@@ -24,4 +24,10 @@ namespace Levonzie\Cerberus;
 
 class CerberusAPI {
     //TODO all api stuff here
+    
+    private $version = "1.0.0-DEV";
+    
+    public function getVersion(): string {
+        return $this->version;
+    }
 }
