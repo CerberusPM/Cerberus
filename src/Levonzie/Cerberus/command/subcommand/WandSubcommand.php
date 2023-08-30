@@ -39,9 +39,6 @@ class WandSubcommand extends BaseSubCommand {
         if (!$sender instanceof Player) {
             $sender->sendMessage(TEXTFORMAT::RED . TEXTFORMAT::BOLD . "Error: must be in-game.");
         }
-        elseif (!$sender->hasPermission("cerberus.command.wand")) {
-            $sender->sendMessage(TEXTFORMAT::RED . TEXTFORMAT::BOLD . "You don't have permission to use this command.");
-        }
         else {
             $sender->sendMessage(TEXTFORMAT::BOLD . TEXTFORMAT::GREEN . "+" . TEXTFORMAT::YELLOW . "-" . TEXTFORMAT::GOLD . "Cerberus" .  TEXTFORMAT::YELLOW . "-" . TEXTFORMAT::GREEN . "+" . TEXTFORMAT::BLUE . " Gave you a Wand");  
             $sender->getInventory()->addItem(VanillaItems::STONE_AXE()->setCustomName("§r§l§gCerberus Wand§r"));
