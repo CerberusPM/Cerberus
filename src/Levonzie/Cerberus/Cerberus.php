@@ -32,7 +32,7 @@ use Levonzie\Cerberus\CerberusAPI;
 
 class Cerberus extends PluginBase {
     
-    private static CerberusAPI $api;
+    private static Cerberus $instance; //Unique instance. Singleton class
     
     public function onEnable(): void {
         $this->getServer()->getCommandMap()->register("Cerberus", new CerberusCommand($this, "cerberus", "protect land", ["crb"]));
@@ -41,11 +41,15 @@ class Cerberus extends PluginBase {
             PacketHooker::register($this);
         }
         
-        self::$api = new CerberusAPI();
+        self::$instance = $this;
         $this->getServer()->getLogger()->info("Cerberus API version: " . $this->getAPI()->getVersion()); //For testing purpose
     }
     
-    public static function getAPI(): CerberusAPI {
-        return self::$api;
+    public static function getInstance(): Cerberus {
+        return self::$instance;
+    }
+    
+    public function getAPI(): CerberusAPI {
+        return CerberusAPI::getInstance();
     }
 }

@@ -25,7 +25,20 @@ namespace Levonzie\Cerberus;
 class CerberusAPI {
     //TODO all api stuff here
     
+    private static CerberusAPI $instance;
+    
     private $version = "1.0.0-DEV";
+    
+    private function __construct() {
+    }
+    
+    public static function getInstance(): CerberusAPI {
+        if (!isset(self::$instance)) {
+            self::$instance = new CerberusAPI();
+        }
+        
+        return self::$instance;
+    }
     
     public function getVersion(): string {
         return $this->version;
