@@ -27,22 +27,24 @@ use pocketmine\utils\TextFormat;
 use pocketmine\player\Player;
 use pocketmine\inventory\{PlayerInventory, Inventory};
 use pocketmine\item\VanillaItems;
-use CortexPE\Commando\BaseSubCommand
+
+use CortexPE\Commando\BaseSubCommand;
+
 class WandSubcommand extends BaseSubCommand {
     protected function prepare(): void {
         $this->setPermission("cerberus.command.wand");
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
-        if (!$sender instanceof Player){
-$sender->sendMessage(TEXTFORMAT::RED . TEXTFORMAT::BOLD . "Error: must be in-game.")
+        if (!$sender instanceof Player) {
+            $sender->sendMessage(TEXTFORMAT::RED . TEXTFORMAT::BOLD . "Error: must be in-game.");
         }
-        elseif (!$sender->hasPermission("cerberus.command.wand")){
-            $sender->sendMessage(TEXTFORMAT::RED . TEXTFORMAT::BOLD . "You don't have permission to use this command.")
+        elseif (!$sender->hasPermission("cerberus.command.wand")) {
+            $sender->sendMessage(TEXTFORMAT::RED . TEXTFORMAT::BOLD . "You don't have permission to use this command.");
         }
         else {
-            $sender->sendMessage(TEXTFORMAT::BOLD . TEXTFORMAT::GREEN . "+" . TEXTFORMAT::YELLOW . "-" . TEXTFORMAT::GOLD . "Cerberus" .  TEXTFORMAT::YELLOW . "-" . TEXTFORMAT::GREEN . "+" . TEXFORMAT::BLUE . " Gave you a Wand");  
-            $sender->getInventory()->addItem(VanillaItems::STONE_AXE)->setCustomName("§r§l§gCerberus Wand§r");
+            $sender->sendMessage(TEXTFORMAT::BOLD . TEXTFORMAT::GREEN . "+" . TEXTFORMAT::YELLOW . "-" . TEXTFORMAT::GOLD . "Cerberus" .  TEXTFORMAT::YELLOW . "-" . TEXTFORMAT::GREEN . "+" . TEXTFORMAT::BLUE . " Gave you a Wand");  
+            $sender->getInventory()->addItem(VanillaItems::STONE_AXE()->setCustomName("§r§l§gCerberus Wand§r"));
         }
     }
 } 
