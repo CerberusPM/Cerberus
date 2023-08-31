@@ -22,6 +22,10 @@ declare(strict_types=1);
 
 namespace Levonzie\Cerberus;
 
+/**
+ * An API class which provides all necessary land management methods used by subcommands
+ */
+
 class CerberusAPI {
     //TODO all api stuff here
     
