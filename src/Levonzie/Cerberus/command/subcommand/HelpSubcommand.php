@@ -26,6 +26,9 @@ use pocketmine\command\CommandSender;
 
 use CortexPE\Commando\BaseSubCommand;
 
+use Levonzie\Cerberus\CerberusAPI;
+use Levonzie\Cerberus\utils\ConfigManager;
+
 class HelpSubcommand extends BaseSubCommand {
     protected function prepare(): void {
         $this->setPermission("cerberus.command.help");
@@ -33,7 +36,8 @@ class HelpSubcommand extends BaseSubCommand {
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         $sender->sendMessage("The plugin is currently in early development stage. Sorry, no commands are available at the moment.");
-        $sender->sendMessage("Cerberus API version: " . $this->getOwningPlugin()->getAPI()->getVersion()); //For testing purpose
+        $sender->sendMessage("Cerberus API version: " . CerberusAPI::getInstance()->getVersion()); //For testing purpose
+        $sender->sendMessage("Selected language: " . ConfigManager::getInstance()->get("language"));
         //TODO
     }
 } 

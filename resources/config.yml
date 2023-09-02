@@ -1,0 +1,5 @@
+# Cerberus Configuration 
+
+version: 1.0-DEV # For internal use. Don't touch!
+
+language: eng

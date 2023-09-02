@@ -29,6 +29,7 @@ use CortexPE\Commando\PacketHooker;
 
 use Levonzie\Cerberus\command\CerberusCommand;
 use Levonzie\Cerberus\CerberusAPI;
+use Levonzie\Cerberus\utils\ConfigManager;
 
 class Cerberus extends PluginBase {
     
@@ -42,7 +43,8 @@ class Cerberus extends PluginBase {
         }
         
         self::$instance = $this;
-        $this->getServer()->getLogger()->info("Cerberus API version: " . $this->getAPI()->getVersion()); //For testing purpose
+        $this->getServer()->getLogger()->info("[Cerberus] Cerberus API version: " . $this->getAPI()->getVersion()); //For testing purpose
+        $this->getServer()->getLogger()->info("[Cerberus] Selected language: " . $this->getConfigManager()->get("language"));
     }
     
     public static function getInstance(): Cerberus {
@@ -51,5 +53,9 @@ class Cerberus extends PluginBase {
     
     public function getAPI(): CerberusAPI {
         return CerberusAPI::getInstance();
+    }
+    
+    public function getConfigManager(): ConfigManager {
+        return ConfigManager::getInstance();
     }
 }
