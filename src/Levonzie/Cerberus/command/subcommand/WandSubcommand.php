@@ -30,6 +30,8 @@ use pocketmine\item\VanillaItems;
 
 use CortexPE\Commando\BaseSubCommand;
 
+use Levonzie\Cerberus\utils\ConfigManager;
+
 class WandSubcommand extends BaseSubCommand {
     protected function prepare(): void {
         $this->setPermission("cerberus.command.wand");
@@ -40,7 +42,7 @@ class WandSubcommand extends BaseSubCommand {
             $sender->sendMessage(TEXTFORMAT::RED . TEXTFORMAT::BOLD . "Error: must be in-game.");
         }
         else {
-            $sender->sendMessage(TEXTFORMAT::BOLD . TEXTFORMAT::GREEN . "+" . TEXTFORMAT::YELLOW . "-" . TEXTFORMAT::GOLD . "Cerberus" .  TEXTFORMAT::YELLOW . "-" . TEXTFORMAT::GREEN . "+" . TEXTFORMAT::BLUE . " Gave you a Wand");  
+            $sender->sendMessage(ConfigManager::getInstance()->getPrefix() . "Gave you a Wand");  
             $sender->getInventory()->addItem(VanillaItems::STONE_AXE()->setCustomName("§r§l§gCerberus Wand§r"));
         }
     }

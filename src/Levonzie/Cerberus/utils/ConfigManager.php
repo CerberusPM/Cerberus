@@ -20,6 +20,7 @@
 
 namespace Levonzie\Cerberus\utils;
 
+use pocketmine\utils\TextFormat;
 use Levonzie\Cerberus\Cerberus;
 
 use function is_file;
@@ -62,6 +63,14 @@ class ConfigManager {
     }
     
     public function get($setting) {
-        return $this->settings[$setting];
+        return $this->settings[$setting] ?? Throw new \LogicException("Option $setting does not exist in the config");
+    }
+    
+    public function getPrefix(): string {
+        try {
+            return TextFormat::colorize($this->settings["prefix"]);
+        } catch (\ErrorException) { //Prefix is not set in the config
+            return "§l§2+§e-§6Cerberus§e-§2+§r ";
+        }
     }
 }
