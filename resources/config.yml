@@ -2,6 +2,11 @@
 
 version: 1.0-DEV # For internal use. Don't touch!
 
+# Customizable prefix. Supports color codes
 prefix: "&l&2+&e-&6Cerberus&e-&2+&r "
 
+# Currently available languages: eng, rus
+# Specify language file name here without .yml ending. If the language file doesn't exist and is available, it will appear in the plugin folder.
+# You can create your own language files if you wish. It's possible by copying any other existing language file and translating it to your language, then specifying the file name below.
+# If you want to help us develop this plugin, consider sending translated language file to us by forking our repository and opening a pull request with your file on github: https://github.com/Levonzie/Cerberus
 language: eng

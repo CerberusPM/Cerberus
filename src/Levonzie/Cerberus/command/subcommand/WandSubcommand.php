@@ -31,6 +31,7 @@ use pocketmine\item\VanillaItems;
 use CortexPE\Commando\BaseSubCommand;
 
 use Levonzie\Cerberus\utils\ConfigManager;
+use Levonzie\Cerberus\utils\LangManager;
 
 class WandSubcommand extends BaseSubCommand {
     protected function prepare(): void {
@@ -38,11 +39,12 @@ class WandSubcommand extends BaseSubCommand {
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
+        $lang_manager = LangManager::getInstance();
         if (!$sender instanceof Player) {
-            $sender->sendMessage(TEXTFORMAT::RED . TEXTFORMAT::BOLD . "Error: must be in-game.");
+            $sender->sendMessage($lang_manager->translate("command.in-game"));
         }
         else {
-            $sender->sendMessage(ConfigManager::getInstance()->getPrefix() . "Gave you a Wand");  
+            $sender->sendMessage(ConfigManager::getInstance()->getPrefix() . $lang_manager->translate("command.wand.given"));  
             $sender->getInventory()->addItem(VanillaItems::STONE_AXE()->setCustomName("§r§l§gCerberus Wand§r"));
         }
     }

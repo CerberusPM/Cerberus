@@ -1,0 +1,13 @@
+# Cerberus language file: Russian
+language-name: Русский
+language-version: 0.1-DEV
+
+## Translation strings
+### Plugin
+plugin.in-dev: "Этот плагин находится на ранней стадии разработки. Извините, но большинство команд на данный момент недоступно."
+plugin.version: "Версия плагина: {%0}"
+plugin.selected_language: "Выбран язык: русский"
+
+### Command
+command.in-game: "&cЭта команда доступна только игрокам"
+command.wand.given: "&aВам выдан инструмент для привата"

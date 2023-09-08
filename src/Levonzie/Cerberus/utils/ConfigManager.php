@@ -62,8 +62,12 @@ class ConfigManager {
         return self::$instance;
     }
     
-    public function get($setting) {
-        return $this->settings[$setting] ?? Throw new \LogicException("Option $setting does not exist in the config");
+    public function get($setting, bool $ignore_null=false) {
+        if ($ignore_null) {
+            return $this->settings[$setting];
+        } else {
+            return $this->settings[$setting] ?? Throw new \LogicException("Option $setting does not exist in the config");
+        }
     }
     
     public function getPrefix(): string {

@@ -1,0 +1,13 @@
+# Cerberus language file: English
+language-name: English
+language-version: 0.1-DEV
+
+## Translation strings
+### Plugin
+plugin.in-dev: "The plugin is currently in early development stage. We apologize, but most commands are not available at the moment."
+plugin.version: "Cerberus version: {%0}"
+plugin.selected_language: "Selected language: English"
+
+### Command
+command.in-game: "&cThis command should be used in-game"
+command.wand.given: "&aGave you a wand"

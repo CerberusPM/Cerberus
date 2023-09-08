@@ -30,12 +30,14 @@ use CortexPE\Commando\PacketHooker;
 use Levonzie\Cerberus\command\CerberusCommand;
 use Levonzie\Cerberus\CerberusAPI;
 use Levonzie\Cerberus\utils\ConfigManager;
+use Levonzie\Cerberus\utils\LangManager;
 
 class Cerberus extends PluginBase {
     
     private static Cerberus $instance; //Unique instance. Singleton class
     
     private CerberusAPI $api;
+    private LangManager $lang_manager;
     private ConfigManager $config_manager;
     
     public function onEnable(): void {
@@ -48,10 +50,12 @@ class Cerberus extends PluginBase {
         self::$instance = $this;
         
         $this->api = CerberusAPI::getInstance();
+        $this->lang_manager = LangManager::getInstance();
         $this->config_manager = ConfigManager::getInstance();
         
-        $this->getLogger()->info("Cerberus API version: " . $this->api->getVersion()); //For testing purpose
-        $this->getLogger()->info("Selected language: " . $this->config_manager->get("language"));
+        $this->getLogger()->notice($this->lang_manager->translate("plugin.in-dev"));
+        $this->getLogger()->info($this->lang_manager->translate("plugin.version", [$this->getDescription()->getVersion()]));
+        $this->getLogger()->info($this->lang_manager->translate("plugin.selected_language"));
     }
     
     public static function getInstance(): Cerberus {
@@ -66,4 +70,16 @@ class Cerberus extends PluginBase {
         return $this->config_manager;
     }
     
+    public function getLangManager(): LangManager {
+        return $this->lang_manager;
+    }
+    
+    /**
+     * Returns the full path to a data file in the plugin's resources folder.
+     * 
+     * This method is available in PocketMine since API 5.5.0. It's added here for compatibility with older PocketMine versions.
+     */
+    public function getResourcePath(string $filename): string {
+        return $this->getFile() . "/resources/" . $filename;
+    }
 }
