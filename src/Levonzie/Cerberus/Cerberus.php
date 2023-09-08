@@ -35,6 +35,9 @@ class Cerberus extends PluginBase {
     
     private static Cerberus $instance; //Unique instance. Singleton class
     
+    private CerberusAPI $api;
+    private ConfigManager $config_manager;
+    
     public function onEnable(): void {
         $this->getServer()->getCommandMap()->register("Cerberus", new CerberusCommand($this, "cerberus", "protect land", ["crb"]));
         
@@ -43,8 +46,12 @@ class Cerberus extends PluginBase {
         }
         
         self::$instance = $this;
-        $this->getServer()->getLogger()->info("[Cerberus] Cerberus API version: " . $this->getAPI()->getVersion()); //For testing purpose
-        $this->getServer()->getLogger()->info("[Cerberus] Selected language: " . $this->getConfigManager()->get("language"));
+        
+        $this->api = CerberusAPI::getInstance();
+        $this->config_manager = ConfigManager::getInstance();
+        
+        $this->getLogger()->info("Cerberus API version: " . $this->api->getVersion()); //For testing purpose
+        $this->getLogger()->info("Selected language: " . $this->config_manager->get("language"));
     }
     
     public static function getInstance(): Cerberus {
@@ -52,10 +59,11 @@ class Cerberus extends PluginBase {
     }
     
     public function getAPI(): CerberusAPI {
-        return CerberusAPI::getInstance();
+        return $this->api;
     }
     
     public function getConfigManager(): ConfigManager {
-        return ConfigManager::getInstance();
+        return $this->config_manager;
     }
+    
 }
