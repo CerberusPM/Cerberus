@@ -2,7 +2,7 @@
 
 /**
  * Cerberus - an advanced land protection plugin for PocketMine-MP 5.
- * Copyright (C) 2023 skyss0fly and Levonzie
+ * Copyright (C) 2023 Levonzie
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
