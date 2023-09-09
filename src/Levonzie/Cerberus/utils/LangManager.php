@@ -129,5 +129,9 @@ class LangManager {
         
         return self::$instance;
     }
+    
+    public function reload(): void {
+        $this->loadLanguages();
+    }
 
 }

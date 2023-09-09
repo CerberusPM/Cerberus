@@ -77,4 +77,9 @@ class ConfigManager {
             return "§l§2+§e-§6Cerberus§e-§2+§r ";
         }
     }
+    
+    public function reload(): void {
+        $this->plugin->reloadConfig();
+        $this->loadConfig();
+    }
 }

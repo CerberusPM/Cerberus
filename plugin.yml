@@ -46,3 +46,6 @@ permissions:
   cerberus.command.whitelist:
     description: Permission for /cerberus whitelist
     default: op
+  cerberus.command.reload:
+    description: Permission for /cerberus reload
+    default: op

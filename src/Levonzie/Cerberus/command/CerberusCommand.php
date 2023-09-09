@@ -34,6 +34,7 @@ use Levonzie\Cerberus\command\subcommand\HelpSubcommand;
 use Levonzie\Cerberus\command\subcommand\HereSubcommand;
 use Levonzie\Cerberus\command\subcommand\ListSubcommand;
 use Levonzie\Cerberus\command\subcommand\MoveSubcommand;
+use Levonzie\Cerberus\command\subcommand\ReloadSubcommand;
 use Levonzie\Cerberus\command\subcommand\RemoveSubcommand;
 use Levonzie\Cerberus\command\subcommand\SecondPositionSubcommand;
 use Levonzie\Cerberus\command\subcommand\SetspawnSubcommand;
@@ -54,6 +55,7 @@ class CerberusCommand extends BaseCommand {
         $this->registerSubCommand(new HereSubcommand("here", "Get name of the land you are in", ["aqui"]));
         $this->registerSubCommand(new ListSubcommand("list", "List landclaims", ["l"]));
         $this->registerSubCommand(new MoveSubcommand("move", "Move a landclaim", ["mv", "mov", "m"]));
+        $this->registerSubCommand(new ReloadSubcommand("reload", "Reload plugin config and/or language", ["rel","rld"]));
         $this->registerSubCommand(new RemoveSubcommand("remove", "Remove a landclaim", ["rm", "rem", "rmv", "delete", "erase", "r", "d"]));
         $this->registerSubCommand(new SecondPositionSubcommand("pos2", "Select second position", ["2", "second"]));
         $this->registerSubCommand(new SetspawnSubcommand("setspawn", "Set teleportation and movement point", ["s", "spawn", "set"]));

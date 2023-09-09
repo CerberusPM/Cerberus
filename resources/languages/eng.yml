@@ -3,11 +3,22 @@ language-name: English
 language-version: 0.1-DEV
 
 ## Translation strings
-### Plugin
+### Plugin - general plugin strings
 plugin.in-dev: "The plugin is currently in early development stage. We apologize, but most commands are not available at the moment."
 plugin.version: "Cerberus version: {%0}"
 plugin.selected_language: "Selected language: English"
 
-### Command
+### Language names (at the moment used in language chnage messages)
+lang.eng: "English"
+lang.rus: "Russian"
+
+### Command messages
 command.in-game: "&cThis command should be used in-game"
+#### Reload
+command.reload.all: "Configuration and plugin language have been successfully reloaded"
+command.reload.config: "Configuration has been reloaded"
+command.reload.lang: "Current language file ({%0}) has been reloaded"
+command.reload.lang.switch: "Language changed from {%0} to {%1}"
+command.reload.options: "The following can be reloaded: all|config|lang. If no argument specified, everything will be reloaded"
+#### Wand
 command.wand.given: "&aGave you a wand"

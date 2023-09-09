@@ -40,14 +40,16 @@ class Cerberus extends PluginBase {
     private LangManager $lang_manager;
     private ConfigManager $config_manager;
     
+    public function onLoad(): void {
+        self::$instance = $this;
+    }
+    
     public function onEnable(): void {
-        $this->getServer()->getCommandMap()->register("Cerberus", new CerberusCommand($this, "cerberus", "protect land", ["crb"]));
+        $this->getServer()->getCommandMap()->register("Cerberus", new CerberusCommand($this, "cerberus", "protect land", ["crb", "cerb"]));
         
         if(!PacketHooker::isRegistered()) {
             PacketHooker::register($this);
         }
-        
-        self::$instance = $this;
         
         $this->api = CerberusAPI::getInstance();
         $this->lang_manager = LangManager::getInstance();
