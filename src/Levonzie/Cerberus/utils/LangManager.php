@@ -34,72 +34,66 @@ use function yaml_parse_file;
 use function is_array;
 use function version_compare;
 use function rename;
+
 /**
  * A class which provides capabilities for plugin messages translation by handling language files and making sure they are up to date.
  */
-
 class LangManager {
     private static LangManager $instance;
     private Cerberus $plugin;
     
     private string $current_language;
     private array $translations;
+    private array $default_translations;
     
     private function __construct() {
         //Load selected language.
         $this->plugin = Cerberus::getInstance();
         $this->loadLanguages();
-    }
-    
-    private function loadLanguages(): void {
-        $selected_language = ConfigManager::getInstance()->get("language", true);
-        if (!isset($selected_language)) {
-            $this->plugin->getLogger()->notice("Language option is not set in config.yml. English will be used by default.");
-            $selected_language = "eng";
-        }
-        $selected_language = str_replace(".yml", "", $selected_language); //In case somebody will add .yml at the end
-        
-        @mkdir($this->plugin->getDataFolder() . "languages");
-        
-        $selected_lang_path = $this->plugin->getDataFolder() . "languages/$selected_language.yml";
-        if (!is_file($selected_lang_path)) { //Create language file and load
-            $saved_file = $this->plugin->saveResource("languages/$selected_language.yml");
-            if (!$saved_file) { //Language file was not created
-                Throw new \RuntimeException("Specified language $selected_language is not available. Please make sure you use one of the available languages (eng, rus), or manually added appropriate language file in plugin's languages folder.");
-            } else {
-                $language_contents = yaml_parse_file($selected_lang_path);
-                $this->translations = $language_contents;
-            }
-        } else { //Language version check and load
-            $language_contents = yaml_parse_file($selected_lang_path);
-            if (!is_array($language_contents)) {
-                Throw new \RuntimeException("$selected_language language file is not a valid YAML file or is empty. Please check the syntax");
-            } else { //version check
-                $embedded_langfile_path = $this->plugin->getResourcePath("languages/$selected_language.yml");
-                $embedded_langfile_contents = yaml_parse_file($embedded_langfile_path);
-                
-                if (version_compare($language_contents["language-version"], $embedded_langfile_contents["language-version"]) < 0) { //Language version of the language_file in plugin_data is lower. Language file has to be updated
-                    @rename($selected_lang_path, $selected_lang_path . '.old'); //Backup the old language file
-                    $this->plugin->saveResource("languages/$selected_language.yml", true);
-                    $this->plugin->getLogger()->warning("$selected_language language file is outdated and has been updated. The old file was backed up as $selected_lang_path.old");
-                }
-                
-                $this->translations = $language_contents;
-            }
-        }
-        $this->current_language = $selected_language;
+        $this->loadDefaultLanguage();
     }
     
     /**
-     * Translate a message by key into the language set in config.yml
+     * Translate a message by key into the language set in config.yml. If translation is not found tries fetching the translation from default English language file.
      * 
      * @param string   $key    Translation message key set in language files.
      * @param string[] $params Array of values that will replace index variables (e.g., {%0}, {%1}) with corresponding values.
      * 
-     * @return string Returns colorized string of the translation corresponding to $key
+     * @return string Returns colorized string of the translation corresponding to $key. Throws an exception if translation is not found.
      */
     public function translate(string $key, array $params = []): string {
-        $translation = $this->translations[$key] ?? Throw new \RuntimeException("Translation $key was not found in $this->current_language language file!");
+        try {
+            $translation = $this->translations[$key];
+        } catch (\ErrorException) { //Undefined array key
+            $default_translation = $this->translateDefault($key, $params);
+            if (isset($default_translation)) {
+                return $default_translation;
+            } else {
+                Throw new \RuntimeException("Translation $key was not found in $this->current_language and default embedded language files!");
+            }
+        }
+        
+        foreach ($params as $index => $param) {
+            $translation = str_replace("{%$index}", $param, $translation);
+        }
+        
+        return TextFormat::colorize($translation);
+    }
+    
+    /**
+     * Translate a message by key into the default English language using a language file embedded in plugin source code.
+     * 
+     * @param string   $key    Translation message key
+     * @param string[] $params Array of values that will replace index variables (e.g., {%0}, {%1}) with corresponding values.
+     * 
+     * @return string|null Returns colorized string of translation corresponding to key. Returns null if translation is not found.
+     */
+    public function translateDefault(string $key, array $params): string|null {
+        try {
+            $translation = $this->default_translations[$key];
+        } catch (\ErrorException) { //Undefined array key
+            return null;
+        }
         
         foreach ($params as $index => $param) {
             $translation = str_replace("{%$index}", $param, $translation);
@@ -130,8 +124,61 @@ class LangManager {
         return self::$instance;
     }
     
+    /**
+     * Reload currently used language file
+     */
     public function reload(): void {
         $this->loadLanguages();
+    }
+    
+    private function loadLanguages(): void {
+        //Fetch the language from the config
+        $selected_language = ConfigManager::getInstance()->get("language", true);
+        if (!isset($selected_language)) {
+            $this->plugin->getLogger()->notice("Language option is not set in config.yml. English will be used by default.");
+            $selected_language = "eng";
+        }
+        $selected_language = str_replace(".yml", "", $selected_language); //In case somebody will add .yml at the end
+        $this->current_language = $selected_language;
+        
+        @mkdir($this->plugin->getDataFolder() . "languages");
+        
+        //Create language file and load if it doesn't exist
+        $selected_lang_path = $this->plugin->getDataFolder() . "languages/$selected_language.yml";
+        if (!is_file($selected_lang_path)) { 
+            $saved_file = $this->plugin->saveResource("languages/$selected_language.yml");
+            
+            if (!$saved_file) //Language file was not created
+                Throw new \RuntimeException("Specified language $selected_language is not available. Please make sure you use one of the available languages (eng, rus), or manually added appropriate language file in plugin's languages folder.");
+            
+            $language_contents = yaml_parse_file($selected_lang_path);
+            $this->translations = $language_contents;
+            return;
+        }
+        
+        //The language file exists
+        //Language version check and load
+        $existing_langfile_contents = yaml_parse_file($selected_lang_path);
+        if (!is_array($existing_langfile_contents))
+            Throw new \RuntimeException("$selected_language language file is not a valid YAML file or is empty. Please check the syntax");
+        
+        //Version check
+        $embedded_langfile_path = $this->plugin->getResourcePath("languages/$selected_language.yml");
+        $embedded_langfile_contents = yaml_parse_file($embedded_langfile_path);
+        
+        if (version_compare($existing_langfile_contents["language-version"], $embedded_langfile_contents["language-version"]) < 0) { //Language version of the language_file in plugin_data is lower. Language file has to be updated
+            @rename($selected_lang_path, $selected_lang_path . '.old'); //Backup the old language file
+            $this->plugin->saveResource("languages/$selected_language.yml", true);
+            $this->plugin->getLogger()->warning("$selected_language language file is outdated and has been updated. The old file was backed up as $selected_lang_path.old");
+        }
+        
+        $language_contents = yaml_parse_file($selected_lang_path);
+        $this->translations = $language_contents;
+    }
+    
+    private function loadDefaultLanguage(): void {
+        $langfile_path = $this->plugin->getResourcePath("languages/eng.yml"); //Default embedded language file
+        $this->default_translations = yaml_parse_file($langfile_path);
     }
 
 }

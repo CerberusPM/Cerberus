@@ -72,7 +72,7 @@ class CerberusCommand extends BaseCommand {
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
-        $sender->sendMessage("The plugin is currently in early development stage. Sorry, no commands are available at the moment.");
+        $sender->sendMessage($this->getOwningPlugin()->getLangManager()->translate("plugin.in-dev"));
     }
     
 }
