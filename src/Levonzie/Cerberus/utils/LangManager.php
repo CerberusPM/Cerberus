@@ -156,20 +156,20 @@ class LangManager {
             return;
         }
         
-        //The language file exists
-        //Language version check and load
+        //The language file exists. Check if it's alright
         $existing_langfile_contents = yaml_parse_file($selected_lang_path);
         if (!is_array($existing_langfile_contents))
             Throw new \RuntimeException("$selected_language language file is not a valid YAML file or is empty. Please check the syntax");
-        
+        $existing_langfile_version = $existing_langfile_contents["language-version"];
         //Version check
         $embedded_langfile_path = $this->plugin->getResourcePath("languages/$selected_language.yml");
         $embedded_langfile_contents = yaml_parse_file($embedded_langfile_path);
+        $embedded_langfile_version = $embedded_langfile_contents["language-version"];
         
-        if (version_compare($existing_langfile_contents["language-version"], $embedded_langfile_contents["language-version"]) < 0) { //Language version of the language_file in plugin_data is lower. Language file has to be updated
+        if (version_compare($existing_langfile_version, $embedded_langfile_version) < 0) { //Embedded language file is newer
             @rename($selected_lang_path, $selected_lang_path . '.old'); //Backup the old language file
             $this->plugin->saveResource("languages/$selected_language.yml", true);
-            $this->plugin->getLogger()->warning("$selected_language language file is outdated and has been updated. The old file was backed up as $selected_lang_path.old");
+            $this->plugin->getLogger()->warning(str_replace('{%0}', "$selected_lang_path.old", $embedded_langfile_contents["plugin.outdated_langfile"])); //Languages are not yet loaded for translate() to work, so we'll translate "manually"
         }
         
         $language_contents = yaml_parse_file($selected_lang_path);

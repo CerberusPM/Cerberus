@@ -7,8 +7,10 @@ language-version: 0.1-DEV
 plugin.in-dev: "The plugin is currently in early development stage. We apologize, but most commands are not available at the moment."
 plugin.version: "Cerberus version: {%0}"
 plugin.selected_language: "Selected language: English"
+plugin.outdated_config: "Plugin's config.yml is outdated and has been updated automatically. The old file was backed up as {%0} If you made any changes to the config, you have to transfer them manually from the old file."
+plugin.outdated_langfile: "Selected language file (English) is outdated and has been updated automatically. The old file was backed up as {%0}"
 
-### Language names (at the moment used in language chnage messages)
+### Language names (at the moment used in language change messages)
 lang.eng: "English"
 lang.rus: "Russian"
 

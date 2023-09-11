@@ -21,17 +21,20 @@
 namespace Levonzie\Cerberus\utils;
 
 use pocketmine\utils\TextFormat;
+
 use Levonzie\Cerberus\Cerberus;
+use Levonzie\Cerberus\utils\LangManager;
 
 use function is_file;
+use function yaml_parse_file;
+use function version_compare;
+use function rename;
+
 /**
  * A class for plugin configuration management
  */
-
 class ConfigManager {
     private static ConfigManager $instance;
-    
-    public const CONFIG_VERSION = "1.0-DEV";
     
     private Cerberus $plugin;
     
@@ -41,19 +44,13 @@ class ConfigManager {
         $this->plugin = Cerberus::getInstance();
         
         $this->loadConfig();
-        
-        
     }
     
-    private function loadConfig(): void {
-        if (is_file($this->plugin->getDataFolder() . "config.yml")) {
-            //TODO: Check if config is okay and implement version check
-        } else {
-            $this->plugin->getInstance()->saveDefaultConfig();
-        }
-        $this->settings = $this->plugin->getConfig()->getAll();
-    }
-    
+    /**
+     * Get ConfigManager instance
+     * 
+     * @return ConfigManager ConfigManager instance
+     */
     public static function getInstance(): ConfigManager {
         if (!isset(self::$instance)) {
             self::$instance = new ConfigManager();
@@ -62,14 +59,30 @@ class ConfigManager {
         return self::$instance;
     }
     
-    public function get($setting, bool $ignore_null=false) {
-        if ($ignore_null) {
+    /**
+     * Get a value of a setting from config.yml by setting name
+     * 
+     * @param string $setting     Setting name from config.yml
+     * @param bool   $ignore_null Do not throw an exception when option is not found in the config
+     * 
+     * @return mixed Returns a value of corresponding setting in config.yml. Throws an exception or returns null (when $ignore_null is set to false) if requested setting is not found
+     */
+    public function get(string $setting, bool $ignore_null=false) {
+        try {
             return $this->settings[$setting];
-        } else {
-            return $this->settings[$setting] ?? Throw new \LogicException("Option $setting does not exist in the config");
+        } catch (\ErrorException) {
+            if ($ignore_null)
+                return null;
+            else
+                Throw new \RuntimeException("Option $setting does not exist in the config");
         }
     }
     
+    /**
+     * Get plugin prefix set in config.yml or, if not set, the default prefix
+     * 
+     * @return string Colorized prefix from config or default one
+     */
     public function getPrefix(): string {
         try {
             return TextFormat::colorize($this->settings["prefix"]);
@@ -78,8 +91,38 @@ class ConfigManager {
         }
     }
     
+    /**
+     * Reload the configuration
+     */
     public function reload(): void {
-        $this->plugin->reloadConfig();
+        $this->plugin->getConfig()->reload();
         $this->loadConfig();
+    }
+    
+    private function loadConfig(): void {
+        $existing_conf_path = $this->plugin->getDataFolder() . "config.yml";
+        $conf_already_existed = is_file($existing_conf_path);
+        $conf_updated = false;
+        
+        $config = $this->plugin->getConfig();
+
+        if ($conf_already_existed) {
+            $existing_conf_version = $config->get("version");
+            $embedded_conf_path = $this->plugin->getResourcePath("config.yml");
+            $embedded_conf_version = yaml_parse_file($embedded_conf_path)["version"];
+            
+            if (version_compare($existing_conf_version, $embedded_conf_version) < 0) { //Embedded config is newer. Fires even when verison is not set and config file is an empty array
+                @rename($existing_conf_path, $existing_conf_path . ".old"); //Backup the old config
+                $this->plugin->saveDefaultConfig(); //Create new config
+                $conf_updated = true;
+            }
+            $config->reload();
+        }
+        
+        $this->settings = $config->getAll();
+        
+        if ($conf_updated) //We can use LangManager only after settings are loaded
+            $this->plugin->getLogger()->warning(LangManager::getInstance()->translate("plugin.outdated_config", ["$existing_conf_path.old"])); //Notify user
+        //TODO: Make the config retain settings after update
     }
 }
