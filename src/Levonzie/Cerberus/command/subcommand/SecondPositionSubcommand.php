@@ -22,20 +22,65 @@ declare(strict_types=1);
 
 namespace Levonzie\Cerberus\command\subcommand;
 
+use pocketmine\Server;
 use pocketmine\command\CommandSender;
+use pocketmine\world\Position;
+use pocketmine\player\Player;
 
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\Vector3Argument;
+use CortexPE\Commando\args\RawStringArgument;
+
+use Levonzie\Cerberus\utils\ConfigManager;
+use Levonzie\Cerberus\utils\LangManager;
+use Levonzie\Cerberus\utils\SelectionManager;
+
+use function strval;
 
 class SecondPositionSubcommand extends BaseSubCommand {
     protected function prepare(): void {
         $this->registerArgument(0, new Vector3Argument("position", true)); //Optional. If not specified uses current player position
+        $this->registerArgument(1, new RawStringArgument("world", true)); //World name. Optional. If not set uses the world player is currently in
         
         $this->setPermission("cerberus.command.selection");
+        
+        $this->config_manager = ConfigManager::getInstance();
+        $this->lang_manager = LangManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
-        //TODO
+        if (isset($args["position"])) { //Set the second position to specified position
+            if (isset($args["world"])) {
+                $world = Server::getInstance()->getWorldManager()->getWorldByName($args["world"]);
+                if (!isset($world)) {
+                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos.world_not_found", [$args["world"]]));
+                    return;
+                }
+            } else {
+                if ($sender instanceof Player)
+                    $world = $sender->getPosition()->getWorld();
+                else {
+                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos.should_select_world"));
+                    return;
+                }
+            }
+            SelectionManager::selectSecondPosition($sender->getName(), Position::fromObject($args["position"], $world));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos2.selected.world", [strval($args["position"]->getFloorX()), 
+                                                                                                     strval($args["position"]->getFloorY()), 
+                                                                                                     strval($args["position"]->getFloorZ()),
+                                                                                                     $world->getFolderName()]));
+        } else { 
+            //Position is not set manually. We should figure out player's current position or notify if the command is being used not from the game
+            if ($sender instanceof Player) {
+                $position = $sender->getPosition();
+                $world = $sender->getPosition()->getWorld();
+                SelectionManager::selectSecondPosition($sender->getName(), Position::fromObject($position, $world));
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos2.selected", [strval($position->getFloorX()),
+                                                                                                         strval($position->getFloorY()),
+                                                                                                         strval($position->getFloorZ())]));
+            } else
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos.in-game"));
+        }
     }
 } 
  

@@ -22,5 +22,15 @@ command.reload.config: "Configuration has been reloaded"
 command.reload.lang: "Current language file ({%0}) has been reloaded"
 command.reload.lang.switch: "Language changed from {%0} to {%1}"
 command.reload.options: "The following can be reloaded: all|config|lang. If no argument specified, everything will be reloaded"
+#### Position
+command.pos.in-game: "&cYou should be in-game to run this command without position set. If you want to select position from the console please specify coordinates manually!"
+command.pos.should_select_world: "&cYou should as well specify the world name where you want the position to be set. World name cannot be figured out automatically as you are not in-game."
+command.pos.world_not_found: "&cWorld \"{%0}\" does not exist. Please check your spelling and case."
+##### Pos1
+command.pos1.selected: "&aSuccessfully selected the first position at X:{%0} Y:{%1} Z:{%2}"
+command.pos1.selected.world: "&aSuccessfully selected the first position at X:{%0} Y:{%1} Z:{%2} World: {%3}"
+##### Pos2
+command.pos2.selected: "&aSuccessfully selected the second position at X:{%0} Y:{%1} Z:{%2}"
+command.pos2.selected.world: "&aSuccessfully selected the second position at X:{%0} Y:{%1} Z:{%2} World: {%3}"
 #### Wand
 command.wand.given: "&aGave you a wand"

@@ -22,6 +22,8 @@ declare(strict_types=1);
 
 namespace Levonzie\Cerberus;
 
+use Levonzie\Cerberus\Cerberus;
+
 /**
  * An API class which provides all necessary land management methods used by subcommands
  */
@@ -30,12 +32,19 @@ class CerberusAPI {
     //TODO all api stuff here
     
     private static CerberusAPI $instance;
+    private Cerberus $plugin;
     
     private $version = "1.0.0-DEV";
     
     private function __construct() {
+        $this->plugin = Cerberus::getInstance();
     }
     
+    /*
+     * Get API class instance
+     * 
+     * @return CerberusAPI CerberusAPI instance
+     */
     public static function getInstance(): CerberusAPI {
         if (!isset(self::$instance)) {
             self::$instance = new CerberusAPI();
@@ -44,7 +53,21 @@ class CerberusAPI {
         return self::$instance;
     }
     
+    /**
+     * Get API version
+     * 
+     * @return string version
+     */
     public function getVersion(): string {
         return $this->version;
+    }
+    
+    /**
+     * Get owning plugin (Cerberus) instance
+     * 
+     * @return Cerberus Cerberus instance
+     */
+    public function getOwningPlugin(): Cerberus {
+        return $this->plugin;
     }
 }
