@@ -59,9 +59,9 @@ class LangManager {
      * @param string   $key    Translation message key set in language files.
      * @param string[] $params Array of values that will replace index variables (e.g., {%0}, {%1}) with corresponding values.
      * 
-     * @return string Returns colorized string of the translation corresponding to $key. Throws an exception if translation is not found.
+     * @return string|string[] Returns colorized string or array of strings of the translation corresponding to $key. Throws an exception if translation is not found.
      */
-    public function translate(string $key, array $params = []): string {
+    public function translate(string $key, array $params = []): string|array {
         try {
             $translation = $this->translations[$key];
         } catch (\ErrorException) { //Undefined array key
@@ -72,12 +72,19 @@ class LangManager {
                 Throw new \RuntimeException("Translation $key was not found in $this->current_language and default embedded language files!");
             }
         }
-        
-        foreach ($params as $index => $param) {
-            $translation = str_replace("{%$index}", $param, $translation);
+        if (is_array($translation)) { // If array is passed, array elements will be translated. Is useful for multiline strings
+            foreach ($translation as &$translation_string) {
+                foreach($params as $index => $param)
+                    $translation_string = str_replace("{%$index}", $param, $translation_string);
+                $translation_string = TextFormat::colorize($translation_string);
+            }
+            return $translation;
+        } else {
+            foreach ($params as $index => $param)
+                $translation = str_replace("{%$index}", $param, $translation);
+            
+            return TextFormat::colorize($translation);
         }
-        
-        return TextFormat::colorize($translation);
     }
     
     /**
