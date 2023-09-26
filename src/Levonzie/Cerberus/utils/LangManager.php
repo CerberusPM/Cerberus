@@ -145,7 +145,7 @@ class LangManager {
     
     private function loadLanguages(): void {
         //Fetch the language from the config
-        $selected_language = ConfigManager::getInstance()->get("language", true);
+        $selected_language = ConfigManager::getInstance()->get("language", false); //We don't need to fetch the default value to show the message later on
         if (!isset($selected_language)) {
             $this->plugin->getLogger()->notice("Language option is not set in config.yml. English will be used by default.");
             $selected_language = "eng";
@@ -188,6 +188,9 @@ class LangManager {
         $this->translations = $language_contents;
     }
     
+    /**
+     * Load translations from default language file, embedded in source code
+     */
     private function loadDefaultLanguage(): void {
         $langfile_path = $this->plugin->getResourcePath("languages/eng.yml"); //Default embedded language file
         $this->default_translations = yaml_parse_file($langfile_path);

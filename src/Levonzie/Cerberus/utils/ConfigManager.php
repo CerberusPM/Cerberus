@@ -39,10 +39,12 @@ class ConfigManager {
     private Cerberus $plugin;
     
     private array $settings;
+    private array $default_settings;
     
     private function __construct() {
         $this->plugin = Cerberus::getInstance();
         
+        $this->loadDefaultConfig(); // Load default settings before to make sure they will be used in version compare
         $this->loadConfig();
     }
     
@@ -62,19 +64,31 @@ class ConfigManager {
     /**
      * Get a value of a setting from config.yml by setting name
      * 
-     * @param string $setting     Setting name from config.yml
-     * @param bool   $ignore_null Do not throw an exception when option is not found in the config
+     * @param string $setting                  Setting name (key) from config.yml
+     * @param bool   $use_default_if_not_found Whether to try fetching a setting from default config if setting is not found
      * 
-     * @return mixed Returns a value of corresponding setting in config.yml. Throws an exception or returns null (when $ignore_null is set to false) if requested setting is not found
+     * @return mixed Returns a value of corresponding setting in config.yml. Returns null if requested setting is not found
      */
-    public function get(string $setting, bool $ignore_null=false) {
+    public function get(string $setting, bool $use_default_if_not_found=true) {
         try {
             return $this->settings[$setting];
         } catch (\ErrorException) {
-            if ($ignore_null)
-                return null;
-            else
-                Throw new \RuntimeException("Option $setting does not exist in the config");
+            if ($use_default_if_not_found)
+                return $this->getDefault($setting);
+            return null;
+        }
+    }
+    
+    /**
+     * Get a default value of a setting from config.yml embedded in source code
+     * 
+     * @param string $setting Setting name (key) from config.yml
+     */
+    public function getDefault(string $setting) {
+        try {
+            return $this->default_settings[$setting];
+        } catch (\ErrorException) { //Undefined array key
+            return null;
         }
     }
     
@@ -87,7 +101,7 @@ class ConfigManager {
         try {
             return TextFormat::colorize($this->settings["prefix"]);
         } catch (\ErrorException) { //Prefix is not set in the config
-            return "§l§2+§e-§6Cerberus§e-§2+§r ";
+            return TextFormat::colorize($this->default_settings["prefix"]);
         }
     }
     
@@ -108,8 +122,7 @@ class ConfigManager {
 
         if ($conf_already_existed) {
             $existing_conf_version = $config->get("version");
-            $embedded_conf_path = $this->plugin->getResourcePath("config.yml");
-            $embedded_conf_version = yaml_parse_file($embedded_conf_path)["version"];
+            $embedded_conf_version = $this->default_settings["version"];
             
             if (version_compare($existing_conf_version, $embedded_conf_version) < 0) { //Embedded config is newer. Fires even when verison is not set and config file is an empty array
                 @rename($existing_conf_path, $existing_conf_path . ".old"); //Backup the old config
@@ -124,5 +137,10 @@ class ConfigManager {
         if ($conf_updated) //We can use LangManager only after settings are loaded
             $this->plugin->getLogger()->warning(LangManager::getInstance()->translate("plugin.outdated_config", ["$existing_conf_path.old"])); //Notify user
         //TODO: Make the config retain settings after update
+    }
+    
+    private function loadDefaultConfig(): void {
+        $default_config_path = $this->plugin->getResourcePath("config.yml"); //Default embedded config
+        $this->default_settings = yaml_parse_file($default_config_path);
     }
 }

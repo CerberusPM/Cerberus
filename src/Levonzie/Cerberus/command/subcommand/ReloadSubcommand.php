@@ -46,7 +46,7 @@ class ReloadSubcommand extends BaseSubCommand {
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         $arg = $args["all|config|lang"] ?? null;
-        $old_lang = $this->config_manager->get("language", true) ?? "eng";
+        $old_lang = $this->config_manager->get("language") ?? "eng";
         if (!isset($arg) || $arg == "all") {
             $this->config_manager->reload();
             $this->lang_manager->reload();
@@ -63,7 +63,7 @@ class ReloadSubcommand extends BaseSubCommand {
             return; //Skip language check change
         }
         //Language change check and lang_manager reload if changed
-        $new_lang = $this->config_manager->get("language", true);
+        $new_lang = $this->config_manager->get("language");
         if ($old_lang !== $new_lang && isset($new_lang)) {
                 $this->lang_manager->reload(); //Reload the language file as new language is set in the config
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.reload.lang.switch", [$this->lang_manager->translate("lang.$old_lang"), $this->lang_manager->translate("lang.$new_lang")]));
