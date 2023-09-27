@@ -26,6 +26,7 @@ use pocketmine\utils\TextFormat;
 
 use Levonzie\Cerberus\Cerberus;
 use Levonzie\Cerberus\utils\ConfigManager;
+use Levonzie\Cerberus\exception\CerberusLangException;
 
 use function mkdir;
 use function is_file;
@@ -59,7 +60,9 @@ class LangManager {
      * @param string   $key    Translation message key set in language files.
      * @param string[] $params Array of values that will replace index variables (e.g., {%0}, {%1}) with corresponding values.
      * 
-     * @return string|string[]|null Returns colorized string or array of strings of the translation corresponding to $key. Returns null if translation is empty. Throws an exception if translation is not found.
+     * @throws CerberusLangException if translation is not found in current and default language files.
+     * 
+     * @return string|string[]|null Returns colorized string or array of strings of the translation corresponding to $key. Returns null if translation is empty.
      */
     public function translate(string $key, array $params = []): string|array|null {
         try {
@@ -69,7 +72,7 @@ class LangManager {
             if (isset($default_translation)) {
                 return $default_translation;
             } else {
-                Throw new \RuntimeException("Translation $key was not found in $this->current_language and default embedded language files!");
+                Throw new CerberusLangException("Translation $key was not found in $this->current_language and default embedded language files!");
             }
         }
         if (isset($translation)) {
@@ -161,7 +164,7 @@ class LangManager {
             $saved_file = $this->plugin->saveResource("languages/$selected_language.yml");
             
             if (!$saved_file) //Language file was not created
-                Throw new \RuntimeException("Specified language $selected_language is not available. Please make sure you use one of the available languages (eng, rus), or manually added appropriate language file in plugin's languages folder.");
+                Throw new CerberusLangException("Specified language $selected_language is not available. Please make sure you use one of the available languages (eng, rus), or manually added appropriate language file in plugin's languages folder.");
             
             $language_contents = yaml_parse_file($selected_lang_path);
             $this->translations = $language_contents;
@@ -171,7 +174,7 @@ class LangManager {
         //The language file exists. Check if it's alright
         $existing_langfile_contents = yaml_parse_file($selected_lang_path);
         if (!is_array($existing_langfile_contents))
-            Throw new \RuntimeException("$selected_language language file is not a valid YAML file or is empty. Please check the syntax");
+            Throw new CerberusLangException("$selected_language language file is not a valid YAML file or is empty. Please check the syntax");
         $existing_langfile_version = $existing_langfile_contents["language-version"];
         //Version check
         $embedded_langfile_path = $this->plugin->getResourcePath("languages/$selected_language.yml");
