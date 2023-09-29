@@ -1,6 +1,6 @@
 # Cerberus language file: English
 language-name: English
-language-version: 0.1-DEV
+language-version: 1.0-DEV-2
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -33,4 +33,9 @@ command.pos1.selected.world: "&aSuccessfully selected the first position at X:{%
 command.pos2.selected: "&aSuccessfully selected the second position at X:{%0} Y:{%1} Z:{%2}"
 command.pos2.selected.world: "&aSuccessfully selected the second position at X:{%0} Y:{%1} Z:{%2} World: {%3}"
 #### Wand
+wand.name: "&l&gCerberus Wand" # Given wand will have this name
+wand.lore: # Wand item description
+- "&aThis is a Cerberus wand"
+- "&eUse it to claim your land"
 command.wand.given: "&aGave you a wand"
+command.wand.inventory_full: "&cCan't give a wand. Your inventory is full."

@@ -22,19 +22,35 @@ declare(strict_types=1);
 
 namespace Levonzie\Cerberus;
 
+use pocketmine\utils\TextFormat;
+use pocketmine\player\Player;
+use pocketmine\item\Item;
+use pocketmine\item\Durable;
+use pocketmine\item\StringToItemParser;
+use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\StringToEnchantmentParser;
+use pocketmine\nbt\tag\CompoundTag;
+
 use Levonzie\Cerberus\Cerberus;
+use Levonzie\Cerberus\utils\ConfigManager;
+use Levonzie\Cerberus\utils\LangManager;
+use Levonzie\Cerberus\exception\InventoryFullException;
+
+use function is_array;
 
 /**
  * An API class which provides all necessary land management methods used by subcommands
  */
 
-class CerberusAPI {
-    //TODO all api stuff here
-    
+class CerberusAPI { 
     private static CerberusAPI $instance;
     private Cerberus $plugin;
     
     private $version = "1.0.0-DEV";
+    
+    public const TAG_CERBERUS = "Cerberus";
+    public const TAG_WAND = "isWand";
     
     private function __construct() {
         $this->plugin = Cerberus::getInstance();
@@ -69,5 +85,74 @@ class CerberusAPI {
      */
     public function getOwningPlugin(): Cerberus {
         return $this->plugin;
+    }
+    
+    /**
+     * Give player a wand
+     * 
+     * @param Player $player Player who will receive a wand
+     * 
+     * @throws InventoryFullException if inventory is full and there's no place for wand
+     */
+    public function giveWand(Player $player): void {
+        $this->config_manager = ConfigManager::getInstance();
+        $this->language_manager = LangManager::getInstance();
+        
+        //Construct the wand item
+        $wand_id = $this->config_manager->get("wand-item");
+        $wand_item = StringToItemParser::getInstance()->parse($wand_id) ?? LegacyStringToItemParser::getInstance()->parse($wand_id);
+        if ($wand_item instanceof Durable)
+            $wand_item->setUnbreakable(true);
+        // Set custom name
+        if ($this->config_manager->get("wand-use-default-name"))
+            $wand_name = $this->language_manager->translate("wand.name"); // LangManager returns already colorized string
+        else
+            $wand_name = $this->config_manager->get("wand-name", false); // Don't use the value from default config as the one from language file will be used
+        if (!empty($wand_name))
+            $wand_item->setCustomName(TextFormat::colorize($wand_name));
+        else //Looks like name option is left blank. Applying the default name
+            $wand_item->setCustomName($this->language_manager->translate("wand.name"));
+        // Set lore
+        $lore_already_colorized = false;
+        if ($this->config_manager->get("wand-use-default-lore")) {
+            $wand_lore = $this->language_manager->translate("wand.lore");
+            $lore_already_colorized = true;
+        } else
+            $wand_lore = $this->config_manager->get("wand-lore", false);
+        
+        if (!empty($wand_lore)) {
+            if (!is_array($wand_lore)) // If lore is string, convert to array with one element since Item->setLore() requieres an array of strings
+                $wand_lore = array($wand_lore);
+            if (!$lore_already_colorized) {
+                foreach ($wand_lore as &$lore_string)
+                    $lore_string = TextFormat::colorize($lore_string);
+                unset($lore_string);
+            }
+            $wand_item->setLore($wand_lore);
+        }
+        //Set enchantments
+        $wand_enchantments = $this->config_manager->get("wand-enchantments");
+        if (is_array($wand_enchantments)) {
+            foreach ($wand_enchantments as $ench_name => $ench_lvl) {
+                $ench = StringToEnchantmentParser::getInstance()->parse($ench_name);
+                if (!empty($ench)) {
+                    $ench_instance = new EnchantmentInstance($ench, $ench_lvl);
+                    $wand_item->addEnchantment($ench_instance);
+                }
+            }
+        }
+        // Set NBT
+        $cerberus_compound_tag = CompoundTag::create();
+        $cerberus_compound_tag->setByte(self::TAG_WAND, 1); //This NBT tag makes wand a wand
+        $wand_item->getNamedTag()->setTag(self::TAG_CERBERUS, $cerberus_compound_tag);
+        //Give the item
+        $player_inv = $player->getInventory();
+        $selected_item = $player_inv->getItemInHand(); // Retreive currently held item, so that it'll be possible to move it to a different slot
+        if ($player_inv->canAddItem($wand_item)) { // Check if inventory is full
+            $player_inv->setItemInHand($wand_item); // Replace currently held item (or air) with the wand item
+            $player_inv->addItem($selected_item); // Return previously held item to player by adding it to an available empty slot
+        } else {
+            Throw new InventoryFullException("Inventory is full");
+        }
     }
 }

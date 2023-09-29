@@ -9,4 +9,18 @@ prefix: "&l&2+&e-&6Cerberus&e-&2+&r "
 # If you want to help us develop this plugin, consider sending translated language file to us by forking our repository and opening a pull request with your file on github: https://github.com/Levonzie/Cerberus
 language: eng
 
-version: 1.0-DEV # For internal use. Don't touch!
+# Wand
+wand-item: stone_axe # Given wand will be of this item type. Wands given before item type change will remain functional if wand-strict-item option is set to false
+wand-enchantments: # The wand will be enchanted
+  protection: 10
+
+wand-use-default-name: true # Whether to use the default wand name from language files
+wand-use-default-lore: true # Whether to use the default wand lore from language files
+
+# To edit wand name and lore below, first set wand-use-default-name and/or wand-use-default-lore options to false
+wand-name: "&l&gCerberus Wand" # Given wand will have this name
+wand-lore: # Wand item description
+- "&aThis is a Cerberus wand"
+- "&eUse it to claim your land"
+
+version: 1.0-DEV-2 # For internal use. Don't touch!

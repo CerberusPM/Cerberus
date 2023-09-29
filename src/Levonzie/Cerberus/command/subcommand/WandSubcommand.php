@@ -23,30 +23,34 @@ declare(strict_types=1);
 namespace Levonzie\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
-use pocketmine\utils\TextFormat;
 use pocketmine\player\Player;
-use pocketmine\inventory\{PlayerInventory, Inventory};
-use pocketmine\item\VanillaItems;
 
 use CortexPE\Commando\BaseSubCommand;
 
+use Levonzie\Cerberus\CerberusAPI;
 use Levonzie\Cerberus\utils\ConfigManager;
 use Levonzie\Cerberus\utils\LangManager;
+use Levonzie\Cerberus\Exception\InventoryFullException;
 
 class WandSubcommand extends BaseSubCommand {
     protected function prepare(): void {
         $this->setPermission("cerberus.command.wand");
+        
+        $this->api = CerberusAPI::getInstance();
+        $this->config_manager = ConfigManager::getInstance();
+        $this->lang_manager = LangManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
-        $lang_manager = LangManager::getInstance();
-        if (!$sender instanceof Player) {
-            $sender->sendMessage($lang_manager->translate("command.in-game"));
-        }
-        else {
-            $sender->sendMessage(ConfigManager::getInstance()->getPrefix() . $lang_manager->translate("command.wand.given"));  
-            $sender->getInventory()->addItem(VanillaItems::STONE_AXE()->setCustomName("§r§l§gCerberus Wand§r"));
-        }
+        if ($sender instanceof Player) {
+            try {
+                $this->api->giveWand($sender);
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.wand.given"));
+            } catch (InventoryFullException) {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.wand.inventory_full"));
+            }
+        } else
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.in-game"));
     }
 } 
  
