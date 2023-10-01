@@ -28,9 +28,10 @@ use function array_key_exists;
  * A class for selection management
  */
 class SelectionManager {
-    
-    private static array $selectingFirstPosition;
-    private static array $selectingSecondPosition;
+    /** @var array $selectingFirstPosition Stores first positions and who've set them. */
+    private static array $selectingFirstPosition = [];
+    /** @var array $selectingFirstPosition Stores second positions and who've set them. */
+    private static array $selectingSecondPosition = [];
     
     private function __construct() { }
     
@@ -42,7 +43,7 @@ class SelectionManager {
      * 
      */
     public static function selectFirstPosition(string $selector, Position $position): void {
-        self::$selectingFirstPosition[$selector] = $position;
+        self::$selectingFirstPosition[$selector] = [$position->floor(), $position->getWorld()->getFolderName()];
     }
     
     /**
@@ -52,7 +53,7 @@ class SelectionManager {
      * @param Position $position Position in the world to be set as the second position
      */
     public static function selectSecondPosition(string $selector, Position $position): void {
-        self::$selectingSecondPosition[$selector] = $position;
+        self::$selectingSecondPosition[$selector] = [$position->floor(), $position->getWorld()->getFolderName()];
     }
     
     /**
@@ -113,7 +114,7 @@ class SelectionManager {
      * 
      * @return Position|null Returns pocketmine\World\Position or null if position is not selected
      */
-    public static function getSelectedFirstPosition(string $selector): Position | null {
+    public static function getSelectedFirstPosition(string $selector): array | null {
         if (array_key_exists($selector, self::$selectingFirstPosition))
             return self::$selectingFirstPosition[$selector];
         else
@@ -127,7 +128,7 @@ class SelectionManager {
      * 
      * @return Position|null Returns pocketmine\World\Position or null if position is not selected
      */
-    public static function getSelectedSecondPosition(string $selector): Position | null {
+    public static function getSelectedSecondPosition(string $selector): array | null {
         if (array_key_exists($selector, self::$selectingSecondPosition))
             return self::$selectingSecondPosition[$selector];
         else

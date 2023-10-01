@@ -73,8 +73,7 @@ class FirstPositionSubcommand extends BaseSubCommand {
             //Position is not set manually. We should figure out player's current position or notify if the command is being used not from the game
             if ($sender instanceof Player) {
                 $position = $sender->getPosition();
-                $world = $sender->getPosition()->getWorld();
-                SelectionManager::selectFirstPosition($sender->getName(), Position::fromObject($position, $world));
+                SelectionManager::selectFirstPosition($sender->getName(), $position);
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos1.selected", [strval($position->getFloorX()),
                                                                                                          strval($position->getFloorY()),
                                                                                                          strval($position->getFloorZ())]));
