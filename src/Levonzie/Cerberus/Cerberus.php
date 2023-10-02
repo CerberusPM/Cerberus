@@ -58,6 +58,8 @@ class Cerberus extends PluginBase {
         $this->getLogger()->notice($this->lang_manager->translate("plugin.in-dev"));
         $this->getLogger()->info($this->lang_manager->translate("plugin.version", [$this->getDescription()->getVersion()]));
         $this->getLogger()->info($this->lang_manager->translate("plugin.selected_language"));
+        
+        $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
     }
     
     public static function getInstance(): Cerberus {

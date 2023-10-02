@@ -11,6 +11,7 @@ language: eng
 
 # Wand
 wand-item: stone_axe # Given wand will be of this item type. Wands given before item type change will remain functional if wand-strict-item option is set to false
+# The wand item should not be food or a projectile. Items of these types can't properly set positions.
 wand-enchantments: # The wand will be enchanted
   protection: 10
 

@@ -155,4 +155,21 @@ class CerberusAPI {
             Throw new InventoryFullException("Inventory is full");
         }
     }
+    
+    /**
+     * Check whether item is wand
+     * 
+     * @param Item $item An item for wand check
+     *                   Turned off by default - any item with isWand NBT tag are considered to be a wand.
+     * 
+     * @return bool True if is wand, false if is not a wand
+     */
+    public function isWand(Item $item): bool {
+        if ($item->hasNamedTag()) {
+            $wand_tag = $item->getNamedTag()->getCompoundTag(self::TAG_CERBERUS)->getTag(self::TAG_WAND);
+            if (isset($wand_tag) && $wand_tag->getValue() == 1)
+                return true;
+        }
+        return false;
+    }
 }
