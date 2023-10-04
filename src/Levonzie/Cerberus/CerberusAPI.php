@@ -30,11 +30,14 @@ use pocketmine\item\StringToItemParser;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
+use pocketmine\world\Position;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\math\Vector3;
 
 use Levonzie\Cerberus\Cerberus;
 use Levonzie\Cerberus\utils\ConfigManager;
 use Levonzie\Cerberus\utils\LangManager;
+use Levonzie\Cerberus\utils\LandManager;
 use Levonzie\Cerberus\exception\InventoryFullException;
 
 use function is_array;
@@ -172,4 +175,60 @@ class CerberusAPI {
         }
         return false;
     }
+    
+    /**
+     * Create a landclaim
+     * 
+     * @param string  $land_name  Name of the landclaim (should be unique)
+     * @param string  $land_owner Landclaim owner name (who this landclaim will belong to)
+     * @param Vector3 $pos1       First position of the landclaim
+     * @param Vector3 $pos2       Second position of the landclaim
+     * @param string  $world_name Folder name of the world, where the landclaim will be created
+     *
+     * @throws LandExistsException if a landclaim with given $land_name already exists  
+     */
+    public function createLand(string $land_name, string $land_owner, Vector3 $pos1, Vector3 $pos2, string $world_name): void {
+        LandManager::registerLandclaim(new Landclaim($land_name, $land_owner, $pos1, $pos2, $world_name));
+    }
+    
+    /**
+     * Get a landclaim which contains given position or null if it there's no such landclaim
+     * 
+     * @param Position $position Position to be checked for inclusion in a landclaim
+     * 
+     * @return Landclaim|null Landclaim if a landclaim, containing given position exists; null if there's no landclaim containing given position
+     */
+    public function getLandByPosition(Position $position): Landclaim|null {
+        foreach(LandManager::getLandclaims() as $land) {
+            if ($land->containsPosition($position))
+                return $land;
+        }
+        return null;
+    }
+    
+    /**
+     * Get landclaim with given name or null if it doesn't exist
+     * 
+     * @param string $land_name Name of a landclaim to get.
+     * 
+     * @return Landclaim|null Landclaim if exists, null if doesn't exist
+     */
+    public function getLandByName(string $land_name): Landclaim|null {
+        if (LandManager::exists($land_name))
+            return LandManager::getLandclaims()[$land_name];
+        else
+            return null;
+    }
+    
+    /**
+     * Check if landclaim with given name exists
+     * 
+     * @param string $land_name Land name to be checked for existance
+     * 
+     * @return bool Whether land exists or not
+     */
+    public function landExists(string $land_name): bool {
+        return LandManager::exists($land_name);
+    }
+    
 }
