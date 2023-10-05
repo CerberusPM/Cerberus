@@ -62,7 +62,7 @@ class SelectionManager {
      * @param string $selector Exact name of whose first position selection has to be unset
      */
     public static function deselectFirstPosition(string $selector): void {
-        unset(self::$selectFirstPosition[$selector]);
+        unset(self::$selectingFirstPosition[$selector]);
     }
     
     /**
@@ -72,6 +72,16 @@ class SelectionManager {
      */
     public static function deselectSecondPosition(string $selector): void {
         unset(self::$selectingSecondPosition[$selector]);
+    }
+    
+    /**
+     * Unset all selected positions of $selector
+     * 
+     * @param string $selector Exact name of whose first and seconf position selection has to be cleared
+     */
+    public static function deselectAll(string $selector): void {
+        self::deselectFirstPosition($selector);
+        self::deselectSecondPosition($selector);
     }
     
     /**
