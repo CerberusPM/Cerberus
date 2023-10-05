@@ -35,8 +35,9 @@ class Landclaim {
     public function __construct(string $name, string $owner, Vector3 $pos1, Vector3 $pos2, string $world_name) {
         $this->name = $name;
         $this->owner = $owner;
-        $this->pos1 = $pos1;
-        $this->pos2 = $pos2;
+        //Optimize positions for containsPosition() calculation speed boost
+        $this->pos1 = Vector3::minComponents($pos1, $pos2);
+        $this->pos2 = Vector3::maxComponents($pos1, $pos2);
         $this->world_name = $world_name;
     }
     
@@ -84,12 +85,12 @@ class Landclaim {
      */
     public function containsPosition(Position $pos): bool {
         if ($pos->getWorld()->getFolderName() === $this->getWorldName() &&
-                $pos->getX() >= min($this->getFirstPosition()->getX(), $this->getSecondPosition()->getX()) &&
-                $pos->getFloorX() <= max($this->getFirstPosition()->getX(), $this->getSecondPosition()->getX()) &&
-                $pos->getY() >= min($this->getFirstPosition()->getY(), $this->getSecondPosition()->getY()) &&
-                $pos->getFloorY() <= max($this->getFirstPosition()->getY(), $this->getSecondPosition()->getY()) &&
-                $pos->getZ() >= min($this->getFirstPosition()->getZ(), $this->getSecondPosition()->getZ()) &&
-                $pos->getFloorZ() <= max($this->getFirstPosition()->getZ(), $this->getSecondPosition()->getZ()))
+                $pos->getX() >= $this->getFirstPosition()->getX() &&
+                $pos->getFloorX() <= $this->getSecondPosition()->getX() &&
+                $pos->getY() >= $this->getFirstPosition()->getY() &&
+                $pos->getFloorY() <= $this->getSecondPosition()->getY() &&
+                $pos->getZ() >= $this->getFirstPosition()->getZ() &&
+                $pos->getFloorZ() <= $this->getSecondPosition()->getZ())
             return true;
         return false;
     }
