@@ -26,11 +26,11 @@ use pocketmine\world\Position;
 use pocketmine\math\Vector3;
 
 class Landclaim {
-    private string $name;
-    private string $owner;
-    private Vector3 $pos1;
-    private Vector3 $pos2;
-    private string $world_name;
+    protected string $name;
+    protected string $owner;
+    protected Vector3 $pos1;
+    protected Vector3 $pos2;
+    protected string $world_name;
     
     public function __construct(string $name, string $owner, Vector3 $pos1, Vector3 $pos2, string $world_name) {
         $this->name = $name;
@@ -91,6 +91,25 @@ class Landclaim {
                 $pos->getFloorY() <= $this->getSecondPosition()->getY() &&
                 $pos->getZ() >= $this->getFirstPosition()->getZ() &&
                 $pos->getFloorZ() <= $this->getSecondPosition()->getZ())
+            return true;
+        return false;
+    }
+    
+    /**
+     * Check whether landclaim intersects another landclaim
+     * 
+     * @param Landclaim $target A landclaim to check for intersection with this landclaim
+     * 
+     * @return bool True if landclaims intersect, false if not
+     */
+    public function intersectsLandclaim(Landclaim $target): bool {
+        if ($target->getWorldName() === $this->getWorldName() &&
+                $target->getFirstPosition()->getX() <= $this->getSecondPosition()->getX() &&
+                $target->getSecondPosition()->getX() >= $this->getFirstPosition()->getX() &&
+                $target->getFirstPosition()->getY() <= $this->getSecondPosition()->getY() &&
+                $target->getSecondPosition()->getY() >= $this->getFirstPosition()->getY() &&
+                $target->getFirstPosition()->getZ() <= $this->getSecondPosition()->getZ() &&
+                $target->getSecondPosition()->getZ() >= $this->getFirstPosition()->getZ())
             return true;
         return false;
     }

@@ -38,9 +38,13 @@ use Levonzie\Cerberus\Cerberus;
 use Levonzie\Cerberus\utils\ConfigManager;
 use Levonzie\Cerberus\utils\LangManager;
 use Levonzie\Cerberus\utils\LandManager;
+
 use Levonzie\Cerberus\exception\InventoryFullException;
+use Levonzie\Cerberus\exception\LandExistsException;
+use Levonzie\Cerberus\exception\LandIntersectException;
 
 use function is_array;
+use function is_null;
 
 /**
  * An API class which provides all necessary land management methods used by subcommands
@@ -179,16 +183,26 @@ class CerberusAPI {
     /**
      * Create a landclaim
      * 
-     * @param string  $land_name  Name of the landclaim (should be unique)
-     * @param string  $land_owner Landclaim owner name (who this landclaim will belong to)
-     * @param Vector3 $pos1       First position of the landclaim
-     * @param Vector3 $pos2       Second position of the landclaim
-     * @param string  $world_name Folder name of the world, where the landclaim will be created
+     * @param string  $land_name              Name of the landclaim (should be unique)
+     * @param string  $land_owner             Landclaim owner name (who this landclaim will belong to)
+     * @param Vector3 $pos1                   First position of the landclaim
+     * @param Vector3 $pos2                   Second position of the landclaim
+     * @param string  $world_name             Folder name of the world, where the landclaim will be created
+     * @param bool    $check_for_intersection Whether to check if specified landclaim intersects a landclaim of another owner
      *
-     * @throws LandExistsException if a landclaim with given $land_name already exists  
+     * @throws LandExistsException    if a landclaim with given $land_name already exists
+     * @throws LandIntersectException if intersection check is performed and resulting landclaim intersects a landclaim of another owner
      */
-    public function createLand(string $land_name, string $land_owner, Vector3 $pos1, Vector3 $pos2, string $world_name): void {
-        LandManager::registerLandclaim(new Landclaim($land_name, $land_owner, $pos1, $pos2, $world_name));
+    public function createLand(string $land_name, string $land_owner, Vector3 $pos1, Vector3 $pos2, string $world_name, bool $check_for_intersection=true): void {
+        if ($this->landExists($land_name))
+            Throw new LandExistsException("Landclaim named $land_name already exists!");
+        $land = new Landclaim($land_name, $land_owner, $pos1, $pos2, $world_name);
+        if ($check_for_intersection) {
+            $intersecting_land = $this->getIntersectingLand($land);
+            if (!is_null($intersecting_land) && $land->getOwner() != $intersecting_land->getOwner())
+                Throw new LandIntersectException("Resulting landclaim intersects landclaim" . $intersecting_land->getName() . " owned by " . $intersecting_land->getOwner(), 0, null, $land, $intersecting_land);
+        }
+        LandManager::registerLandclaim($land);
     }
     
     /**
@@ -231,4 +245,18 @@ class CerberusAPI {
         return LandManager::exists($land_name);
     }
     
+    /**
+     * Get a landclaim which intersects specified landclaim or null if there's no intersection
+     * 
+     * @param Landclaim $land Landclaim to check for intersection
+     * 
+     * @return Landclaim|null Landclaim intersecting specified landclaim or null if there's no intersection
+     */
+    public function getIntersectingLand(Landclaim $land): Landclaim|null {
+        foreach(LandManager::getLandclaims() as $land2) {
+            if ($land->intersectsLandclaim($land2))
+                return $land2;
+        }
+        return null;
+    }
 }
