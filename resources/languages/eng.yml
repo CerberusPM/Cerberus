@@ -1,6 +1,6 @@
 # Cerberus language file: English
 language-name: English
-language-version: 1.0-DEV-2
+language-version: 1.0-DEV-3
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -39,3 +39,12 @@ wand.lore: # Wand item description
 - "&eUse it to claim your land"
 command.wand.given: "&aGave you a wand"
 command.wand.inventory_full: "&cCan't give a wand. Your inventory is full."
+#### Claim
+command.claim.select_both_positions: "&cUnable to claim. You should first select two positions!"
+command.claim.select_pos1: "&cUnable to claim. First position is not selected!"
+command.claim.select_pos2: "&cUnable to claim. Second position is not selected!"
+command.claim.world_mismatch: "&cUnable to claim. Both positions should be located in the same world!"
+command.claim.already_exists: "&cUnable to claim. Landclaim named {%0} already exists!"
+command.claim.intersects: "&cUnable to claim. Resulting landclaim intersects landclaim {%0} owned by {%1}!"
+command.claim.intersects_notification: "&eWarning! Resulting landclaim intersects landclaim {%0} owned by {%1}, but will be created, as you've got a bypass permission."
+command.claim.success: "&aSuccessfully created landclaim {%0}!"
