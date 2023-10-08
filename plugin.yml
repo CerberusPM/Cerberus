@@ -34,6 +34,9 @@ permissions:
   cerberus.command.remove:
     description: Permission for /cerberus remove
     default: op
+  cerberus.command.remove.other:
+    description: Permission to remove landclaims of other players with /cerberus remove
+    default: op
   cerberus.command.selection:
     description: Permission for position selection commands, /cerberus pos1 and /cerberus pos2 as well as for selection using wand, selection movement using /cerberus move and selection expansion using /cerberus expand
     default: op

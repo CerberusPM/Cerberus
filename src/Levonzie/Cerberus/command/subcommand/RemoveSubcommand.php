@@ -27,15 +27,39 @@ use pocketmine\command\CommandSender;
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
+use Levonzie\Cerberus\CerberusAPI;
+use Levonzie\Cerberus\utils\ConfigManager;
+use Levonzie\Cerberus\utils\LangManager;
+
+use function is_null;
+
 class RemoveSubcommand extends BaseSubCommand {
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name"));
         
-        $this->setPermission("cerberus.subcommand.remove");
+        $this->setPermission("cerberus.command.remove");
+        
+        $this->api = CerberusAPI::getInstance();
+        $this->config_manager = ConfigManager::getInstance();
+        $this->lang_manager = LangManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
-        //TODO
+        $land = $this->api->getLandByName($args["land name"]);
+        if (is_null($land)) {
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.land_does_not_exist", [$args["land name"]]));
+            return;
+        }
+        if ($land->getOwner() != $sender->getName() && !$sender->hasPermission("cerberus.command.remove.other")) {
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.no_other"));
+            return;
+        }
+        $this->api->removeLand($args["land name"]);
+        
+        if ($land->getOwner() != $sender->getName())
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.other.success", [$args["land name"], $land->getOwner()]));
+        else
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.success", [$args["land name"]]));
     }
 } 
  

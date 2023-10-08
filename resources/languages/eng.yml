@@ -1,6 +1,6 @@
 # Cerberus language file: English
 language-name: English
-language-version: 1.0-DEV-3
+language-version: 1.0-DEV-4
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -48,3 +48,8 @@ command.claim.already_exists: "&cUnable to claim. Landclaim named {%0} already e
 command.claim.intersects: "&cUnable to claim. Resulting landclaim intersects landclaim {%0} owned by {%1}!"
 command.claim.intersects_notification: "&eWarning! Resulting landclaim intersects landclaim {%0} owned by {%1}, but will be created, as you've got a bypass permission."
 command.claim.success: "&aSuccessfully created landclaim {%0}!"
+#### Remove
+command.remove.land_does_not_exist: "&cUnable to remove. Landclaim {%0} does not exist!"
+command.remove.no_other: "&cUnable to remove. You don't have permission to delete landclaims of other players!"
+command.remove.success: "&aSuccessfully removed landclaim {%0}!"
+command.remove.other.success: "&aSuccessfully removed landclaim {%0} owned by {%1}!"

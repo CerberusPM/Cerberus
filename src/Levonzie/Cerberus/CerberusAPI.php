@@ -206,6 +206,15 @@ class CerberusAPI {
     }
     
     /**
+     * Remove landclaim by name
+     * 
+     * @param string $land_name Name of a landclaim to remove
+     */
+    public function removeLand(string $land_name): void {
+        LandManager::unregisterLandclaim($land_name);
+    }
+    
+    /**
      * Get a landclaim which contains given position or null if it there's no such landclaim
      * 
      * @param Position $position Position to be checked for inclusion in a landclaim
