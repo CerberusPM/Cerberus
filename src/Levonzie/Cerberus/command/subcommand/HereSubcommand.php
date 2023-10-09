@@ -23,15 +23,42 @@ declare(strict_types=1);
 namespace Levonzie\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
+use pocketmine\player\Player;
 
 use CortexPE\Commando\BaseSubCommand;
+
+use Levonzie\Cerberus\CerberusAPI;
+use Levonzie\Cerberus\utils\ConfigManager;
+use Levonzie\Cerberus\utils\LangManager;
+
+use function is_null;
 
 class HereSubcommand extends BaseSubCommand {
     protected function prepare(): void {
         $this->setPermission("cerberus.command.here");
+        
+        $this->api = CerberusAPI::getInstance();
+        $this->config_manager = ConfigManager::getInstance();
+        $this->lang_manager = LangManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
-        //TODO
+        if (!$sender instanceof Player) {
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.in-game"));
+            return;
+        }
+        
+        $current_position = $sender->getPosition();
+        $land = $this->api->getLandByPosition($current_position);
+        
+        $current_position = $current_position->round(1);
+        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.current_position", [$current_position->getX(),
+                                                                                                                                   $current_position->getY(),
+                                                                                                                                   $current_position->getZ()]));
+        if (!is_null($land)) {
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.land_here", [$land->getName(), $land->getOwner()]));
+        }
+        else
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.no_land_here"));
     }
 } 

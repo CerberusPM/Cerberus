@@ -1,6 +1,6 @@
 # Cerberus language file: English
 language-name: English
-language-version: 1.0-DEV-4
+language-version: 1.0-DEV-5
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -53,3 +53,7 @@ command.remove.land_does_not_exist: "&cUnable to remove. Landclaim {%0} does not
 command.remove.no_other: "&cUnable to remove. You don't have permission to delete landclaims of other players!"
 command.remove.success: "&aSuccessfully removed landclaim {%0}!"
 command.remove.other.success: "&aSuccessfully removed landclaim {%0} owned by {%1}!"
+#### Here
+command.here.current_position: "&bYour current position: &eX: &f{%0} &eY: &f{%1} &eZ: &f{%2}"
+command.here.land_here: "&aHere is the land {%0} owned by {%1}"
+command.here.no_land_here: "&eThere are no landclaims where you are!"
