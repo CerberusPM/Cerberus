@@ -35,6 +35,8 @@ use function yaml_parse_file;
 use function is_array;
 use function version_compare;
 use function rename;
+use function gettype;
+use function strval;
 
 /**
  * A class which provides capabilities for plugin messages translation by handling language files and making sure they are up to date.
@@ -78,14 +80,20 @@ class LangManager {
         if (isset($translation)) {
             if (is_array($translation)) { // If array is passed, array elements will be translated. Is useful for multiline strings
                 foreach ($translation as &$translation_string) {
-                    foreach($params as $index => $param)
+                    foreach($params as $index => $param) {
+                        if (gettype($param) == "integer" || gettype($param) == "double")
+                            $param = strval($param);
                         $translation_string = str_replace("{%$index}", $param, $translation_string);
+                    }
                     $translation_string = TextFormat::colorize($translation_string);
                 }
                 return $translation;
             } else {
-                foreach ($params as $index => $param)
+                foreach ($params as $index => $param) {
+                    if (gettype($param) == "integer" || gettype($param) == "double")
+                        $param = strval($param);
                     $translation = str_replace("{%$index}", $param, $translation);
+                }
                 
                 return TextFormat::colorize($translation);
             }
@@ -110,14 +118,20 @@ class LangManager {
         if (isset($translation)) {
             if (is_array($translation)) { // If array is passed, array elements will be translated. Is useful for multiline strings
                 foreach ($translation as &$translation_string) {
-                    foreach($params as $index => $param)
+                    foreach($params as $index => $param) {
+                        if (gettype($param) == "integer" || gettype($param) == "double")
+                            $param = strval($param);
                         $translation_string = str_replace("{%$index}", $param, $translation_string);
+                    }
                     $translation_string = TextFormat::colorize($translation_string);
                 }
                 return $translation;
             } else {
-                foreach ($params as $index => $param)
+                foreach ($params as $index => $param) {
+                    if (gettype($param) == "integer" || gettype($param) == "double")
+                        $param = strval($param);
                     $translation = str_replace("{%$index}", $param, $translation);
+                }
                 
                 return TextFormat::colorize($translation);
             }

@@ -65,18 +65,18 @@ class FirstPositionSubcommand extends BaseSubCommand {
                 }
             }
             SelectionManager::selectFirstPosition($sender->getName(), Position::fromObject($args["position"], $world));
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos1.selected.world", [strval($args["position"]->getFloorX()), 
-                                                                                                     strval($args["position"]->getFloorY()), 
-                                                                                                     strval($args["position"]->getFloorZ()),
-                                                                                                     $world->getFolderName()]));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos1.selected.world", [$args["position"]->getFloorX(),
+                                                                                                                                     $args["position"]->getFloorY(),
+                                                                                                                                     $args["position"]->getFloorZ(),
+                                                                                                                                     $world->getFolderName()]));
         } else { 
             //Position is not set manually. We should figure out player's current position or notify if the command is being used not from the game
             if ($sender instanceof Player) {
                 $position = $sender->getPosition();
                 SelectionManager::selectFirstPosition($sender->getName(), $position);
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos1.selected", [strval($position->getFloorX()),
-                                                                                                         strval($position->getFloorY()),
-                                                                                                         strval($position->getFloorZ())]));
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos1.selected", [$position->getFloorX(),
+                                                                                                                                   $position->getFloorY(),
+                                                                                                                                   $position->getFloorZ()]));
             } else
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos.in-game"));
         }
