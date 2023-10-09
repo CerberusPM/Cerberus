@@ -99,20 +99,28 @@ class LangManager {
      * @param string   $key    Translation message key
      * @param string[] $params Array of values that will replace index variables (e.g., {%0}, {%1}) with corresponding values.
      * 
-     * @return string|null Returns colorized string of translation corresponding to key. Returns null if translation is not found or is empty.
+     * @return string|string[]|null Returns colorized string or array of strings of the translation corresponding to $key. Returns null if translation is not found or empty.
      */
-    public function translateDefault(string $key, array $params): string|null {
+    public function translateDefault(string $key, array $params): string|array|null {
         try {
             $translation = $this->default_translations[$key];
         } catch (\ErrorException) { //Undefined array key
             return null;
         }
         if (isset($translation)) {
-            foreach ($params as $index => $param) {
-                $translation = str_replace("{%$index}", $param, $translation);
+            if (is_array($translation)) { // If array is passed, array elements will be translated. Is useful for multiline strings
+                foreach ($translation as &$translation_string) {
+                    foreach($params as $index => $param)
+                        $translation_string = str_replace("{%$index}", $param, $translation_string);
+                    $translation_string = TextFormat::colorize($translation_string);
+                }
+                return $translation;
+            } else {
+                foreach ($params as $index => $param)
+                    $translation = str_replace("{%$index}", $param, $translation);
+                
+                return TextFormat::colorize($translation);
             }
-            
-            return TextFormat::colorize($translation);
         }
         return null;
     }
