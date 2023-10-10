@@ -1,6 +1,6 @@
 # Cerberus language file: English
 language-name: English
-language-version: 1.0-DEV-5
+language-version: 1.0-DEV-6
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -13,6 +13,9 @@ plugin.outdated_langfile: "Selected language file (English) is outdated and has 
 ### Language names (at the moment used in language change messages)
 lang.eng: "English"
 lang.rus: "Russian"
+
+### Miscellaneous strings
+misc.and: "and"
 
 ### Command messages
 command.in-game: "&cThis command should be used in-game"
@@ -46,7 +49,11 @@ command.claim.select_pos2: "&cUnable to claim. Second position is not selected!"
 command.claim.world_mismatch: "&cUnable to claim. Both positions should be located in the same world!"
 command.claim.already_exists: "&cUnable to claim. Landclaim named {%0} already exists!"
 command.claim.intersects: "&cUnable to claim. Resulting landclaim intersects landclaim {%0} owned by {%1}!"
-command.claim.intersects_notification: "&eWarning! Resulting landclaim intersects landclaim {%0} owned by {%1}, but will be created, as you've got a bypass permission."
+command.claim.intersects.notification: "&eWarning! Resulting landclaim intersects landclaim {%0} owned by {%1}, but will be created, as you've got a bypass permission."
+command.claim.intersects.multiple: "&cUnable to claim. Resulting landclaim intersects the following landclaims:"
+command.claim.intersects.multiple.land_list_item: "&b{%0}&a{%1} owned by {%2}" # {%0} is a list marker. Numbers by default. You may put your own marker instead
+command.claim.intersects.multiple.inline_land_list_item: "&e{%0} owned by {%1}"
+command.claim.intersects.multiple.notification: "&eWarning! Resulting landclaim intersects {%0}, but will be created, as you've got a bypass permission."
 command.claim.success: "&aSuccessfully created landclaim {%0}!"
 #### Remove
 command.remove.land_does_not_exist: "&cUnable to remove. Landclaim {%0} does not exist!"
@@ -57,3 +64,5 @@ command.remove.other.success: "&aSuccessfully removed landclaim {%0} owned by {%
 command.here.current_position: "&bYour current position: &eX: &f{%0} &eY: &f{%1} &eZ: &f{%2}"
 command.here.land_here: "&aHere is the land {%0} owned by {%1}"
 command.here.no_land_here: "&eThere are no landclaims where you are!"
+command.here.multiple.land_here: "&aHere are the following landclaims:"
+command.here.multiple.land_list_item: "&b{%0}&a{%1} owned by {%2}" # {%0} is a list marker. Numbers by default. You may put your own marker instead

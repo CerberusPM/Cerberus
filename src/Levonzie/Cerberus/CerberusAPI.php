@@ -45,6 +45,7 @@ use Levonzie\Cerberus\exception\LandIntersectException;
 
 use function is_array;
 use function is_null;
+use function array_push;
 
 /**
  * An API class which provides all necessary land management methods used by subcommands
@@ -215,18 +216,23 @@ class CerberusAPI {
     }
     
     /**
-     * Get a landclaim which contains given position or null if it there's no such landclaim
+     * Get an array of landclaims containing position
      * 
-     * @param Position $position Position to be checked for inclusion in a landclaim
+     * @param Position $position                Position to be checked for inclusion in a landclaim
+     * @param bool     $stop_on_first_occurance Whether to stop on fist occurance
      * 
-     * @return Landclaim|null Landclaim if a landclaim, containing given position exists; null if there's no landclaim containing given position
+     * @return Landclaim[] Array of landclaims containing given position. Empty array if no such landclaims were found
      */
-    public function getLandByPosition(Position $position): Landclaim|null {
+    public function getLandclaimsByPosition(Position $position, bool $stop_on_first_occurance=false): array {
+        $landclaims = array();
         foreach(LandManager::getLandclaims() as $land) {
-            if ($land->containsPosition($position))
-                return $land;
+            if ($land->containsPosition($position)) {
+                array_push($landclaims, $land);
+                if ($stop_on_first_occurance)
+                    break;
+            }
         }
-        return null;
+        return $landclaims;
     }
     
     /**
@@ -255,17 +261,22 @@ class CerberusAPI {
     }
     
     /**
-     * Get a landclaim which intersects specified landclaim or null if there's no intersection
+     * Get an array of landclaims which itersect given landclaim
      * 
-     * @param Landclaim $land Landclaim to check for intersection
+     * @param Landclaim $land                    Landclaim to check for intersection
+     * @param bool      $stop_on_first_occurance Whether to stop on first occurance
      * 
-     * @return Landclaim|null Landclaim intersecting specified landclaim or null if there's no intersection
+     * @return Landclaim[] Array of lanclaims which intersect given landclaim. Empty array if no such landclaims were found
      */
-    public function getIntersectingLand(Landclaim $land): Landclaim|null {
+    public function getIntersectingLandclaims(Landclaim $land, bool $stop_on_first_occurance=false): array {
+        $landclaims = array();
         foreach(LandManager::getLandclaims() as $land2) {
-            if ($land->intersectsLandclaim($land2))
-                return $land2;
+            if ($land->intersectsLandclaim($land2)) {
+                array_push($landclaims, $land2);
+                if ($stop_on_first_occurance)
+                    break;
+            }
         }
-        return null;
+        return $landclaims;
     }
 }

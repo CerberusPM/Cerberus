@@ -32,6 +32,8 @@ use Levonzie\Cerberus\utils\ConfigManager;
 use Levonzie\Cerberus\utils\LangManager;
 
 use function is_null;
+use function count;
+use function strval;
 
 class HereSubcommand extends BaseSubCommand {
     protected function prepare(): void {
@@ -49,14 +51,20 @@ class HereSubcommand extends BaseSubCommand {
         }
         
         $current_position = $sender->getPosition();
-        $land = $this->api->getLandByPosition($current_position);
+        $landclaims = $this->api->getLandclaimsByPosition($current_position);
         
         $current_position = $current_position->round(1);
         $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.current_position", [$current_position->getX(),
                                                                                                                                    $current_position->getY(),
                                                                                                                                    $current_position->getZ()]));
-        if (!is_null($land)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.land_here", [$land->getName(), $land->getOwner()]));
+        if (!empty($landclaims)) {
+            if (count($landclaims) == 1)
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.land_here", [$landclaims[0]->getName(), $landclaims[0]->getOwner()]));
+            else {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.multiple.land_here"));
+                foreach ($landclaims as $index => $land)
+                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.multiple.land_list_item", [strval($index+1) . '. ', $land->getName(), $land->getOwner()]));
+            }
         }
         else
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.no_land_here"));

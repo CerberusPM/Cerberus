@@ -35,6 +35,10 @@ use Levonzie\Cerberus\utils\LandManager;
 use Levonzie\Cerberus\Landclaim;
 
 use function is_null;
+use function array_push;
+use function count;
+use function trim;
+use function strval;
 
 class ClaimSubcommand extends BaseSubCommand {
     protected function prepare(): void {
@@ -81,13 +85,45 @@ class ClaimSubcommand extends BaseSubCommand {
         }
         $new_land = new Landclaim($args["name"], $selector, $pos1[0], $pos2[0], $world);
         //Check if intersects land owned by somebody else
-        $intersecting_land = $this->api->getIntersectingLand($new_land);
-        if (!is_null($intersecting_land) && $intersecting_land->getOwner() != $selector) {
-            if (!$sender->hasPermission("cerberus.command.claim.bypass_intersect")) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects", [$intersecting_land->getName(), $intersecting_land->getOwner()]));
-                return;
-            } else
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects_notification", [$intersecting_land->getName(), $intersecting_land->getOwner()]));
+        $intersecting_landclaims = $this->api->getIntersectingLandclaims($new_land);
+        if (!empty($intersecting_landclaims)) {
+            $owned_by_somebody_else = array();
+            foreach ($intersecting_landclaims as $land) { //Make a list of intersecting landclaims owned by other player
+                if ($land->getOwner() != $selector)
+                    array_push($owned_by_somebody_else, $land);
+            }
+            if (!empty($owned_by_somebody_else)) { //We allow to intersect landclaims owned by command executer themself
+                if (count($owned_by_somebody_else) == 1) { //Intersects only one land. Sending appropriate messages
+                    if (!$sender->hasPermission("cerberus.command.claim.bypass_intersect")) {
+                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects", [$owned_by_somebody_else[0]->getName(),
+                                                                                                                                              $owned_by_somebody_else[0]->getOwner()]));
+                        return;
+                    } else {
+                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects.notification", [$owned_by_somebody_else[0]->getName(),
+                                                                                                                                                           $owned_by_somebody_else[0]->getOwner()]));
+                    }
+                } else { //Intersects multiple landclaims. We should provide command executor a list
+                    if (!$sender->hasPermission("cerberus.command.claim.bypass_intersect")) {
+                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects.multiple"));
+                        foreach ($owned_by_somebody_else as $index => $land)
+                            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects.multiple.land_list_item", [strval($index+1) . ". ", $land->getName(), $land->getOwner()]));
+                        return;
+                    } else {
+                        $inline_land_list_message = "";
+                        foreach ($owned_by_somebody_else as $index => $land) {//Constructing a beautiful list of intersecting landclaims
+                            if ($index+1 == count($owned_by_somebody_else)) //Last array item
+                                $trailing_symbol = '';
+                            elseif ($index == count($owned_by_somebody_else)-2) //Symbol before last
+                                $trailing_symbol = ' ' . $this->lang_manager->translate("misc.and") . ' ';
+                            else
+                                $trailing_symbol = ", ";
+                            $inline_land_list_message .= $this->lang_manager->translate("command.claim.intersects.multiple.inline_land_list_item", [$land->getName(), $land->getOwner()]) . $trailing_symbol;
+                        //$inline_land_list_message = trim($inline_land_list_message); //Remove extra space at the end of the enlisting message
+                        }
+                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects.multiple.notification", [$inline_land_list_message]));
+                    }
+                }
+            }
         }
         //Finally create a landclaim
         LandManager::registerLandclaim($new_land);
