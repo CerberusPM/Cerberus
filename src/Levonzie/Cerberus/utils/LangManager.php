@@ -37,6 +37,11 @@ use function version_compare;
 use function rename;
 use function gettype;
 use function strval;
+use function str_contains;
+use function strlen;
+use function array_push;
+use function trim;
+use function substr;
 
 /**
  * A class which provides capabilities for plugin messages translation by handling language files and making sure they are up to date.
@@ -85,6 +90,7 @@ class LangManager {
                             $param = strval($param);
                         $translation_string = str_replace("{%$index}", $param, $translation_string);
                     }
+                    $translation_string = $this->parseDeclensions($translation_string);
                     $translation_string = TextFormat::colorize($translation_string);
                 }
                 return $translation;
@@ -94,7 +100,7 @@ class LangManager {
                         $param = strval($param);
                     $translation = str_replace("{%$index}", $param, $translation);
                 }
-                
+                $translation = $this->parseDeclensions($translation);
                 return TextFormat::colorize($translation);
             }
         }
@@ -123,6 +129,7 @@ class LangManager {
                             $param = strval($param);
                         $translation_string = str_replace("{%$index}", $param, $translation_string);
                     }
+                    $translation_string = $this->parseDeclensions($translation_string);
                     $translation_string = TextFormat::colorize($translation_string);
                 }
                 return $translation;
@@ -132,7 +139,7 @@ class LangManager {
                         $param = strval($param);
                     $translation = str_replace("{%$index}", $param, $translation);
                 }
-                
+                $translation = $this->parseDeclensions($translation);
                 return TextFormat::colorize($translation);
             }
         }
@@ -166,6 +173,87 @@ class LangManager {
      */
     public function reload(): void {
         $this->loadLanguages();
+    }
+    
+    /**
+     * Parse plugin-unique word declension format
+     * 
+     * @param string $message Message, which declension inclusions (if there are any) should be replaced with appropriately declensed word.
+     * 
+     * @return string Message with proper word declensions by number
+     */
+    public function parseDeclensions(string $message): string {
+        if (!str_contains($message, '!declense')) //Declension keyword
+            return $message;
+        $new_message = $message;
+        
+        $declension_map = array();
+        $temp_keys = array();
+        $message_len = strlen($message);
+        $char_buffer = '';
+        $block_buffer = '';
+        $round_bracket_met = false;
+        $curly_bracket_met = false;
+        $declension_block_started = false;
+        $declensing = false;
+        $declense_number = "1";
+        for ($i = 0; $i < $message_len; $i++) {
+            if ($declension_block_started)
+                $block_buffer .= $message[$i];
+            if ($message[$i] == '{') {
+                $curly_bracket_met = true;
+                $declension_block_started = true;
+                $block_buffer .= $message[$i];
+                continue;
+            }
+            if ($curly_bracket_met && !$declensing) {
+                $char_buffer .= $message[$i]; //Load current char into charbuffer
+                if (str_contains($char_buffer, '!declense')) {
+                    $declensing = true;
+                    $char_buffer = '';
+                }
+            }
+            if ($declensing) {
+                if ($message[$i] == '(') {
+                    $round_bracket_met = true;
+                    continue;
+                }
+                if ($message[$i] == ')') {
+                    $round_bracket_met = false;
+                    $declense_number = $char_buffer;
+                    $char_buffer = '';
+                    continue;
+                }
+                if ($message[$i] == ',' || $message[$i] == ':') { //Key listing
+                    array_push($temp_keys, trim($char_buffer));
+                    $char_buffer = '';
+                    continue;
+                }
+                if ($message[$i] == ';' || $message[$i] == '}') { //Time to assign values to declension map keys
+                    $value = trim($char_buffer);
+                    foreach ($temp_keys as $key)
+                        $declension_map[$key] = $value;
+                    $temp_keys = array();
+                    $char_buffer = '';
+                    if ($message[$i] == '}') { //Declension block end reached. Replace declension block with declension result
+                        $ending_digits = '';
+                        foreach ($declension_map as $key => $value) {
+                            $key = strval($key);
+                            if (substr($declense_number, -strlen($key)) == $key && strlen($ending_digits) <= strlen($key)) //We make sure that two-digit numbers are prefered over single-digit
+                                $ending_digits = $key;
+                        }
+                        $new_message = str_replace($block_buffer, $declension_map[$ending_digits], $new_message);
+                        $block_buffer = '';
+                        $declension_block_started = false;
+                        $declensing = false;
+                        $declension_map = array();
+                    }
+                    continue;
+                }
+                $char_buffer .= $message[$i];
+            }
+        }
+        return $new_message;
     }
     
     private function loadLanguages(): void {
