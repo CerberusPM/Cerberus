@@ -279,4 +279,20 @@ class CerberusAPI {
         }
         return $landclaims;
     }
+    
+    /**
+     * Get an array of landclaims owned by specified owner
+     * 
+     * @param string $land_owner Exact name of whose landclaim list has to be returned
+     * 
+     * @return Landclaim[] Array of landclaims owned by specified owner. Empty array if has no landclaims
+     */
+    public function listLandOwnedBy(string $land_owner): array {
+        $landclaims = array();
+        foreach(LandManager::getLandclaims() as $land) {
+            if ($land->getOwner() == $land_owner)
+                array_push($landclaims, $land);
+        }
+        return $landclaims;
+    }
 }

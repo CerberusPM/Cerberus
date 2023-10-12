@@ -1,6 +1,8 @@
 # Cerberus language file: English
+# Author: Levonzie
+
 language-name: English
-language-version: 1.0-DEV-6
+language-version: 1.0-DEV-7
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -66,3 +68,11 @@ command.here.land_here: "&aHere is the land {%0} owned by {%1}"
 command.here.no_land_here: "&eThere are no landclaims where you are!"
 command.here.multiple.land_here: "&aHere are the following landclaims:"
 command.here.multiple.land_list_item: "&b{%0}&a{%1} owned by {%2}" # {%0} is a list marker. Numbers by default. You may put your own marker instead
+#### List
+command.list.none: "&cYou own no land."
+command.list.land_list: "&bYou own {%0} landclaims: {%1}" # {%0} is a number of lanclaims, {%1} - list of landclaims
+command.list.one_land: "&bYou own one landclaim: {%0}"
+command.list.no_other: "&cYou don't have permission to view the landclaim list of other players."
+command.list.other: "&b{%0} owns {%1} landclaims: {%2}" # {%0} is an owner name, {%1} - number of landclaims, {%2} - list of landclaims
+command.list.other.none: "&c{%0} owns no land."
+command.list.other.one_land: "&b{%0} owns one landclaim: {%1}"

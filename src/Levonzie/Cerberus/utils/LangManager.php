@@ -177,6 +177,7 @@ class LangManager {
     
     /**
      * Parse plugin-unique word declension format
+     * @see https://github.com/Levonzie/Cerberus/commit/ca4b058 The commit that has a detailed format description in its message
      * 
      * @param string $message Message, which declension inclusions (if there are any) should be replaced with appropriately declensed word.
      * 

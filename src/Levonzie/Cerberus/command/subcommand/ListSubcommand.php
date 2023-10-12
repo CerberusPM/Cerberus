@@ -27,14 +27,64 @@ use pocketmine\command\CommandSender;
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
+use Levonzie\Cerberus\CerberusAPI;
+use Levonzie\Cerberus\utils\ConfigManager;
+use Levonzie\Cerberus\utils\LangManager;
+
+use function count;
+
 class ListSubcommand extends BaseSubCommand {
     protected function prepare(): void {
-        $this->registerArgument(0, new RawStringArgument("scope")); // my/all
+        $this->registerArgument(0, new RawStringArgument("player name", true));
         
         $this->setPermission("cerberus.command.list");
+        
+        $this->api = CerberusAPI::getInstance();
+        $this->config_manager = ConfigManager::getInstance();
+        $this->lang_manager = LangManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
-        //TODO
+        if (count($args) == 0) { //Checking landclaims of sender
+            $landclaims = $this->api->listLandOwnedBy($sender->getName());
+            if (empty($landclaims)) {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.none"));
+                return;
+            }
+            if (count($landclaims) == 1) {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.one_land", [$landclaims[0]->getName()]));
+                return;
+            }
+            $landclaim_list_message = "";
+            foreach($landclaims as $index => $land) {
+                if ($index < count($landclaims) - 1) // Add a comma at the end if not the last
+                    $landclaim_list_message .= $land->getName() . ', ';
+                else
+                    $landclaim_list_message .= $land->getName();
+            }
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.land_list", [count($landclaims), $landclaim_list_message]));
+        } else { //Checking landclaims of another owner
+            if (!$sender->hasPermission("cerberus.command.list.other")) {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.no_other"));
+                return;
+            }
+            $landclaims = $this->api->listLandOwnedBy($args["player name"]);
+            if (empty($landclaims)) {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.none", [$args["player name"]]));
+                return;
+            }
+            if (count($landclaims) == 1) {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.one_land", [$args["player name"], $landclaims[0]->getName()]));
+                return;
+            }
+            $landclaim_list_message = "";
+            foreach($landclaims as $index => $land) {
+                if ($index < count($landclaims) - 1) // Add a comma at the end if not the last
+                    $landclaim_list_message .= $land->getName() . ', ';
+                else
+                    $landclaim_list_message .= $land->getName();
+            }
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other", [$args["player name"], count($landclaims), $landclaim_list_message]));
+        }
     }
 } 

@@ -28,6 +28,9 @@ permissions:
   cerberus.command.list:
     description: Permission for /cerberus list
     default: op
+  cerberus.command.list.other:
+    description: Permission to enlist landclaims owned by other players with /cerberus list <name>
+    default: op
   cerberus.command.move:
     description: Permission for /cerberus move
     default: op
