@@ -22,8 +22,20 @@ declare(strict_types=1);
 
 namespace Levonzie\Cerberus;
 
+use DateTime;
+use DateTimeZone;
+
+use pocketmine\utils\Timezone;
 use pocketmine\world\Position;
 use pocketmine\math\Vector3;
+
+use Levonzie\Cerberus\utils\ConfigManager;
+
+use function min;
+use function max;
+use function time;
+use function strval;
+use function is_null;
 
 class Landclaim {
     protected string $name;
@@ -31,6 +43,7 @@ class Landclaim {
     protected Vector3 $pos1;
     protected Vector3 $pos2;
     protected string $world_name;
+    protected int $creation_timestamp;
     
     public function __construct(string $name, string $owner, Vector3 $pos1, Vector3 $pos2, string $world_name) {
         $this->name = $name;
@@ -39,6 +52,7 @@ class Landclaim {
         $this->pos1 = Vector3::minComponents($pos1, $pos2);
         $this->pos2 = Vector3::maxComponents($pos1, $pos2);
         $this->world_name = $world_name;
+        $this->creation_timestamp = time();
     }
     
     /**
@@ -112,5 +126,78 @@ class Landclaim {
                 $target->getSecondPosition()->getZ() >= $this->getFirstPosition()->getZ())
             return true;
         return false;
+    }
+    
+    /**
+     * @return int Length of the landclaim
+     */
+    public function getLength(): int {
+        $side1_len = $this->getSecondPosition()->getX() - $this->getFirstPosition()->getX();
+        $side2_len = $this->getSecondPosition()->getZ() - $this->getFirstPosition()->getZ();
+        return max($side1_len, $side2_len)+1; //Add one, as the edge block should be count
+    }
+
+    /**
+     * @return int Width of the landclaim
+     */
+    public function getWidth(): int {
+        $side1_len = $this->getSecondPosition()->getX() - $this->getFirstPosition()->getX();
+        $side2_len = $this->getSecondPosition()->getZ() - $this->getFirstPosition()->getZ();
+        return min($side1_len, $side2_len)+1; //Add one, as the edge block should be count
+    }
+
+    /**
+     * @return int Height of the landclaim
+     */
+    public function getHeight(): int {
+        return $this->getSecondPosition()->getY() - $this->getFirstPosition()->getY()+1;
+    }
+
+    /**
+     * @return int Area of the landclaim
+     */
+    public function getArea(): int {
+        return $this->getWidth() * $this->getLength();
+    }
+
+    /**
+     * @return int Volume of the landclaim
+     */
+    public function getVolume(): int {
+        return $this->getLength() * $this->getWidth() * $this->getHeight();
+    }
+    
+    /**
+     * @return int Creation time Unix timestamp (GMT)
+     */
+    public function getCreationTimestamp(): int {
+        return $this->creation_timestamp;
+    }
+    
+    /**
+     * Get human-readable landclaim creation date string, formatted with respect to the timezone
+     * 
+     * @param string $format   PHP DateTime formatting string. If null, gets the format from the config option date-format
+     * @param string $timezone Timezone in PHP DateTimeZone format. If null, gets the timezone from config option default-timezone.
+     *                         Tries to figure system timezone automatically if config option is not set
+     * 
+     * @see https://www.php.net/manual/en/timezones.php                                           List of available timezones
+     * @see https://www.php.net/manual/en/datetime.format.php#refsect1-datetime.format-parameters Format parameters
+     * 
+     * @return string Formatted date string
+     */
+    public function getFormattedCreationDate(string $format=null, string $timezone=null): string {
+        $timestamp = $this->getCreationTimestamp();
+        if (is_null($format))
+            $format = ConfigManager::getInstance()->get("date-format") ?? "Y-m-d H:i:s";
+        if (is_null($timezone)) {
+            $timezone = ConfigManager::getInstance()->get("default-timezone"); //Try to get timezone from the config
+            if (empty($timezone)) //Figure out server time zone if it's not set
+                $timezone = Timezone::detectSystemTimezone(); // Not always accurate. Returned Africa/Juba for me, which is UTC+2, though I had UTC+3 set on my system
+        }
+        $datetime = new DateTime('@' . strval($timestamp), new DateTimeZone('UTC')); //Timestamp is stored in UTC to make timezone conversion easier
+        $timezone = new DateTimeZone($timezone);
+        $datetime->setTimeZone($timezone);
+        return $datetime->format($format);
     }
 }

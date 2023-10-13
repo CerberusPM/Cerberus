@@ -24,4 +24,8 @@ wand-lore: # Wand item description
 - "&aThis is a Cerberus wand"
 - "&eUse it to claim your land"
 
-version: 1.0-DEV-2 # For internal use. Don't touch!
+# default-timezone and date-format are used in landclaim creation date information (/cerberus info <land name>)
+default-timezone: '' # If empty or not set will detect server time zone automatically. Better set it, as automatic recognition is inaccurate. List of available timezones: https://www.php.net/manual/en/timezones.php
+date-format: "Y-m-d H:i:s" # Formatting lookup table: https://www.php.net/manual/en/datetime.format.php#refsect1-datetime.format-parameters
+
+version: 1.0-DEV-3 # For internal use. Don't touch!
