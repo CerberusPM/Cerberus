@@ -25,6 +25,9 @@ permissions:
   cerberus.command.here:
     description: Permission for /cerberus here
     default: op
+  cerberus.command.info:
+    description: Permission for /cerberus info
+    default: op
   cerberus.command.list:
     description: Permission for /cerberus list
     default: op

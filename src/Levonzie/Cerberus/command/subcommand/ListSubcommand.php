@@ -53,6 +53,7 @@ class ListSubcommand extends BaseSubCommand {
             }
             if (count($landclaims) == 1) {
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.one_land", [$landclaims[0]->getName()]));
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
                 return;
             }
             $landclaim_list_message = "";
@@ -63,6 +64,7 @@ class ListSubcommand extends BaseSubCommand {
                     $landclaim_list_message .= $land->getName();
             }
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.land_list", [count($landclaims), $landclaim_list_message]));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.general"));
         } else { //Checking landclaims of another owner
             if (!$sender->hasPermission("cerberus.command.list.other")) {
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.no_other"));
@@ -75,6 +77,7 @@ class ListSubcommand extends BaseSubCommand {
             }
             if (count($landclaims) == 1) {
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.one_land", [$args["player name"], $landclaims[0]->getName()]));
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
                 return;
             }
             $landclaim_list_message = "";
@@ -85,6 +88,7 @@ class ListSubcommand extends BaseSubCommand {
                     $landclaim_list_message .= $land->getName();
             }
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other", [$args["player name"], count($landclaims), $landclaim_list_message]));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.general"));
         }
     }
 } 

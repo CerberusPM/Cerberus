@@ -2,7 +2,7 @@
 # Author: Levonzie
 
 language-name: English
-language-version: 1.0-DEV-7
+language-version: 1.0-DEV-8
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -76,3 +76,21 @@ command.list.no_other: "&cYou don't have permission to view the landclaim list o
 command.list.other: "&b{%0} owns {%1} landclaims: {%2}" # {%0} is an owner name, {%1} - number of landclaims, {%2} - list of landclaims
 command.list.other.none: "&c{%0} owns no land."
 command.list.other.one_land: "&b{%0} owns one landclaim: {%1}"
+#### Info
+command.info.should_specify_land_name.player: "&cYou should specify land name to get the info. To get the list of landclaims you are standing at, do: /cerberus here or /crb here"
+comamnd.info.should_specify_land_name.console: "&cYou should specify land name to get the info."
+command.info.land_does_not_exist: "&cCan't get the info. Land \"{%0}\" does not exist."
+command.info.advertisement.general: "&bDo /cerberus info <land name> or /crb i <land name> to get more info about a landclaim."
+command.info.advertisement.specific: "&bDo /cerberus info {%0} or /crb i {%0} to get more info about this landclaim."
+command.info.no_info: "&7No info"
+command.info.info:
+- "&b--- &e{%0}&b Information ---"
+- "&bOwner: &e{%1}"
+- "&bWorld: &e{%2}"
+- "&bCreation date: &e{%3}"
+- "&bFirst position: &eX: &f{%4} &eY: &f{%5} &eZ: &f{%6}"
+- "&bSecond position: &eX: &f{%7} &eY: &f{%8} &eZ: &f{%9}"
+- "&bDimensions: &f{%10}&ex&f{%11}&ex&f{%12} &e(LWH)"
+- "&bArea: &e{%13} m²"
+- "&bVolume: &e{%14} m³"
+- "&b----------------------------"

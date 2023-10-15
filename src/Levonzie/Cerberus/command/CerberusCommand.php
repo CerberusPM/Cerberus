@@ -32,6 +32,7 @@ use Levonzie\Cerberus\command\subcommand\FirstPositionSubcommand;
 use Levonzie\Cerberus\command\subcommand\FlagSubcommand;
 use Levonzie\Cerberus\command\subcommand\HelpSubcommand;
 use Levonzie\Cerberus\command\subcommand\HereSubcommand;
+use Levonzie\Cerberus\command\subcommand\InfoSubcommand;
 use Levonzie\Cerberus\command\subcommand\ListSubcommand;
 use Levonzie\Cerberus\command\subcommand\MoveSubcommand;
 use Levonzie\Cerberus\command\subcommand\ReloadSubcommand;
@@ -54,6 +55,7 @@ class CerberusCommand extends BaseCommand {
         $this->registerSubCommand(new HelpSubcommand("help", "Get usage information", ["h", "?", "how"]));
         $this->registerSubCommand(new HereSubcommand("here", "Get name of the land you are in", ["aqui"]));
         $this->registerSubCommand(new ListSubcommand("list", "List landclaims", ["l"]));
+        $this->registerSubCommand(new InfoSubcommand("info", "Get detailed information about a land", ["i", "information"]));
         $this->registerSubCommand(new MoveSubcommand("move", "Move a landclaim", ["mv", "mov", "m"]));
         $this->registerSubCommand(new ReloadSubcommand("reload", "Reload plugin config and/or language", ["rel","rld"]));
         $this->registerSubCommand(new RemoveSubcommand("remove", "Remove a landclaim", ["rm", "rem", "rmv", "delete", "erase", "r", "d"]));
