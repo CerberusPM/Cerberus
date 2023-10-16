@@ -16,6 +16,9 @@ permissions:
   cerberus.command.claim.bypass_intersect:
     description: Permission to intersect landclaims created by other players
     default: op
+  cerberus.command.claim.count_limit.unlimited:
+    description: Permission to bypass landclaim count limit (if it's turend on) while claiming
+    default: op
   cerberus.command.flag:
     description: Base permission for /cerberus flag
     default: op
