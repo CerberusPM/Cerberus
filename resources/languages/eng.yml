@@ -2,7 +2,7 @@
 # Author: Levonzie
 
 language-name: English
-language-version: 1.0-DEV-40
+language-version: 1.0-DEV-41
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -51,6 +51,7 @@ command.claim.select_pos2: "&cUnable to claim. Second position is not selected!"
 command.claim.world_mismatch: "&cUnable to claim. Both positions should be located in the same world!"
 command.claim.landclaim_count_limit_reached_warning: "&eWarning! The landclaim is going to be created, but your claim limit of {%0} landclaims has been reached. You won't be able to claim more."
 command.claim.landclaim_count_limit_exceeded: "&cUnable to claim. Landclaim count limit of {%0} exceeded!"
+command.claim.landclaim_area_limit_exceeded: "&cUnable to claim. Landclaim area limit of {%0} m² exceeded! Resulting landclaim area would have been {%1} m²!"
 command.claim.already_exists: "&cUnable to claim. Landclaim named {%0} already exists!"
 command.claim.intersects: "&cUnable to claim. Resulting landclaim intersects landclaim {%0} owned by {%1}!"
 command.claim.intersects.notification: "&eWarning! Resulting landclaim intersects landclaim {%0} owned by {%1}, but will be created, as you've got a bypass permission."

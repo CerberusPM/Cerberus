@@ -29,11 +29,15 @@ default-timezone: '' # If empty or not set will detect server time zone automati
 date-format: "Y-m-d H:i:s" # Formatting lookup table: https://www.php.net/manual/en/datetime.format.php#refsect1-datetime.format-parameters
 
 # Claim limits
-# Here you can enable/disable landclaim count limit set by permission:
+# Here you can enable/disable landclaim count and area limits set by permissions:
 # - cerberus.command.claim.limit.count.<number> - set claim limit to number
+# - cerberus.command.claim.limit.area.<number> - maximum allowed landclaim area (in square meters)
 # Put 'unlimited' instead of number in order to disable a limit
 landclaim-count-limit: false
 default-landclaim-count-limit: 5 # This limit will be set for ones, not having any land count limit permission. Works only if landclaim-count-limit is enabled! "unlimited" works here as well
 notify-user-when-count-limit-reached: true # Notification will be sent to user when they reach the limit (i.e., claim the last land within the limit)
 
-version: 1.0-DEV-40 # For internal use. Don't touch!
+landclaim-area-limit: false
+default-landclaim-area-limit: 10000 # In square meters
+
+version: 1.0-DEV-41 # For internal use. Don't touch!

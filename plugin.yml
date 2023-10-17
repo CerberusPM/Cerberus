@@ -19,6 +19,9 @@ permissions:
   cerberus.command.claim.count_limit.unlimited:
     description: Permission to bypass landclaim count limit (if it's turend on) while claiming
     default: op
+  cerberus.command.claim.area_limit.unlimited:
+    description: permission to bypass landclaim area limit (if it's turned on) while claiming
+    default: op
   cerberus.command.flag:
     description: Base permission for /cerberus flag
     default: op

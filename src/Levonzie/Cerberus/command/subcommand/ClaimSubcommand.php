@@ -86,38 +86,59 @@ class ClaimSubcommand extends BaseSubCommand {
             return;
         }
         $new_land = new Landclaim($args["name"], $selector, $pos1[0], $pos2[0], $world);
-        //Check if landclaim count limit exceeded for the command executor
+        //Claim limits
         $show_limit_reach_warning = false;
-        if ($this->config_manager->get("landclaim-count-limit")) {
-            $default_limit = $this->config_manager->get("default-landclaim-count-limit");
-            $sender_limit = 0; # We use a different counter for permission-based limit to be able to set the limit to numbers lower than default limit
-            $has_limit_permission = false;
-            $no_limit = false;
+        if ($this->config_manager->get("landclaim-count-limit") || $this->config_manager->get("landclaim-area-limit")) {
+            $default_count_limit = $this->config_manager->get("default-landclaim-count-limit");
+            $default_area_limit = $this->config_manager->get("default-landclaim-area-limit");
+            $count_limit = $area_limit = 0; # We use a different counter for permission-based limits to be able to set the limit to numbers lower than default limit
+            $has_count_limit_permission = $has_area_limit_permission = false;
+            $no_count_limit = !$this->config_manager->get("landclaim-count-limit"); //As we check both limits in the same if (for foreach loop optimisation), we should understand whether one of those turned on or off
+            $no_area_limit = !$this->config_manager->get("landclaim-area-limit");
             foreach ($sender->getEffectivePermissions() as $permission) {
                 $permission_string = $permission->getPermission();
-                if (str_contains($permission_string, "cerberus.command.claim.count_limit.") && $permission->getValue()) {
-                    $has_limit_permission = true;
+                //Landclaim count limit
+                if (!$no_count_limit && str_contains($permission_string, "cerberus.command.claim.count_limit.") && $permission->getValue()) {
+                    $has_count_limit_permission = true;
                     $limit = substr($permission_string, strrpos($permission_string, '.') + 1);
-                    if ($limit == "unlimited") {
-                        $no_limit = true;
-                        break;
-                    }
-                    if (intval($limit) > $sender_limit) //Finding the maximum limit. There might be multiple permissions with different limits set (e.g. because of group inheritance)
-                        $sender_limit = intval($limit);
+                    if ($limit == "unlimited")
+                        $no_count_limit = true;
+                    else if (intval($limit) > $count_limit) //Finding the maximum limit. There might be multiple permissions with different limits set (e.g. because of group inheritance)
+                        $count_limit = intval($limit);
+                }
+                //Landclaim area limit
+                if (!$no_area_limit && str_contains($permission_string, "cerberus.command.claim.area_limit.") && $permission->getValue()) {
+                    $has_area_limit_permission = true;
+                    $limit = substr($permission_string, strrpos($permission_string, '.') + 1);
+                    if ($limit == "unlimited")
+                        $no_area_limit = true;
+                    else if (intval($limit) > $area_limit)
+                        $area_limit = intval($limit);
                 }
             }
-            if (!$has_limit_permission) {# Using default limit if user has no limit permissions
-                if ($default_limit == "unlimited")
-                    $no_limit = true;
+            if (!$has_count_limit_permission) { # Using default limit if user has no limit permissions
+                if ($default_count_limit == "unlimited")
+                    $no_count_limit = true;
                 else
-                    $sender_limit = intval($default_limit);
+                    $count_limit = intval($default_count_limit);
             }
-            if (!$no_limit && count($this->api->listLandOwnedBy($selector)) >= $sender_limit) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.landclaim_count_limit_exceeded", [$sender_limit]));
+            if (!$has_area_limit_permission) {
+                if ($default_area_limit == "unlimited")
+                    $no_area_limit = true;
+                else
+                    $area_limit = intval($default_area_limit);
+            }
+            if (!$no_count_limit && count($this->api->listLandOwnedBy($selector)) >= $count_limit) {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.landclaim_count_limit_exceeded", [$count_limit]));
                 return;
             }
-            if ($this->config_manager->get("notify-user-when-count-limit-reached") && !$no_limit && count($this->api->listLandOwnedBy($selector)) == $sender_limit-1)
+            if ($this->config_manager->get("notify-user-when-count-limit-reached") && !$no_count_limit && count($this->api->listLandOwnedBy($selector)) == $count_limit-1)
                 $show_limit_reach_warning = true;
+            
+            if (!$no_area_limit && $new_land->getArea() > $area_limit) {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.landclaim_area_limit_exceeded", [$area_limit, $new_land->getArea()]));
+                return;
+            }
         }
         //Check if intersects land owned by somebody else
         $intersecting_landclaims = $this->api->getIntersectingLandclaims($new_land);
@@ -160,7 +181,7 @@ class ClaimSubcommand extends BaseSubCommand {
             }
         }
         if ($show_limit_reach_warning)
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.landclaim_count_limit_reached_warning", [$sender_limit]));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.landclaim_count_limit_reached_warning", [$count_limit]));
         //Finally create a landclaim
         LandManager::registerLandclaim($new_land);
         SelectionManager::deselectAll($selector);
