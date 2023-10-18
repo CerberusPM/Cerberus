@@ -2,7 +2,7 @@
 # Author: Levonzie
 
 language-name: English
-language-version: 1.0-DEV-41
+language-version: 1.0-DEV-42
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -86,6 +86,7 @@ command.info.land_does_not_exist: "&cCan't get the info. Land \"{%0}\" does not 
 command.info.advertisement.general: "&bDo /cerberus info <land name> or /crb i <land name> to get more info about a landclaim."
 command.info.advertisement.specific: "&bDo /cerberus info {%0} or /crb i {%0} to get more info about this landclaim."
 command.info.no_info: "&7No info"
+command.info.not_set: "&7Not set"
 command.info.info:
 - "&b--- &e{%0}&b Information ---"
 - "&bOwner: &e{%1}"
@@ -93,7 +94,15 @@ command.info.info:
 - "&bCreation date: &e{%3}"
 - "&bFirst position: &eX: &f{%4} &eY: &f{%5} &eZ: &f{%6}"
 - "&bSecond position: &eX: &f{%7} &eY: &f{%8} &eZ: &f{%9}"
-- "&bDimensions: &f{%10}&ex&f{%11}&ex&f{%12} &e(LWH)"
-- "&bArea: &e{%13} m²"
-- "&bVolume: &e{%14} m³"
+- "&bSpawnpoint: &eX: &f{%10} &eY: &f{%11} &eZ: &f{%12}"
+- "&bDimensions: &f{%13}&ex&f{%14}&ex&f{%15} &e(LWH)"
+- "&bArea: &e{%16} m²"
+- "&bVolume: &e{%17} m³"
 - "&b----------------------------"
+#### Setspawn
+command.setspawn.should_specify_land_name: "&cYou should specify the land which spawnpoint should be set."
+command.setspawn.land_does_not_exist: "&cUnable to set spawnpoint. Landclaim named \"{%0}\" is not found. Please, check the case."
+command.setspawn.no_other: "&cYou have no permission to set spawnpoints for landclaims owned by other players."
+command.setspawn.should_specify_position: "&cYou should specify position for the spawnpoint to be set. Your position cannot be figured out automatically, as you are not a player."
+command.setspawn.position_not_in_land: "&cSpecified position does not belong to specified landclaim. Spawnpoint should be in bounds of the landclaim it belongs to."
+command.setspawn.success: "&aThe spawnpoint for landclaim {%0} has been successfully set to &eX: &f{%1} &eY: &f{%2} &eZ: &f{%3}"

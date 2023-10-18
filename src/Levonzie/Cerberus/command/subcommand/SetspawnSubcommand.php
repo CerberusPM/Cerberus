@@ -23,18 +23,56 @@ declare(strict_types=1);
 namespace Levonzie\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
+use pocketmine\player\Player;
+use pocketmine\world\Position;
 
 use CortexPE\Commando\BaseSubCommand;
+use CortexPE\Commando\args\RawStringArgument;
 use CortexPE\Commando\args\Vector3Argument;
+
+use Levonzie\Cerberus\CerberusAPI;
+use Levonzie\Cerberus\utils\ConfigManager;
+use Levonzie\Cerberus\utils\LangManager;
 
 class SetspawnSubcommand extends BaseSubCommand {
     protected function prepare(): void {
-        $this->registerArgument(0, new Vector3Argument("position", true)); //Optional. Uses player current position if not set.
+        $this->registerArgument(0, new RawStringArgument("land name", true));
+        $this->registerArgument(1, new Vector3Argument("position", true)); //Optional. Uses player current position if not set.
         
         $this->setPermission("cerberus.command.setspawn");
+        
+        $this->api = CerberusAPI::getInstance();
+        $this->config_manager = ConfigManager::getInstance();
+        $this->lang_manager = LangManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
-        //TODO
+        if (!isset($args["land name"])) {
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.setspawn.should_specify_land_name"));
+            return;
+        }
+        $land = $this->api->getLandByName($args["land name"]);
+        if (!isset($land)) {
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.setspawn.land_does_not_exist", [$args["land name"]]));
+            return;
+        }
+        if ($land->getOwner() != $sender->getName() && !$sender->hasPermission("cerberus.command.setspawn.other")) {
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.setspawn.no_other"));
+            return;
+        }
+        if (!isset($args["position"])) {
+            if (!$sender instanceof Player) {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.setspawn.should_specify_position"));
+                return;
+            }
+            $new_pos = $sender->getPosition();
+        } else
+           $new_pos = Position::fromObject($args["position"], $this->getOwningPlugin()->getServer()->getWorldManager()->getWorldByName($land->getWorldName())); //We assume that user means position from the world where the landclaim is
+        if (!$land->containsPosition($new_pos)) { //Check if specified position is in landclaim bounds
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.setspawn.position_not_in_land"));
+            return;
+        }
+        $land->setSpawnpoint($new_pos);
+        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.setspawn.success", [$args["land name"], $new_pos->getX(), $new_pos->getY(), $new_pos->getZ()]));
     }
 } 

@@ -60,7 +60,7 @@ class CerberusCommand extends BaseCommand {
         $this->registerSubCommand(new ReloadSubcommand("reload", "Reload plugin config and/or language", ["rel","rld"]));
         $this->registerSubCommand(new RemoveSubcommand("remove", "Remove a landclaim", ["rm", "rem", "rmv", "delete", "erase", "r", "d"]));
         $this->registerSubCommand(new SecondPositionSubcommand("pos2", "Select second position", ["2", "second"]));
-        $this->registerSubCommand(new SetspawnSubcommand("setspawn", "Set teleportation and movement point", ["s", "spawn", "set"]));
+        $this->registerSubCommand(new SetspawnSubcommand("setspawn", "Set teleportation point for a landclaim", ["s", "spawn", "set"]));
         $this->registerSubCommand(new TeleportSubcommand("teleport", "Teleport to land's spawnpoint", ["tp", "to", "tpto"]));
         $this->registerSubCommand(new WandSubcommand("wand", "Get a selection wand", ["wnd", "w", "thingy"]));
         $this->registerSubCommand(new WhitelistSubcommand("whitelist", "Manage who can access your land", ["white", "invite"]));

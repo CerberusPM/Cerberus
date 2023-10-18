@@ -55,6 +55,8 @@ permissions:
   cerberus.command.setspawn:
     description: Permission for /cerberus setspawn
     default: op
+  cerberus.command.setspawn.other:
+    description: Permission to set spawnpoints for landclaims owned by others
   cerberus.command.teleport:
     description: Permission for /cerberus teleport
     default: op

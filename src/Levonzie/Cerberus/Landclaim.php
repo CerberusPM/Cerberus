@@ -43,6 +43,7 @@ class Landclaim {
     protected Vector3 $pos1;
     protected Vector3 $pos2;
     protected string $world_name;
+    protected Vector3 $spawn_point;
     protected int $creation_timestamp;
     
     public function __construct(string $name, string $owner, Vector3 $pos1, Vector3 $pos2, string $world_name) {
@@ -88,6 +89,22 @@ class Landclaim {
      */
     public function getWorldName(): string {
         return $this->world_name;
+    }
+    
+    /**
+     * @return Vector3|null Vector3 of spawnpoint coordinates if they are set and null if they aren't
+     */
+    public function getSpawnpoint(): Vector3|null {
+        if (!isset($this->spawn_point))
+            return null;
+        return $this->spawn_point;
+    }
+    
+    /**
+     * Sets spawnpoint for the landclaim
+     */
+    public function setSpawnpoint(Vector3 $position): void {
+        $this->spawn_point = $position;
     }
     
     /**

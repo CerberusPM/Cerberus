@@ -33,6 +33,7 @@ use Levonzie\Cerberus\utils\ConfigManager;
 use Levonzie\Cerberus\utils\LangManager;
 
 use function count;
+use function is_null;
 
 class InfoSubcommand extends BaseSubCommand {
     protected function prepare(): void {
@@ -61,11 +62,18 @@ class InfoSubcommand extends BaseSubCommand {
         $creation_date = $land->getFormattedCreationDate();
         if (empty($creation_date)) //That may happen if format is empty or improperly set
             $creation_date = $this->lang_manager->translate("command.info.no_info");
+        if (is_null($land->getSpawnpoint()))
+            $spawn_x = $spawn_y = $spawn_z = $this->lang_manager->translate("command.info.not_set");
+        else {
+            $spawn_x = $land->getSpawnpoint()->getX();
+            $spawn_y = $land->getSpawnpoint()->getY();
+            $spawn_z = $land->getSpawnpoint()->getZ();
+        }
         
         $message = $this->lang_manager->translate("command.info.info", [$land->getName(), $land->getOwner(), $land->getWorldName(), $creation_date,
                                                                         $land->getFirstPosition()->getX(), $land->getFirstPosition()->getY(), $land->getFirstPosition()->getZ(),
                                                                         $land->getSecondPosition()->getX(), $land->getSecondPosition()->getY(), $land->getSecondPosition()->getZ(),
-                                                                        $land->getLength(), $land->getWidth(), $land->getHeight(), $land->getArea(), $land->getVolume()]);
+                                                                        $spawn_x, $spawn_y, $spawn_z, $land->getLength(), $land->getWidth(), $land->getHeight(), $land->getArea(), $land->getVolume()]);
         foreach ($message as $string)
             $sender->sendMessage($this->config_manager->getPrefix() . $string);
     }
