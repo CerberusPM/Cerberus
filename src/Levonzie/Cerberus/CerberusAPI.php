@@ -46,6 +46,7 @@ use Levonzie\Cerberus\exception\LandIntersectException;
 use function is_array;
 use function is_null;
 use function array_push;
+use function strtolower;
 
 /**
  * An API class which provides all necessary land management methods used by subcommands
@@ -289,8 +290,9 @@ class CerberusAPI {
      */
     public function listLandOwnedBy(string $land_owner): array {
         $landclaims = array();
+        $land_owner = strtolower($land_owner);
         foreach(LandManager::getLandclaims() as $land) {
-            if ($land->getOwner() == $land_owner)
+            if (strtolower($land->getOwner()) == $land_owner)
                 array_push($landclaims, $land);
         }
         return $landclaims;

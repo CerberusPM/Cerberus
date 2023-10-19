@@ -72,11 +72,18 @@ class ListSubcommand extends BaseSubCommand {
             }
             $landclaims = $this->api->listLandOwnedBy($args["player name"]);
             if (empty($landclaims)) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.none", [$args["player name"]]));
-                return;
+                //Try to find an online player with name by prefix
+                $online_player_name = $this->getOwningPlugin()->getServer()->getPlayerByPrefix($args["player name"]);
+                if (isset($online_player_name))
+                    $landclaims = $this->api->listLandOwnedBy($online_player_name->getName());
+                if (empty($landclaims)) {
+                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.none", [$args["player name"]]));
+                    return;
+                }
             }
+            $owner_name = $landclaims[0]->getOwner(); //We might have retreived land name which has improper case or is unfinished (since we may get player name by prefix). It's better to display the accurate land owner name. That might as well help player to tell if landclaim list of the wrong player was retreived
             if (count($landclaims) == 1) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.one_land", [$args["player name"], $landclaims[0]->getName()]));
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.one_land", [$owner_name, $landclaims[0]->getName()]));
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
                 return;
             }
@@ -87,7 +94,7 @@ class ListSubcommand extends BaseSubCommand {
                 else
                     $landclaim_list_message .= $land->getName();
             }
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other", [$args["player name"], count($landclaims), $landclaim_list_message]));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other", [$owner_name, count($landclaims), $landclaim_list_message]));
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.general"));
         }
     }
