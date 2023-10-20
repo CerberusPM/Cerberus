@@ -60,6 +60,12 @@ permissions:
   cerberus.command.teleport:
     description: Permission for /cerberus teleport
     default: op
+  cerberus.command.teleport.other:
+    description: Permission to teleport other players to landclaims' spawnpoints
+    default: op
+  cerberus.command.teleport.to.other:
+    description: Permission to teleport to other players' landclaim spawnpoints
+    default: op
   cerberus.command.wand:
     description: Permission for /cerberus wand
     default: op

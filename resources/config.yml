@@ -40,4 +40,7 @@ notify-user-when-count-limit-reached: true # Notification will be sent to user w
 landclaim-area-limit: false
 default-landclaim-area-limit: 10000 # In square meters
 
-version: 1.0-DEV-41 # For internal use. Don't touch!
+# Command options
+notify-player-on-teleportation: true #Whether player who gets teleported to a landclaim should be notified that they have been teleported
+
+version: 1.0-DEV-44 # For internal use. Don't touch!

@@ -2,7 +2,7 @@
 # Author: Levonzie
 
 language-name: English
-language-version: 1.0-DEV-42
+language-version: 1.0-DEV-44
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -106,3 +106,20 @@ command.setspawn.no_other: "&cYou have no permission to set spawnpoints for land
 command.setspawn.should_specify_position: "&cYou should specify position for the spawnpoint to be set. Your position cannot be figured out automatically, as you are not a player."
 command.setspawn.position_not_in_land: "&cSpecified position does not belong to specified landclaim. Spawnpoint should be in bounds of the landclaim it belongs to."
 command.setspawn.success: "&aThe spawnpoint for landclaim {%0} has been successfully set to &eX: &f{%1} &eY: &f{%2} &eZ: &f{%3}"
+#### Teleport
+command.teleport.to.no_other: "&cYou have no permission to teleport to landclaims owned by other players."
+command.teleport.to.no_other.no_other: "&cYou have no permission to teleport yourself and other players to landclaims owned by other players."
+command.teleport.land_does_not_exist: "&cLandclaim named \"{%0}\" does not exist. Please check the case."
+command.teleport.no_land_at_current_position: "&cUnable to teleport to the spawnpoint of the landclaim at your position. There are no landclaims where you are. To teleport to a landclaim by name do /cerberus teleport <land name> or /crb tp <land name>"
+command.teleport.to_here.no_other: "&cUnable to teleport to the spawnpoint of the landclaim at your position. There is a landclaim at your position, but it belongs to another player and you have no permission to teleport to landclaims of other players."
+command.teleport.multiple_suitable_land_at_current_pos: "&cUnable to teleport to the spawnpoint of the landclaim at your position. Multiple landclaims suitable for teleportation found."
+command.teleport.multiple_suitable_land_at_current_pos.here_ad: "Type /cerberus here or /crb here to get a list."
+command.teleport.multiple_unsuitable_land_at_current_pos: "&cUnable to teleport to the spawnpoint of the landclaim at your position. All landclaims at your current position are not suitable for teleportation."
+command.teleport.should_specify_land_name: "&cYou should specify the name of the landclaim which spawnpoint will be used for teleportation."
+command.teleport.no_other: "&cYou have no permission to teleport other players."
+command.teleport.player_not_found: "&cPlayer {%0} not found."
+command.teleport.must_be_player: "&cYou must be in-game to teleport yourself. Please specify player name to teleport a player."
+command.teleport.land_has_no_spawnpoint: "&cUnable to teleport. The spawnpoint for landclaim {%0} is not set."
+command.teleport.land_here_has_no_spawnpoint: "&cUnable to teleport. The spawnpoint for the landclaim {%0}, where you are, is not set."
+command.teleport.success: "&aYou have been successfully teleported to landclaim {%0}"
+command.teleport.success.other: "&aYou have successfully teleported {%0} to landclaim {%1}"
