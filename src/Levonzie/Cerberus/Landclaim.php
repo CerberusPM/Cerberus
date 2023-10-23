@@ -108,6 +108,13 @@ class Landclaim {
     }
     
     /**
+     * Unsets spawnpoint for the landclaim
+     */
+    public function unsetSpawnpoint(): void {
+        unset($this->spawn_point);
+    }
+    
+    /**
      * Check whether landclaim contains a position
      * 
      * @param Position $pos Position to be checked for inclusion in landclaim
