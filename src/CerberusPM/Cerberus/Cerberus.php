@@ -2,7 +2,7 @@
 
 /**
  * Cerberus - an advanced land protection plugin for PocketMine-MP 5.
- * Copyright (C) 2023 Levonzie
+ * Copyright (C) 2025 CerberusPM
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,19 @@
 
 declare(strict_types=1);
 
-namespace Levonzie\Cerberus;
+namespace CerberusPM\Cerberus;
 
 use pocketmine\plugin\PluginBase;
 use pocketmine\command\Command;
 
 use CortexPE\Commando\PacketHooker;
 
-use Levonzie\Cerberus\command\CerberusCommand;
-use Levonzie\Cerberus\CerberusAPI;
-use Levonzie\Cerberus\utils\ConfigManager;
-use Levonzie\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\command\CerberusCommand;
+use CerberusPM\Cerberus\CerberusAPI;
+use CerberusPM\Cerberus\utils\ConfigManager;
+use CerberusPM\Cerberus\utils\LangManager;
+
+use CerberusPM\Cerberus\events\BlockBreakLandEvent;
 
 class Cerberus extends PluginBase {
     

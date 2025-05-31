@@ -2,7 +2,7 @@
 
 /**
  * Cerberus - an advanced land protection plugin for PocketMine-MP 5.
- * Copyright (C) 2023 Levonzie
+ * Copyright (C) 2025 CerberusPM
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,15 @@
 
 declare(strict_types=1);
 
-namespace Levonzie\Cerberus;
+namespace CerberusPM\Cerberus;
 
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\block\BlockBreakEvent;
 
-use Levonzie\Cerberus\utils\ConfigManager;
-use Levonzie\Cerberus\utils\LangManager;
-use Levonzie\Cerberus\utils\SelectionManager;
+use CerberusPM\Cerberus\utils\ConfigManager;
+use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\SelectionManager;
 
 /**
  * Main event listener used for wand position selection

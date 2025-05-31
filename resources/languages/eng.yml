@@ -2,7 +2,7 @@
 # Author: Levonzie
 
 language-name: English
-language-version: 1.0-DEV-45
+language-version: 1.0-DEV-46
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -11,6 +11,7 @@ plugin.version: "Cerberus version: {%0}"
 plugin.selected_language: "Selected language: English"
 plugin.outdated_config: "Plugin's config.yml is outdated and has been updated automatically. The old file was backed up as {%0} If you made any changes to the config, you have to transfer them manually from the old file."
 plugin.outdated_langfile: "Selected language file (English) is outdated and has been updated automatically. The old file was backed up as {%0}"
+plugin.author: "This Plugin is Constructed by Levonzie, skyss0fly"
 
 ### Language names (at the moment used in language change messages)
 lang.eng: "English"
@@ -130,3 +131,17 @@ command.unsetspawn.no_other: "&cYou have no permission to unset spawnpoints of o
 command.unsetspawn.land_has_no_spawnpoint: "&cUnable to unset spawnpoint. Specified landclaim has not got its spawnpoint set."
 command.unsetspawn.success: "&aSuccessfully unset spawnpoint for landclaim {%0}!"
 command.unsetspawn.success.other: "&aSuccessfully unset spawnpoint for landclaim {%0} owned by {%1}!"
+### Whitelist
+command.whitelist.no_player: "&cPlayer Not Found"
+command.whitelist.success : "&aAdded {%0} to the Whitelist!"
+command.whitelist.success.other: "&aRemoved \"{%0}\" from the whitelist!"
+command.whitelist.should_specify_land_name: "&cYou should specify the land which player should be added."
+command.whitelist.should_specify_land_name.other: "%cYou should specify the land which player should be Removed."
+command.whitelist.land_does_not_exist: "&cLandclaim \"{%0}\" does not exist. Please check the case."
+command.whitelist.no_other: "&cYou have no permission to whitelist players to other players' landclaims."
+command.whitelist.land_has_no_player: "&cUnable to remove Player. Specified landclaim has not got any players whitelisted."
+command.whitelist.land_has_no_player.other: "&cUnable to add Player. Specified landclaim has not got any players whitelisted."
+command.whitelist.specify: "&cPlease Specify which Task you wish to do: (add,remove)"
+command.whitelist.invalidargs: "&cInvalid Arguments. <add,remove> expected!"
+command.whitelist.specify.land: "&cPlease Specify Land"
+command.whitelist.specify.player: "&cPlease Specify a Player"

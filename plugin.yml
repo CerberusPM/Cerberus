@@ -1,10 +1,10 @@
 name: Cerberus
 api: 5.0.0
 version: 1.0.0-DEV
-main: Levonzie\Cerberus\Cerberus
-author: Levonzie
+main: CerberusPM\Cerberus\Cerberus
+author: [ Levonzie, skyss0fly ]
 description: An advanced land protection plugin for PocketMine-MP 5
-website: https://github.com/Levonzie/Cerberus
+website: https://github.com/CerberusPM/Cerberus
 
 permissions:
   cerberus.command:

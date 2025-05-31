@@ -2,7 +2,7 @@
 
 /**
  * Cerberus - an advanced land protection plugin for PocketMine-MP 5.
- * Copyright (C) 2023 Levonzie
+ * Copyright (C) 2025 CerberusPM
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,19 +20,19 @@
 
 declare(strict_types=1);
 
-namespace Levonzie\Cerberus\command\subcommand;
+namespace CerberusPM\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
 
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
-use Levonzie\Cerberus\CerberusAPI;
-use Levonzie\Cerberus\utils\SelectionManager;
-use Levonzie\Cerberus\utils\ConfigManager;
-use Levonzie\Cerberus\utils\LangManager;
-use Levonzie\Cerberus\utils\LandManager;
-use Levonzie\Cerberus\Landclaim;
+use CerberusPM\Cerberus\CerberusAPI;
+use CerberusPM\Cerberus\utils\SelectionManager;
+use CerberusPM\Cerberus\utils\ConfigManager;
+use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\LandManager;
+use CerberusPM\Cerberus\Landclaim;
 
 use function is_null;
 use function array_push;
@@ -44,14 +44,34 @@ use function substr;
 use function strrpos;
 
 class ClaimSubcommand extends BaseSubCommand {
+	// V1.0.0 Feature to do is remove deprecated dynamic Properties in every class like so:
+/* 	public CerberusAPI $api;
+    public ConfigManager $config_manager;
+    public LangManager $lang_manager;
+
+    public function __construct() {
+        $this->api = CerberusAPI::getInstance();
+        $this->config_manager = ConfigManager::getInstance();
+        $this->lang_manager = LangManager::getInstance();
+    } */
+
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("name")); //Name of a landclaim
         
         $this->setPermission("cerberus.command.claim");
-        
-        $this->api = CerberusAPI::getInstance();
+		/*
+		V1.0.0 Feature todo is to remove
+		the deprecated dynamic properties 
+		in every class like below and add
+		the following features in above 
+		todo comment
+		VVVV
+		*/
+          $this->api = CerberusAPI::getInstance();
         $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
+		
+		// ^^^^
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {

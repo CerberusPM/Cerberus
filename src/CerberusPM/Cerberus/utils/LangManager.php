@@ -2,7 +2,7 @@
 
 /**
  * Cerberus - an advanced land protection plugin for PocketMine-MP 5.
- * Copyright (C) 2023 Levonzie
+ * Copyright (C) 2025 CerberusPM
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@
 
 declare(strict_types=1);
 
-namespace Levonzie\Cerberus\utils;
+namespace CerberusPM\Cerberus\utils;
 
 use pocketmine\utils\TextFormat;
 
-use Levonzie\Cerberus\Cerberus;
-use Levonzie\Cerberus\utils\ConfigManager;
-use Levonzie\Cerberus\exception\CerberusLangException;
+use CerberusPM\Cerberus\Cerberus;
+use CerberusPM\Cerberus\utils\ConfigManager;
+use CerberusPM\Cerberus\exception\CerberusLangException;
 
 use function mkdir;
 use function is_file;

@@ -2,7 +2,7 @@
 
 /**
  * Cerberus - an advanced land protection plugin for PocketMine-MP 5.
- * Copyright (C) 2023 Levonzie
+ * Copyright (C) 2025 CerberusPM
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 declare(strict_types=1);
 
-namespace Levonzie\Cerberus;
+namespace CerberusPM\Cerberus;
 
 use pocketmine\utils\TextFormat;
 use pocketmine\player\Player;
@@ -34,14 +34,14 @@ use pocketmine\world\Position;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\math\Vector3;
 
-use Levonzie\Cerberus\Cerberus;
-use Levonzie\Cerberus\utils\ConfigManager;
-use Levonzie\Cerberus\utils\LangManager;
-use Levonzie\Cerberus\utils\LandManager;
+use CerberusPM\Cerberus\Cerberus;
+use CerberusPM\Cerberus\utils\ConfigManager;
+use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\LandManager;
 
-use Levonzie\Cerberus\exception\InventoryFullException;
-use Levonzie\Cerberus\exception\LandExistsException;
-use Levonzie\Cerberus\exception\LandIntersectException;
+use CerberusPM\Cerberus\exception\InventoryFullException;
+use CerberusPM\Cerberus\exception\LandExistsException;
+use CerberusPM\Cerberus\exception\LandIntersectException;
 
 use function is_array;
 use function is_null;
@@ -56,11 +56,18 @@ class CerberusAPI {
     private static CerberusAPI $instance;
     private Cerberus $plugin;
     
-    private $version = "1.0.0-DEV";
-    
+    private $version = "1.0.1-DEV";
+    private array $whitelist = [];
     public const TAG_CERBERUS = "Cerberus";
     public const TAG_WAND = "isWand";
-    
+	
+	// Extensions:
+	
+    private $isUIEventListenerEnabled = false;
+    // by default this will be false UNLESS you have installed CerberusUI to AVOID CRASHES;
+	
+	// CODE:
+	
     private function __construct() {
         $this->plugin = Cerberus::getInstance();
     }
@@ -85,6 +92,15 @@ class CerberusAPI {
      */
     public function getVersion(): string {
         return $this->version;
+    }
+    
+    /**
+    * Get UIEventListener Status
+    *
+    * @return bool isUIEventListenerEnabled
+    */
+    public function isUIEventListenerEnabled(): bool {
+        return $this->isUIEventListenerEnabled;
     }
     
     /**
@@ -296,5 +312,34 @@ class CerberusAPI {
                 array_push($landclaims, $land);
         }
         return $landclaims;
+    }
+    
+public function addPlayerToWhitelist(string $player): void {
+        if (!in_array($player, $this->whitelist)) {
+            $this->whitelist[] = $player;
+        }
+    }
+
+    public function removePlayerFromWhitelist(string $player): void {
+        $index = array_search($player, $this->whitelist);
+        if ($index !== false) {
+            unset($this->whitelist[$index]);
+            $this->whitelist = array_values($this->whitelist);  // Re-index the array
+        }
+    }
+
+    public function getWhitelist(): array {
+        return $this->whitelist;
+    }
+    private function isPlayerWhitelisted(string $name): bool {
+    if (empty($name)) {
+        return false;
+    }
+
+    // Check if the name exists in the whitelist
+    if (!in_array($name, $this->api->getWhitelist())) {
+        return false;
+    }
+    return true;
     }
 }
