@@ -1,13 +1,9 @@
 # Cerberus
-> [!Note]
-> This Branch is a Developmental Branch and may be UNSTABLE, it is strongly recommened you download the latest releases from the stable branch
-<br>
-An advanced land protection plugin for PocketMine-MP 5 
-
+Protect your builds with ease!
 Built By Server Owners for Server Owners!
 
-# DEPENDENCIES:
-CerberusPM uses [Commando](https://www.github.com/CerberusPM/Commando) (the Link is a Forked Version of Commando which remains UP TO DATE with CerberusPM. 
+## DEPENDENCIES:
+CerberusPM uses [Commando](https://github.com/ACM-PocketMine-MP/Commando/tree/PM5/) (the Link is a Forked Version of Commando which remains UP TO DATE with CerberusPM. 
 
 ## Description
 **Cerberus** is an essential tool for protecting server structures. It allows server administrators and players to easily protect their builds.
@@ -40,7 +36,6 @@ CerberusPM uses [Commando](https://www.github.com/CerberusPM/Commando) (the Link
 | `cerberus.command.unsetspawn`                     | `/cerberus unsetspawn`       | Removes a spawn point from a land claim. |
 | `cerberus.command.unsetspawn.other`               | `/cerberus unsetspawn <name>`| Allows removing spawn points from land claims owned by others. |
 | `cerberus.command.wand`                           | `/cerberus wand`             | Grants access to selection wand tools. |
-| `cerberus.command.whitelist`                      | `/cerberus whitelist`        | Grants access to land whitelist management. |
 | `cerberus.command.reload`                         | `/cerberus reload`           | Reloads the plugin configuration. |
 
 ## Default Permissions
@@ -59,10 +54,14 @@ Video Tutorial:
 
 # **Work in progress:**
 
-## Features to Implement
-flag subcommand,
-extend subcommand,
-move subcommand
+## Features yet to Implement
+* Landclaim saving
+* Whitelist subcommand
+* Expand subcommand
+* Move subcommand
+* Flag system and flag subcommand
+* Flag subcommand with many flags (like in WorldGuard for Java)
+* Region highlighting
 
 ## Authors
 This Plugin was Jointly Founded by Levonzie and skyss0fly.

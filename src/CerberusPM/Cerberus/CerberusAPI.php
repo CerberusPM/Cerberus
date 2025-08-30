@@ -56,8 +56,7 @@ class CerberusAPI {
     private static CerberusAPI $instance;
     private Cerberus $plugin;
     
-    private $version = "1.0.1-DEV";
-    private array $whitelist = [];
+    private $version = "1.0.0-DEV";
     public const TAG_CERBERUS = "Cerberus";
     public const TAG_WAND = "isWand";
 	
@@ -312,34 +311,5 @@ class CerberusAPI {
                 array_push($landclaims, $land);
         }
         return $landclaims;
-    }
-    
-public function addPlayerToWhitelist(string $player): void {
-        if (!in_array($player, $this->whitelist)) {
-            $this->whitelist[] = $player;
-        }
-    }
-
-    public function removePlayerFromWhitelist(string $player): void {
-        $index = array_search($player, $this->whitelist);
-        if ($index !== false) {
-            unset($this->whitelist[$index]);
-            $this->whitelist = array_values($this->whitelist);  // Re-index the array
-        }
-    }
-
-    public function getWhitelist(): array {
-        return $this->whitelist;
-    }
-    private function isPlayerWhitelisted(string $name): bool {
-    if (empty($name)) {
-        return false;
-    }
-
-    // Check if the name exists in the whitelist
-    if (!in_array($name, $this->api->getWhitelist())) {
-        return false;
-    }
-    return true;
     }
 }

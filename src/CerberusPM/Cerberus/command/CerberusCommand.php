@@ -65,7 +65,7 @@ class CerberusCommand extends BaseCommand {
         $this->registerSubCommand(new TeleportSubcommand("teleport", "Teleport to land's spawnpoint", ["tp", "to", "tpto"]));
         $this->registerSubCommand(new UnsetspawnSubcommand("unsetspawn", "Remove landclaim's spawnpoint", ["us", "unset", "rmspawn", "delspawn", 'clearspawn']));
         $this->registerSubCommand(new WandSubcommand("wand", "Get a selection wand", ["wnd", "w", "thingy"]));
-        $this->registerSubCommand(new WhitelistSubcommand("whitelist", "Manage who can access your land", ["white", "invite"]));
+        #$this->registerSubCommand(new WhitelistSubcommand("whitelist", "Manage who can access your land", ["white", "invite"])); # Doesn't work for now
         
         
         $this->setPermission(self::BASE_PERMISSION);
