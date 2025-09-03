@@ -38,6 +38,10 @@ use CerberusPM\Cerberus\utils\SelectionManager;
 use function strval;
 
 class FirstPositionSubcommand extends BaseSubCommand {
+
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->registerArgument(0, new Vector3Argument("position", true)); //Optional. If not specified uses current player position
         $this->registerArgument(1, new RawStringArgument("world", true)); //World name. Optional. If not set uses the world player is currently in

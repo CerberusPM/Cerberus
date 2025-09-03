@@ -37,6 +37,11 @@ use function count;
 use function array_push;
 
 class TeleportSubcommand extends BaseSubCommand {
+
+    private CerberusAPI $api;
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name", true)); //If omitted, teleports to the spawnpoint of the land player is standing at. Shows usage message if not in land bounds and land name is not specified
         $this->registerArgument(1, new RawStringArgument("player name", true)); //Optional. Player to teleport

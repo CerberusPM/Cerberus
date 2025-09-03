@@ -36,6 +36,11 @@ use function count;
 use function is_null;
 
 class InfoSubcommand extends BaseSubCommand {
+
+    private CerberusAPI $api;
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name", true));
         

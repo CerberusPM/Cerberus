@@ -35,6 +35,11 @@ use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 
 class SetspawnSubcommand extends BaseSubCommand {
+
+    private CerberusAPI $api;
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name", true));
         $this->registerArgument(1, new Vector3Argument("position", true)); //Optional. Uses player current position if not set.

@@ -34,6 +34,11 @@ use CerberusPM\Cerberus\utils\LangManager;
 use function is_null;
 
 class RemoveSubcommand extends BaseSubCommand {
+
+    private CerberusAPI $api;
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name"));
         

@@ -33,6 +33,11 @@ use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\Exception\InventoryFullException;
 
 class WandSubcommand extends BaseSubCommand {
+
+    private CerberusAPI $api;
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->setPermission("cerberus.command.wand");
         

@@ -35,6 +35,10 @@ use CerberusPM\Cerberus\utils\LangManager;
  * A class which provides /cerberus reload command functionality
  */
 class ReloadSubcommand extends BaseSubCommand {
+
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("all|config|lang", true)); //Optional. If not specified what to reload will reload everything
         

@@ -30,6 +30,11 @@ use CortexPE\Commando\args\RawStringArgument;
  * Requires more work to be done. Coming soon
  */
 class WhitelistSubcommand extends BaseSubCommand {
+
+    private CerberusAPI $api;
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("operation"));
         $this->registerArgument(1, new RawStringArgument("land_name"));

@@ -36,6 +36,11 @@ use function count;
 use function strval;
 
 class HereSubcommand extends BaseSubCommand {
+
+    private CerberusAPI $api;
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->setPermission("cerberus.command.here");
         

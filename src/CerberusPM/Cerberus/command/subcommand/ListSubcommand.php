@@ -34,6 +34,11 @@ use CerberusPM\Cerberus\utils\LangManager;
 use function count;
 
 class ListSubcommand extends BaseSubCommand {
+
+    private CerberusAPI $api;
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("player name", true));
         

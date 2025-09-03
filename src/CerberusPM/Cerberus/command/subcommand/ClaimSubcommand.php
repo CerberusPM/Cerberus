@@ -44,34 +44,18 @@ use function substr;
 use function strrpos;
 
 class ClaimSubcommand extends BaseSubCommand {
-	// V1.0.0 Feature to do is remove deprecated dynamic Properties in every class like so:
-/* 	public CerberusAPI $api;
-    public ConfigManager $config_manager;
-    public LangManager $lang_manager;
 
-    public function __construct() {
-        $this->api = CerberusAPI::getInstance();
-        $this->config_manager = ConfigManager::getInstance();
-        $this->lang_manager = LangManager::getInstance();
-    } */
+    private CerberusAPI $api;
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
 
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("name")); //Name of a landclaim
         
         $this->setPermission("cerberus.command.claim");
-		/*
-		V1.0.0 Feature todo is to remove
-		the deprecated dynamic properties 
-		in every class like below and add
-		the following features in above 
-		todo comment
-		VVVV
-		*/
-          $this->api = CerberusAPI::getInstance();
+        $this->api = CerberusAPI::getInstance();
         $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
-		
-		// ^^^^
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
