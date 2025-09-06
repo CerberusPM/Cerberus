@@ -27,7 +27,6 @@ use pocketmine\command\CommandSender;
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
-use CerberusPM\Cerberus\Cerberus;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 
@@ -54,23 +53,23 @@ class ReloadSubcommand extends BaseSubCommand {
         if (!isset($arg) || $arg == "all") {
             $this->config_manager->reload();
             $this->lang_manager->reload();
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.reload.all"));
+            $sender->sendMessage($this->lang_manager->translate("command.reload.all"));
         } else if ($arg == "config" || $arg == "conf") {
             $this->config_manager->reload();
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.reload.config"));
+            $sender->sendMessage($this->lang_manager->translate("command.reload.config"));
         } else if ($arg == "lang" || $arg == "language") {
             $this->lang_manager->reload();
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.reload.lang", [$this->lang_manager->translate("language-name")]));
+            $sender->sendMessage($this->lang_manager->translate("command.reload.lang", [$this->lang_manager->translate("language-name")]));
             return; //Skip language change check
         } else {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.reload.options"));
+            $sender->sendMessage($this->lang_manager->translate("command.reload.options"));
             return; //Skip language check change
         }
         //Language change check and lang_manager reload if changed
         $new_lang = $this->config_manager->get("language");
         if ($old_lang !== $new_lang && isset($new_lang)) {
                 $this->lang_manager->reload(); //Reload the language file as new language is set in the config
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.reload.lang.switch", [$this->lang_manager->translate("lang.$old_lang"), $this->lang_manager->translate("lang.$new_lang")]));
+                $sender->sendMessage($this->lang_manager->translate("command.reload.lang.switch", [$this->lang_manager->translate("lang.$old_lang"), $this->lang_manager->translate("lang.$new_lang")]));
         }
     }
 } 

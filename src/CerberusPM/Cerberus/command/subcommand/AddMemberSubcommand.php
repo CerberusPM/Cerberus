@@ -29,13 +29,11 @@ use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\LangManager;
-use CerberusPM\Cerberus\utils\ConfigManager;
 
 class AddMemberSubcommand extends BaseSubCommand {
     
     private CerberusAPI $api;
     private LangManager $lang_manager;
-    private ConfigManager $config_manager;
 
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name", true));
@@ -45,28 +43,27 @@ class AddMemberSubcommand extends BaseSubCommand {
         
         $this->api = CerberusAPI::getInstance();
         $this->lang_manager = LangManager::getInstance();
-        $this->config_manager = ConfigManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         // Check if args are set
         if (!isset($args["land name"])) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.should_specify_land_name"));
+            $sender->sendMessage($this->lang_manager->translate("command.should_specify_land_name"));
             return;
         }
         if (!isset($args["player name"])) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.should_specify_player"));
+            $sender->sendMessage($this->lang_manager->translate("command.should_specify_player"));
             return;
         }
         // Get the land
         $land = $this->api->getLandByName($args["land name"]);
         if (is_null($land)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
+            $sender->sendMessage($this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;
         }
         // Check ownership
         if (!$land->isOwner($sender) && !$sender->hasPermission("cerberus.command.addmember.other")) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.addmember.no_other"));
+            $sender->sendMessage($this->lang_manager->translate("command.addmember.no_other"));
             return;
         }
         // Get the player
@@ -76,10 +73,10 @@ class AddMemberSubcommand extends BaseSubCommand {
         }
         // Add the player
         if (!$land->addMember($player)) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.player_not_found", [$args["player name"]]));
+                $sender->sendMessage($this->lang_manager->translate("command.player_not_found", [$args["player name"]]));
                 return;
         }
-        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.addmember.success", [$player->getDisplayName()]));
+        $sender->sendMessage($this->lang_manager->translate("command.addmember.success", [$player->getDisplayName()]));
     }
 } 
  

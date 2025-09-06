@@ -131,7 +131,7 @@ class CerberusAPI {
         }
         // Set custom name
         if ($this->config_manager->get("wand-use-default-name")) {
-            $wand_name = $this->language_manager->translate("wand.name");
+            $wand_name = $this->language_manager->translate("wand.name", include_prefix: false);
         } // LangManager returns already colorized string
         else {
             $wand_name = $this->config_manager->get("wand-name", false);
@@ -139,12 +139,12 @@ class CerberusAPI {
         if (!empty($wand_name)) {
             $wand_item->setCustomName(TextFormat::colorize($wand_name));
         } else { //Looks like name option is left blank. Applying the default name
-            $wand_item->setCustomName($this->language_manager->translate("wand.name"));
+            $wand_item->setCustomName($this->language_manager->translate("wand.name", include_prefix: false));
         }
         // Set lore
         $lore_already_colorized = false;
         if ($this->config_manager->get("wand-use-default-lore")) {
-            $wand_lore = $this->language_manager->translate("wand.lore");
+            $wand_lore = $this->language_manager->translate("wand.lore", include_prefix: false);
             $lore_already_colorized = true;
         } else {
             $wand_lore = $this->config_manager->get("wand-lore", false);

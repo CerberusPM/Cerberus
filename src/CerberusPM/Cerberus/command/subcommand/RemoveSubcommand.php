@@ -28,7 +28,6 @@ use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\CerberusAPI;
-use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 
 use function is_null;
@@ -36,7 +35,6 @@ use function is_null;
 class RemoveSubcommand extends BaseSubCommand {
 
     private CerberusAPI $api;
-    private ConfigManager $config_manager;
     private LangManager $lang_manager;
 
     protected function prepare(): void {
@@ -45,26 +43,25 @@ class RemoveSubcommand extends BaseSubCommand {
         $this->setPermission("cerberus.command.remove");
         
         $this->api = CerberusAPI::getInstance();
-        $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         $land = $this->api->getLandByName($args["land name"]);
         if (is_null($land)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
+            $sender->sendMessage($this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;
         }
         if (!$land->isOwner($sender) && !$sender->hasPermission("cerberus.command.remove.other")) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.no_other"));
+            $sender->sendMessage($this->lang_manager->translate("command.remove.no_other"));
             return;
         }
         $this->api->removeLand($args["land name"]);
         
         if (!$land->isOwner($sender)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.other.success", [$args["land name"], implode(", ", $land->getOwnerNames())]));
+            $sender->sendMessage($this->lang_manager->translate("command.remove.other.success", [$args["land name"], implode(", ", $land->getOwnerNames())]));
         } else {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.success", [$args["land name"]]));
+            $sender->sendMessage($this->lang_manager->translate("command.remove.success", [$args["land name"]]));
         }
     }
 } 

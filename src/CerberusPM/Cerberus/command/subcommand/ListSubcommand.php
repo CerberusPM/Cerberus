@@ -28,7 +28,6 @@ use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\CerberusAPI;
-use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 
 use function count;
@@ -36,7 +35,6 @@ use function count;
 class ListSubcommand extends BaseSubCommand {
 
     private CerberusAPI $api;
-    private ConfigManager $config_manager;
     private LangManager $lang_manager;
 
     protected function prepare(): void {
@@ -45,7 +43,6 @@ class ListSubcommand extends BaseSubCommand {
         $this->setPermission("cerberus.command.list");
         
         $this->api = CerberusAPI::getInstance();
-        $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
     }
     
@@ -53,12 +50,12 @@ class ListSubcommand extends BaseSubCommand {
         if (count($args) == 0) { //Checking landclaims of sender
             $landclaims = $this->api->listLandOwnedBy($sender);
             if (empty($landclaims)) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.none"));
+                $sender->sendMessage($this->lang_manager->translate("command.list.none"));
                 return;
             }
             if (count($landclaims) == 1) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.one_land", [$landclaims[0]->getName()]));
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
+                $sender->sendMessage($this->lang_manager->translate("command.list.one_land", [$landclaims[0]->getName()]));
+                $sender->sendMessage($this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
                 return;
             }
             $landclaim_list_message = "";
@@ -69,11 +66,11 @@ class ListSubcommand extends BaseSubCommand {
                     $landclaim_list_message .= $land->getName();
                 }
             }
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.land_list", [count($landclaims), $landclaim_list_message]));
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.general"));
+            $sender->sendMessage($this->lang_manager->translate("command.list.land_list", [count($landclaims), $landclaim_list_message]));
+            $sender->sendMessage($this->lang_manager->translate("command.info.advertisement.general"));
         } else { //Checking landclaims of another owner
             if (!$sender->hasPermission("cerberus.command.list.other")) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.no_other"));
+                $sender->sendMessage($this->lang_manager->translate("command.list.no_other"));
                 return;
             }
             $online_player_name = $this->getOwningPlugin()->getServer()->getPlayerByPrefix($args["player name"]);
@@ -84,14 +81,14 @@ class ListSubcommand extends BaseSubCommand {
                     $landclaims = $this->api->listLandOwnedBy($online_player_name->getName());
                 }
                 if (empty($landclaims)) {
-                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.none", [$args["player name"]]));
+                    $sender->sendMessage($this->lang_manager->translate("command.list.other.none", [$args["player name"]]));
                     return;
                 }
             }
             $owner_name = implode(", ", $landclaims[0]->getOwnerNames()); //We might have retreived land name which has improper case or is unfinished (since we may get player name by prefix). It's better to display the accurate land owner name. That might as well help player to tell if landclaim list of the wrong player was retreived
             if (count($landclaims) == 1) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.one_land", [$owner_name, $landclaims[0]->getName()]));
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
+                $sender->sendMessage($this->lang_manager->translate("command.list.other.one_land", [$owner_name, $landclaims[0]->getName()]));
+                $sender->sendMessage($this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
                 return;
             }
             $landclaim_list_message = "";
@@ -102,8 +99,8 @@ class ListSubcommand extends BaseSubCommand {
                     $landclaim_list_message .= $land->getName();
                 }
             }
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other", [$owner_name, count($landclaims), $landclaim_list_message]));
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.general"));
+            $sender->sendMessage($this->lang_manager->translate("command.list.other", [$owner_name, count($landclaims), $landclaim_list_message]));
+            $sender->sendMessage($this->lang_manager->translate("command.info.advertisement.general"));
         }
     }
 } 

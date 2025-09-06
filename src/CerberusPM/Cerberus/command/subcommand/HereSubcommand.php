@@ -28,7 +28,6 @@ use pocketmine\player\Player;
 use CortexPE\Commando\BaseSubCommand;
 
 use CerberusPM\Cerberus\CerberusAPI;
-use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 
 use function count;
@@ -37,20 +36,18 @@ use function strval;
 class HereSubcommand extends BaseSubCommand {
 
     private CerberusAPI $api;
-    private ConfigManager $config_manager;
     private LangManager $lang_manager;
 
     protected function prepare(): void {
         $this->setPermission("cerberus.command.here");
         
         $this->api = CerberusAPI::getInstance();
-        $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         if (!$sender instanceof Player) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.in_game"));
+            $sender->sendMessage($this->lang_manager->translate("command.in_game"));
             return;
         }
         
@@ -58,22 +55,22 @@ class HereSubcommand extends BaseSubCommand {
         $landclaims = $this->api->getLandclaimsByPosition($current_position);
         
         $current_position = $current_position->round(1);
-        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.current_position", [$current_position->getX(),
+        $sender->sendMessage($this->lang_manager->translate("command.here.current_position", [$current_position->getX(),
                                                                                                                                    $current_position->getY(),
                                                                                                                                    $current_position->getZ()]));
                                                                                                                        if (!empty($landclaims)) {
             if (count($landclaims) == 1) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.land_here", [$landclaims[0]->getName(), implode(", ", $landclaims[0]->getOwnerNames())]));
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
+                $sender->sendMessage($this->lang_manager->translate("command.here.land_here", [$landclaims[0]->getName(), implode(", ", $landclaims[0]->getOwnerNames())]));
+                $sender->sendMessage($this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
             } else {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.multiple.land_here"));
+                $sender->sendMessage($this->lang_manager->translate("command.here.multiple.land_here"));
                 foreach ($landclaims as $index => $land) {
-                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.multiple.land_list_item", [strval($index + 1) . '. ', $land->getName(), implode(", ", $land->getOwnerNames())]));
+                    $sender->sendMessage($this->lang_manager->translate("command.here.multiple.land_list_item", [strval($index + 1) . '. ', $land->getName(), implode(", ", $land->getOwnerNames())]));
                 }
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.general"));
+                $sender->sendMessage($this->lang_manager->translate("command.info.advertisement.general"));
             }
         } else {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.no_land_here"));
+            $sender->sendMessage($this->lang_manager->translate("command.here.no_land_here"));
         }
     }
 } 

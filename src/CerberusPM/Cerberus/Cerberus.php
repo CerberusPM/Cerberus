@@ -56,9 +56,9 @@ class Cerberus extends PluginBase {
         $this->lang_manager = LangManager::getInstance();
         $this->config_manager = ConfigManager::getInstance();
         
-        $this->getLogger()->notice($this->lang_manager->translate("plugin.in-dev"));
-        $this->getLogger()->info($this->lang_manager->translate("plugin.version", [$this->getDescription()->getVersion()]));
-        $this->getLogger()->info($this->lang_manager->translate("plugin.selected_language"));
+        $this->getLogger()->notice($this->lang_manager->translate("plugin.in-dev", include_prefix: false));
+        $this->getLogger()->info($this->lang_manager->translate("plugin.version", [$this->getDescription()->getVersion()], false));
+        $this->getLogger()->info($this->lang_manager->translate("plugin.selected_language", include_prefix: false));
         
         $this->getServer()->getPluginManager()->registerEvents(new WandSelectionListener($this), $this);
         $this->getServer()->getPluginManager()->registerEvents(new BlockBreakListener($this), $this);

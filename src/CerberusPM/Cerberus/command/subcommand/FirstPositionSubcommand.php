@@ -31,13 +31,11 @@ use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\Vector3Argument;
 use CortexPE\Commando\args\RawStringArgument;
 
-use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\SelectionManager;
 
 class FirstPositionSubcommand extends BaseSubCommand {
 
-    private ConfigManager $config_manager;
     private LangManager $lang_manager;
 
     protected function prepare(): void {
@@ -46,7 +44,6 @@ class FirstPositionSubcommand extends BaseSubCommand {
         
         $this->setPermission("cerberus.command.selection");
         
-        $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
     }
     
@@ -55,19 +52,19 @@ class FirstPositionSubcommand extends BaseSubCommand {
             if (isset($args["world"])) {
                 $world = Server::getInstance()->getWorldManager()->getWorldByName($args["world"]);
                 if (!isset($world)) {
-                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos.world_not_found", [$args["world"]]));
+                    $sender->sendMessage($this->lang_manager->translate("command.pos.world_not_found", [$args["world"]]));
                     return;
                 }
             } else {
                 if ($sender instanceof Player) {
                     $world = $sender->getPosition()->getWorld();
                 } else {
-                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos.should_select_world"));
+                    $sender->sendMessage($this->lang_manager->translate("command.pos.should_select_world"));
                     return;
                 }
             }
             SelectionManager::selectFirstPosition($sender, Position::fromObject($args["position"], $world));
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos1.selected.world", [$args["position"]->getFloorX(),
+            $sender->sendMessage($this->lang_manager->translate("command.pos1.selected.world", [$args["position"]->getFloorX(),
                                                                                                                                      $args["position"]->getFloorY(),
                                                                                                                                      $args["position"]->getFloorZ(),
                                                                                                                                      $world->getFolderName()]));
@@ -76,11 +73,11 @@ class FirstPositionSubcommand extends BaseSubCommand {
             if ($sender instanceof Player) {
                 $position = $sender->getPosition();
                 SelectionManager::selectFirstPosition($sender, $position);
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos1.selected", [$position->getFloorX(),
+                $sender->sendMessage($this->lang_manager->translate("command.pos1.selected", [$position->getFloorX(),
                             $position->getFloorY(),
                             $position->getFloorZ()]));
             } else {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos.in-game"));
+                $sender->sendMessage($this->lang_manager->translate("command.pos.in-game"));
             }
         }
     }

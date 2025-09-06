@@ -49,6 +49,7 @@ use function substr;
 class LangManager {
     private static LangManager $instance;
     private Cerberus $plugin;
+    private ConfigManager $config_manager;
     
     private string $current_language;
     private array $translations;
@@ -57,6 +58,7 @@ class LangManager {
     private function __construct() {
         //Load selected language.
         $this->plugin = Cerberus::getInstance();
+        $this->config_manager = ConfigManager::getInstance();
         $this->loadLanguages();
         $this->loadDefaultLanguage();
     }
@@ -71,7 +73,7 @@ class LangManager {
      * 
      * @return string|string[]|null Returns colorized string or array of strings of the translation corresponding to $key. Returns null if translation is empty.
      */
-    public function translate(string $key, array $params = []): string|array|null {
+    public function translate(string $key, array $params = [], bool $include_prefix = true): string|array|null {
         try {
             $translation = $this->translations[$key];
         } catch (\ErrorException) { //Undefined array key
@@ -102,7 +104,11 @@ class LangManager {
                     $translation = str_replace("{%$index}", $param, $translation);
                 }
                 $translation = $this->parseDeclensions($translation);
-                return TextFormat::colorize($translation);
+                if ($include_prefix) {
+                    return $this->config_manager->getPrefix() . TextFormat::colorize($translation);
+                } else {
+                    return TextFormat::colorize($translation);
+                }
             }
         }
         return null;

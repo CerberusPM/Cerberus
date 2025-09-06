@@ -28,13 +28,11 @@ use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\CerberusAPI;
-use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 
 class UnsetspawnSubcommand extends BaseSubCommand {
 
     private CerberusAPI $api;
-    private ConfigManager $config_manager;
     private LangManager $lang_manager;
 
     protected function prepare(): void {
@@ -43,33 +41,32 @@ class UnsetspawnSubcommand extends BaseSubCommand {
         $this->setPermission("cerberus.command.unsetspawn");
         
         $this->api = CerberusAPI::getInstance();
-        $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         if (!isset($args["land name"])) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.unsetspawn.should_specify_land_name"));
+            $sender->sendMessage($this->lang_manager->translate("command.unsetspawn.should_specify_land_name"));
             return;
         }
         $land = $this->api->getLandByName($args["land name"]);
         if (!isset($land)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
+            $sender->sendMessage($this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;
         }
         if (!$land->isOwner($sender) && !$sender->hasPermission("cerberus.command.unsetspawn.other")) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.unsetspawn.no_other"));
+            $sender->sendMessage($this->lang_manager->translate("command.unsetspawn.no_other"));
             return;
         }
         if ($land->getSpawnpoint() === null) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.unsetspawn.land_has_no_spawnpoint"));
+            $sender->sendMessage($this->lang_manager->translate("command.unsetspawn.land_has_no_spawnpoint"));
             return;
         }
         $land->unsetSpawnpoint();
         if (!$land->isOwner($sender)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.unsetspawn.success.other", [$land->getName(), implode(", ", $land->getOwnerNames())]));
+            $sender->sendMessage($this->lang_manager->translate("command.unsetspawn.success.other", [$land->getName(), implode(", ", $land->getOwnerNames())]));
         } else {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.unsetspawn.success", [$land->getName()]));
+            $sender->sendMessage($this->lang_manager->translate("command.unsetspawn.success", [$land->getName()]));
         }
     }
 }

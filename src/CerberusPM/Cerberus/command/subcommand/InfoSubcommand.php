@@ -55,23 +55,23 @@ class InfoSubcommand extends BaseSubCommand {
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         if (count($args) < 1) {
             if ($sender instanceof Player) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.should_specify_land_name.player"));
+                $sender->sendMessage($this->lang_manager->translate("command.info.should_specify_land_name.player"));
             } else {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("comamnd.info.should_specify_land_name.console"));
+                $sender->sendMessage($this->lang_manager->translate("comamnd.info.should_specify_land_name.console"));
             }
             return;
         }
         $land = $this->api->getLandByName($args["land name"]);
         if (!isset($land)) {//Landclaim not found
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
+            $sender->sendMessage($this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;
         }
         $creation_date = $land->getFormattedCreationDate();
         if (empty($creation_date)) { //That may happen if format is empty or improperly set
-            $creation_date = $this->lang_manager->translate("command.info.no_info");
+            $creation_date = $this->lang_manager->translate("command.info.no_info", include_prefix: false);
         }
         if (is_null($land->getSpawnpoint())) {
-            $spawn_x = $spawn_y = $spawn_z = $this->lang_manager->translate("command.info.not_set");
+            $spawn_x = $spawn_y = $spawn_z = $this->lang_manager->translate("command.info.not_set", include_prefix: false);
         } else {
             $spawn_x = $land->getSpawnpoint()->getX();
             $spawn_y = $land->getSpawnpoint()->getY();
@@ -82,7 +82,7 @@ class InfoSubcommand extends BaseSubCommand {
             $land->getName(), $land->getCreatorName(), implode(", ", $land->getOwnerNames()), implode(", ", $land->getMemberNames()), $land->getWorldName(), $creation_date,
             $land->getFirstPosition()->getX(), $land->getFirstPosition()->getY(), $land->getFirstPosition()->getZ(),
             $land->getSecondPosition()->getX(), $land->getSecondPosition()->getY(), $land->getSecondPosition()->getZ(),
-            $spawn_x, $spawn_y, $spawn_z, $land->getLength(), $land->getWidth(), $land->getHeight(), $land->getArea(), $land->getVolume()]);
+            $spawn_x, $spawn_y, $spawn_z, $land->getLength(), $land->getWidth(), $land->getHeight(), $land->getArea(), $land->getVolume()], false);
         foreach ($message as $string) {
             $sender->sendMessage($this->config_manager->getPrefix() . $string);
         }

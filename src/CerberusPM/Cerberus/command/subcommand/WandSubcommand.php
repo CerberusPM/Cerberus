@@ -28,21 +28,18 @@ use pocketmine\player\Player;
 use CortexPE\Commando\BaseSubCommand;
 
 use CerberusPM\Cerberus\CerberusAPI;
-use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\Exception\InventoryFullException;
 
 class WandSubcommand extends BaseSubCommand {
 
     private CerberusAPI $api;
-    private ConfigManager $config_manager;
     private LangManager $lang_manager;
 
     protected function prepare(): void {
         $this->setPermission("cerberus.command.wand");
         
         $this->api = CerberusAPI::getInstance();
-        $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
     }
     
@@ -50,12 +47,12 @@ class WandSubcommand extends BaseSubCommand {
         if ($sender instanceof Player) {
             try {
                 $this->api->giveWand($sender);
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.wand.given"));
+                $sender->sendMessage($this->lang_manager->translate("command.wand.given"));
             } catch (InventoryFullException) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.wand.inventory_full"));
+                $sender->sendMessage($this->lang_manager->translate("command.wand.inventory_full"));
             }
         } else
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.in_game"));
+            $sender->sendMessage($this->lang_manager->translate("command.in_game"));
     }
 } 
  

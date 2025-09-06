@@ -59,15 +59,15 @@ class ClaimSubcommand extends BaseSubCommand {
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         //Check if all positions are selected 
         if (!SelectionManager::hasSelectedFirst($sender) && !SelectionManager::hasSelectedSecond($sender)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.select_both_positions"));
+            $sender->sendMessage($this->lang_manager->translate("command.claim.select_both_positions"));
             return;
         }
         elseif (!SelectionManager::hasSelectedFirst($sender)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.select_pos1"));
+            $sender->sendMessage($this->lang_manager->translate("command.claim.select_pos1"));
             return;
         }
         elseif (!SelectionManager::hasSelectedSecond($sender)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.select_pos2"));
+            $sender->sendMessage($this->lang_manager->translate("command.claim.select_pos2"));
             return;
         }
         else {
@@ -76,14 +76,14 @@ class ClaimSubcommand extends BaseSubCommand {
         }
         //Check if positions are located in the same world
         if ($pos1[1] != $pos2[1]) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.world_mismatch"));
+            $sender->sendMessage($this->lang_manager->translate("command.claim.world_mismatch"));
             return;
         } else {
             $world = $pos1[1];
         }
         //Check if land already exists
         if ($this->api->landExists($args["name"])) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.already_exists", [$args["name"]]));
+            $sender->sendMessage($this->lang_manager->translate("command.claim.already_exists", [$args["name"]]));
             return;
         }
         $new_land = new Landclaim($args["name"], $sender, $pos1[0], $pos2[0], $world);
@@ -134,7 +134,7 @@ class ClaimSubcommand extends BaseSubCommand {
                 }
             }
             if (!$no_count_limit && count($this->api->listLandOwnedBy($sender)) >= $count_limit) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.landclaim_count_limit_exceeded", [$count_limit]));
+                $sender->sendMessage($this->lang_manager->translate("command.claim.landclaim_count_limit_exceeded", [$count_limit]));
                 return;
             }
             if ($this->config_manager->get("notify-user-when-count-limit-reached") && !$no_count_limit && count($this->api->listLandOwnedBy($sender)) == $count_limit - 1) {
@@ -142,7 +142,7 @@ class ClaimSubcommand extends BaseSubCommand {
             }
 
             if (!$no_area_limit && $new_land->getArea() > $area_limit) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.landclaim_area_limit_exceeded", [$area_limit, $new_land->getArea()]));
+                $sender->sendMessage($this->lang_manager->translate("command.claim.landclaim_area_limit_exceeded", [$area_limit, $new_land->getArea()]));
                 return;
             }
         }
@@ -158,18 +158,18 @@ class ClaimSubcommand extends BaseSubCommand {
             if (!empty($owned_by_somebody_else)) { //We allow to intersect landclaims owned by command executer themself
                 if (count($owned_by_somebody_else) == 1) { //Intersects only one land. Sending appropriate messages
                     if (!$sender->hasPermission("cerberus.command.claim.bypass_intersect")) {
-                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects", [$owned_by_somebody_else[0]->getName(),
+                        $sender->sendMessage($this->lang_manager->translate("command.claim.intersects", [$owned_by_somebody_else[0]->getName(),
                                                                                                                                               implode(", ", $owned_by_somebody_else[0]->getOwnerNames())]));
                         return;
                     } else {
-                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects.notification", [$owned_by_somebody_else[0]->getName(),
+                        $sender->sendMessage($this->lang_manager->translate("command.claim.intersects.notification", [$owned_by_somebody_else[0]->getName(),
                                                                                                                                                            implode(", ", $owned_by_somebody_else[0]->getOwnerNames())]));
                     }
                 } else { //Intersects multiple landclaims. We should provide command executor a list
                     if (!$sender->hasPermission("cerberus.command.claim.bypass_intersect")) {
-                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects.multiple"));
+                        $sender->sendMessage($this->lang_manager->translate("command.claim.intersects.multiple"));
                         foreach ($owned_by_somebody_else as $index => $land) {
-                            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects.multiple.land_list_item", [strval($index + 1) . ". ", $land->getName(), implode(", ", $land->getOwnerNames())]));
+                            $sender->sendMessage($this->lang_manager->translate("command.claim.intersects.multiple.land_list_item", [strval($index + 1) . ". ", $land->getName(), implode(", ", $land->getOwnerNames())]));
                         }
                         return;
                     } else {
@@ -178,24 +178,24 @@ class ClaimSubcommand extends BaseSubCommand {
                             if ($index + 1 == count($owned_by_somebody_else)) { //Last array item
                                 $trailing_symbol = '';
                             } elseif ($index == count($owned_by_somebody_else) - 2) { //Symbol before last
-                                $trailing_symbol = ' ' . $this->lang_manager->translate("misc.and") . ' ';
+                                $trailing_symbol = ' ' . $this->lang_manager->translate("misc.and, include_prefix: false") . ' ';
                             } else {
                                 $trailing_symbol = ", ";
                             }
-                            $inline_land_list_message .= $this->lang_manager->translate("command.claim.intersects.multiple.inline_land_list_item", [$land->getName(), implode(", ", $land->getOwnerNames())]) . $trailing_symbol;
+                            $inline_land_list_message .= $this->lang_manager->translate("command.claim.intersects.multiple.inline_land_list_item", [$land->getName(), implode(", ", $land->getOwnerNames())], false) . $trailing_symbol;
                         }
-                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.intersects.multiple.notification", [$inline_land_list_message]));
+                        $sender->sendMessage($this->lang_manager->translate("command.claim.intersects.multiple.notification", [$inline_land_list_message]));
                     }
                 }
             }
         }
         if ($show_limit_reach_warning) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.landclaim_count_limit_reached_warning", [$count_limit]));
+            $sender->sendMessage($this->lang_manager->translate("command.claim.landclaim_count_limit_reached_warning", [$count_limit]));
         }
         //Finally create a landclaim
         LandManager::registerLandclaim($new_land);
         SelectionManager::deselectAll($sender);
         
-        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.claim.success", [$args["name"]]));
+        $sender->sendMessage($this->lang_manager->translate("command.claim.success", [$args["name"]]));
     }
 }

@@ -59,26 +59,26 @@ class TeleportSubcommand extends BaseSubCommand {
         if (isset($args["land name"])) {
             $land = $this->api->getLandByName($args["land name"]);
             if (!isset($land)) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
+                $sender->sendMessage($this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
                 return;
             }
             if (!$land->isOwner($sender) && !$sender->hasPermission("cerberus.command.teleport.to.other")) {
                 if (isset($args["player name"])) {
-                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.to.no_other.no_other"));
+                    $sender->sendMessage($this->lang_manager->translate("command.teleport.to.no_other.no_other"));
                 } else {
-                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.to.no_other"));
+                    $sender->sendMessage($this->lang_manager->translate("command.teleport.to.no_other"));
                 }
                 return;
             }
             if ($land->getSpawnpoint() === null) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.land_has_no_spawnpoint", [$args["land name"]]));
+                $sender->sendMessage($this->lang_manager->translate("command.teleport.land_has_no_spawnpoint", [$args["land name"]]));
                 return;
             }
         } else {
             if ($sender instanceof Player) { //Figure out a landclaim where player is standing
                 $landclaims = $this->api->getLandclaimsByPosition($sender->getPosition());
                 if (empty($landclaims)) {
-                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.no_land_at_current_position"));
+                    $sender->sendMessage($this->lang_manager->translate("command.teleport.no_land_at_current_position"));
                     return;
                 }
                 if (count($landclaims) > 1) {
@@ -97,12 +97,12 @@ class TeleportSubcommand extends BaseSubCommand {
                     if (count($landclaims_avail_for_tp) == 1)
                         $land = $landclaims_avail_for_tp[0];
                     else if (count($landclaims_avail_for_tp) < 1) {
-                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.multiple_unsuitable_land_at_current_pos"));
+                        $sender->sendMessage($this->lang_manager->translate("command.teleport.multiple_unsuitable_land_at_current_pos"));
                         return;
                     } else {
-                        $message = $this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.multiple_suitable_land_at_current_pos");
+                        $message = $this->lang_manager->translate("command.teleport.multiple_suitable_land_at_current_pos");
                         if ($sender->hasPermission("cerberus.command.here")) {
-                            $message .= ' ' . $this->lang_manager->translate("command.teleport.multiple_suitable_land_at_current_pos.here_ad");
+                            $message .= ' ' . $this->lang_manager->translate("command.teleport.multiple_suitable_land_at_current_pos.here_ad", include_prefix: false);
                         }
                         $sender->sendMessage($message);
                         return;
@@ -110,17 +110,17 @@ class TeleportSubcommand extends BaseSubCommand {
                 }
                 if (count($landclaims) == 1) {
                     if (!$landclaims[0]->isOwner($sender) && !$sender->hasPermission("cerberus.command.teleport.to.other")) {
-                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.to_here.no_other"));
+                        $sender->sendMessage($this->lang_manager->translate("command.teleport.to_here.no_other"));
                         return;
                     }
                     $land = $landclaims[0];
                     if ($land->getSpawnpoint() === null) {
-                        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.land_here_has_no_spawnpoint", [$land->getName()]));
+                        $sender->sendMessage($this->lang_manager->translate("command.teleport.land_here_has_no_spawnpoint", [$land->getName()]));
                         return;
                     }
                 }
             } else {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.should_specify_land_name"));
+                $sender->sendMessage($this->lang_manager->translate("command.teleport.should_specify_land_name"));
                 return;
             }
         }
@@ -128,18 +128,18 @@ class TeleportSubcommand extends BaseSubCommand {
         if (isset($args["player name"])) {
             $player = $this->getOwningPlugin()->getServer()->getPlayerByPrefix($args["player name"]);
             if (!$sender->hasPermission("cerberus.command.teleport.other") && !(isset($player) && $player->getName() == $sender->getName())) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.no_other"));
+                $sender->sendMessage($this->lang_manager->translate("command.teleport.no_other"));
                 return;
             }
             if (!isset($player)) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.player_not_found", [$args["player name"]]));
+                $sender->sendMessage($this->lang_manager->translate("command.player_not_found", [$args["player name"]]));
                 return;
             }
         } else {
             if ($sender instanceof Player) {
                 $player = $sender;
             } else {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.must_be_player"));
+                $sender->sendMessage($this->lang_manager->translate("command.teleport.must_be_player"));
                 return;
             }
         }
@@ -147,13 +147,13 @@ class TeleportSubcommand extends BaseSubCommand {
         $player->teleport(Position::fromObject($land->getSpawnpoint(), $this->getOwningPlugin()->getServer()->getWorldManager()->getWorldByName($land->getWorldName())));
         if (isset($args["player name"])) {
             if ($player->getName() != $sender->getName()) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.success.other", [$player->getName(), $land->getName()]));
+                $sender->sendMessage($this->lang_manager->translate("command.teleport.success.other", [$player->getName(), $land->getName()]));
             }
             if ($this->config_manager->get("notify-player-on-teleportation") || $player->getName() == $sender->getName()) {
-                $player->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.success", [$land->getName()]));
+                $player->sendMessage($this->lang_manager->translate("command.teleport.success", [$land->getName()]));
             }
         } else {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.teleport.success", [$land->getName()]));
+            $sender->sendMessage($this->lang_manager->translate("command.teleport.success", [$land->getName()]));
         }
     }
 } 

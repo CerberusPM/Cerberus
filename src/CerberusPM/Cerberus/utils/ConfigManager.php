@@ -135,7 +135,7 @@ class ConfigManager {
         $this->settings = $config->getAll();
         
         if ($conf_updated) //We can use LangManager only after settings are loaded
-            $this->plugin->getLogger()->warning(LangManager::getInstance()->translate("plugin.outdated_config", ["$existing_conf_path.old"])); //Notify user
+            $this->plugin->getLogger()->warning(LangManager::getInstance()->translate("plugin.outdated_config", ["$existing_conf_path.old"], false)); //Notify user
         //TODO: Make the config retain settings after update
     }
     

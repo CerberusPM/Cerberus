@@ -65,10 +65,10 @@ class WandSelectionListener implements Listener {
             
             if ($event->getAction() === PlayerInteractEvent::LEFT_CLICK_BLOCK) { // start break
                 SelectionManager::selectFirstPosition($player, $position);
-                $player->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos1.selected", [$position->getX(), $position->getY(), $position->getZ()]));
+                $player->sendMessage($this->lang_manager->translate("command.pos1.selected", [$position->getX(), $position->getY(), $position->getZ()]));
             } else if ($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK) { // use
                 SelectionManager::selectSecondPosition($player, $position);
-                $player->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos2.selected", [$position->getX(), $position->getY(), $position->getZ()]));
+                $player->sendMessage($this->lang_manager->translate("command.pos2.selected", [$position->getX(), $position->getY(), $position->getZ()]));
             }
         }
     }
