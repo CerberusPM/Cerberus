@@ -27,7 +27,6 @@ use pocketmine\command\CommandSender;
 use CortexPE\Commando\BaseSubCommand;
 
 use CerberusPM\Cerberus\Cerberus;
-use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 
 class HelpSubcommand extends BaseSubCommand {

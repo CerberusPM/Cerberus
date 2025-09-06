@@ -28,48 +28,57 @@ use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\CerberusAPI;
-use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\ConfigManager;
 
-class UnsetspawnSubcommand extends BaseSubCommand {
-
+class AddOwnerSubcommand extends BaseSubCommand {
+        
     private CerberusAPI $api;
-    private ConfigManager $config_manager;
     private LangManager $lang_manager;
-
+    private ConfigManager $config_manager;
+    
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name", true));
+        $this->registerArgument(1, new RawStringArgument("player name", true));
         
-        $this->setPermission("cerberus.command.unsetspawn");
+        $this->setPermission("cerberus.command.addowner");
         
         $this->api = CerberusAPI::getInstance();
-        $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
+        $this->config_manager = ConfigManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
+        // Check if args are set
         if (!isset($args["land name"])) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.unsetspawn.should_specify_land_name"));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.should_specify_land_name"));
+            return;
+        }
+        if (!isset($args["player name"])) {
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.should_specify_player"));
             return;
         }
         $land = $this->api->getLandByName($args["land name"]);
-        if (!isset($land)) {
+        if (is_null($land)) {
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;
         }
-        if (!$land->isOwner($sender) && !$sender->hasPermission("cerberus.command.unsetspawn.other")) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.unsetspawn.no_other"));
+        // Check ownership
+        if (!$land->isOwner($sender) && !$sender->hasPermission("cerberus.command.addowner.other")) {
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.addowner.no_other"));
             return;
         }
-        if ($land->getSpawnpoint() === null) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.unsetspawn.land_has_no_spawnpoint"));
-            return;
+        // Get the player
+        $player = $this->getOwningPlugin()->getServer()->getPlayerByPrefix($args["player name"]);
+        if (!isset($player)) {
+            $player = $this->api->getOwningPlugin()->getServer()->getOfflinePlayer($args["player name"]);
         }
-        $land->unsetSpawnpoint();
-        if (!$land->isOwner($sender)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.unsetspawn.success.other", [$land->getName(), implode(", ", $land->getOwnerNames())]));
-        } else {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.unsetspawn.success", [$land->getName()]));
+        // Add the player
+        if (!$land->addOwner($player)) {
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.player_not_found", [$args["player name"]]));
+                return;
         }
+        $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.addowner.success", [$player->getDisplayName()]));
     }
 }
+ 

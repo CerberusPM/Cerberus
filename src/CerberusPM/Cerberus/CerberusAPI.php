@@ -44,9 +44,10 @@ use CerberusPM\Cerberus\exception\LandExistsException;
 use CerberusPM\Cerberus\exception\LandIntersectException;
 
 use function is_array;
+use function in_array;
 use function is_null;
 use function array_push;
-use function strtolower;
+use function implode;
 
 /**
  * An API class which provides all necessary land management methods used by subcommands
@@ -125,31 +126,38 @@ class CerberusAPI {
         //Construct the wand item
         $wand_id = $this->config_manager->get("wand-item");
         $wand_item = StringToItemParser::getInstance()->parse($wand_id) ?? LegacyStringToItemParser::getInstance()->parse($wand_id);
-        if ($wand_item instanceof Durable)
+        if ($wand_item instanceof Durable) {
             $wand_item->setUnbreakable(true);
+        }
         // Set custom name
-        if ($this->config_manager->get("wand-use-default-name"))
-            $wand_name = $this->language_manager->translate("wand.name"); // LangManager returns already colorized string
-        else
-            $wand_name = $this->config_manager->get("wand-name", false); // Don't use the value from default config as the one from language file will be used
-        if (!empty($wand_name))
+        if ($this->config_manager->get("wand-use-default-name")) {
+            $wand_name = $this->language_manager->translate("wand.name");
+        } // LangManager returns already colorized string
+        else {
+            $wand_name = $this->config_manager->get("wand-name", false);
+        } // Don't use the value from default config as the one from language file will be used
+        if (!empty($wand_name)) {
             $wand_item->setCustomName(TextFormat::colorize($wand_name));
-        else //Looks like name option is left blank. Applying the default name
+        } else { //Looks like name option is left blank. Applying the default name
             $wand_item->setCustomName($this->language_manager->translate("wand.name"));
+        }
         // Set lore
         $lore_already_colorized = false;
         if ($this->config_manager->get("wand-use-default-lore")) {
             $wand_lore = $this->language_manager->translate("wand.lore");
             $lore_already_colorized = true;
-        } else
+        } else {
             $wand_lore = $this->config_manager->get("wand-lore", false);
-        
+        }
+
         if (!empty($wand_lore)) {
-            if (!is_array($wand_lore)) // If lore is string, convert to array with one element since Item->setLore() requieres an array of strings
+            if (!is_array($wand_lore)) { // If lore is string, convert to array with one element since Item->setLore() requieres an array of strings
                 $wand_lore = array($wand_lore);
+            }
             if (!$lore_already_colorized) {
-                foreach ($wand_lore as &$lore_string)
+                foreach ($wand_lore as &$lore_string) {
                     $lore_string = TextFormat::colorize($lore_string);
+                }
                 unset($lore_string);
             }
             $wand_item->setLore($wand_lore);
@@ -191,8 +199,9 @@ class CerberusAPI {
     public function isWand(Item $item): bool {
         if ($item->hasNamedTag()) {
             $wand_tag = $item->getNamedTag()->getCompoundTag(self::TAG_CERBERUS)->getTag(self::TAG_WAND);
-            if (isset($wand_tag) && $wand_tag->getValue() == 1)
+            if (isset($wand_tag) && $wand_tag->getValue() == 1) {
                 return true;
+            }
         }
         return false;
     }
@@ -201,7 +210,7 @@ class CerberusAPI {
      * Create a landclaim
      * 
      * @param string  $land_name              Name of the landclaim (should be unique)
-     * @param string  $land_owner             Landclaim owner name (who this landclaim will belong to)
+     * @param Player  $land_creator           Landclaim creator
      * @param Vector3 $pos1                   First position of the landclaim
      * @param Vector3 $pos2                   Second position of the landclaim
      * @param string  $world_name             Folder name of the world, where the landclaim will be created
@@ -210,14 +219,18 @@ class CerberusAPI {
      * @throws LandExistsException    if a landclaim with given $land_name already exists
      * @throws LandIntersectException if intersection check is performed and resulting landclaim intersects a landclaim of another owner
      */
-    public function createLand(string $land_name, string $land_owner, Vector3 $pos1, Vector3 $pos2, string $world_name, bool $check_for_intersection=true): void {
-        if ($this->landExists($land_name))
+    public function createLand(string $land_name, Player $land_creator, Vector3 $pos1, Vector3 $pos2, string $world_name, bool $check_for_intersection=true): void {
+        if ($this->landExists($land_name)) {
             Throw new LandExistsException("Landclaim named $land_name already exists!");
-        $land = new Landclaim($land_name, $land_owner, $pos1, $pos2, $world_name);
+        }
+        $land = new Landclaim($land_name, $land_creator, $pos1, $pos2, $world_name);
         if ($check_for_intersection) {
             $intersecting_land = $this->getIntersectingLand($land);
-            if (!is_null($intersecting_land) && $land->getOwner() != $intersecting_land->getOwner())
-                Throw new LandIntersectException("Resulting landclaim intersects landclaim" . $intersecting_land->getName() . " owned by " . $intersecting_land->getOwner(), 0, null, $land, $intersecting_land);
+            if (!is_null($intersecting_land) && !$intersecting_land->isOwner($land_creator)) {
+                Throw new LandIntersectException("Resulting landclaim intersects landclaim" 
+                        . $intersecting_land->getName() . " owned by " 
+                        . implode(", ", $intersecting_land->getOwnerNames()), 0, null, $land, $intersecting_land);
+            }
         }
         LandManager::registerLandclaim($land);
     }
@@ -244,8 +257,9 @@ class CerberusAPI {
         foreach(LandManager::getLandclaims() as $land) {
             if ($land->containsPosition($position)) {
                 array_push($landclaims, $land);
-                if ($stop_on_first_occurance)
+                if ($stop_on_first_occurance) {
                     break;
+                }
             }
         }
         return $landclaims;
@@ -259,10 +273,11 @@ class CerberusAPI {
      * @return Landclaim|null Landclaim if exists, null if doesn't exist
      */
     public function getLandByName(string $land_name): Landclaim|null {
-        if (LandManager::exists($land_name))
+        if (LandManager::exists($land_name)) {
             return LandManager::getLandclaims()[$land_name];
-        else
+        } else {
             return null;
+        }
     }
     
     /**
@@ -289,8 +304,9 @@ class CerberusAPI {
         foreach(LandManager::getLandclaims() as $land2) {
             if ($land->intersectsLandclaim($land2)) {
                 array_push($landclaims, $land2);
-                if ($stop_on_first_occurance)
+                if ($stop_on_first_occurance) {
                     break;
+                }
             }
         }
         return $landclaims;
@@ -299,16 +315,16 @@ class CerberusAPI {
     /**
      * Get an array of landclaims owned by specified owner
      * 
-     * @param string $land_owner Exact name of whose landclaim list has to be returned
+     * @param Player $player Whose landclaim list has to be returned
      * 
      * @return Landclaim[] Array of landclaims owned by specified owner. Empty array if has no landclaims
      */
-    public function listLandOwnedBy(string $land_owner): array {
+    public function listLandOwnedBy(Player $player): array {
         $landclaims = array();
-        $land_owner = strtolower($land_owner);
         foreach(LandManager::getLandclaims() as $land) {
-            if (strtolower($land->getOwner()) == $land_owner)
+            if ($land->isOwner($player)) {
                 array_push($landclaims, $land);
+            }
         }
         return $landclaims;
     }

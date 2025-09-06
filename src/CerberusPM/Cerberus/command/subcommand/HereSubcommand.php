@@ -31,7 +31,6 @@ use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 
-use function is_null;
 use function count;
 use function strval;
 
@@ -51,7 +50,7 @@ class HereSubcommand extends BaseSubCommand {
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         if (!$sender instanceof Player) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.in-game"));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.in_game"));
             return;
         }
         
@@ -62,18 +61,19 @@ class HereSubcommand extends BaseSubCommand {
         $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.current_position", [$current_position->getX(),
                                                                                                                                    $current_position->getY(),
                                                                                                                                    $current_position->getZ()]));
-        if (!empty($landclaims)) {
+                                                                                                                       if (!empty($landclaims)) {
             if (count($landclaims) == 1) {
-                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.land_here", [$landclaims[0]->getName(), $landclaims[0]->getOwner()]));
+                $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.land_here", [$landclaims[0]->getName(), implode(", ", $landclaims[0]->getOwnerNames())]));
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
             } else {
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.multiple.land_here"));
-                foreach ($landclaims as $index => $land)
-                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.multiple.land_list_item", [strval($index+1) . '. ', $land->getName(), $land->getOwner()]));
+                foreach ($landclaims as $index => $land) {
+                    $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.multiple.land_list_item", [strval($index + 1) . '. ', $land->getName(), implode(", ", $land->getOwnerNames())]));
+                }
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.general"));
             }
-        }
-        else
+        } else {
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.here.no_land_here"));
+        }
     }
 } 

@@ -21,6 +21,7 @@
 namespace CerberusPM\Cerberus\utils;
 
 use pocketmine\world\Position;
+use pocketmine\player\Player;
 
 use function array_key_exists;
 
@@ -38,48 +39,50 @@ class SelectionManager {
     /**
      * Select the first position
      * 
-     * @param string   $selector Exact name of who selects the position
+     * @param Player   $selector Who selects the position
      * @param Position $position Position in the world to be set as the first position
      * 
      */
-    public static function selectFirstPosition(string $selector, Position $position): void {
-        self::$selectingFirstPosition[$selector] = [$position->floor(), $position->getWorld()->getFolderName()];
+    public static function selectFirstPosition(Player $selector, Position $position): void {
+        $uuid = $selector->getUniqueId()->toString();
+        self::$selectingFirstPosition[$uuid] = [$position->floor(), $position->getWorld()->getFolderName()];
     }
     
     /**
      * Select the second position
      * 
-     * @param string   $selector Exact name of who selects the position
+     * @param Player   $selector Who selects the position
      * @param Position $position Position in the world to be set as the second position
      */
-    public static function selectSecondPosition(string $selector, Position $position): void {
-        self::$selectingSecondPosition[$selector] = [$position->floor(), $position->getWorld()->getFolderName()];
+    public static function selectSecondPosition(Player $selector, Position $position): void {
+        $uuid = $selector->getUniqueId()->toString();
+        self::$selectingSecondPosition[$uuid] = [$position->floor(), $position->getWorld()->getFolderName()];
     }
     
     /**
      * Unset previously selected first position
      * 
-     * @param string $selector Exact name of whose first position selection has to be unset
+     * @param Player $selector Whose first position selection has to be unset
      */
-    public static function deselectFirstPosition(string $selector): void {
-        unset(self::$selectingFirstPosition[$selector]);
+    public static function deselectFirstPosition(Player $selector): void {
+        unset(self::$selectingFirstPosition[$selector->getUniqueId()->toString()]);
     }
     
     /**
      * Unset previously selected second position
      * 
-     * @param string $selector Exact name of whose first position selection has to be unset
+     * @param Player $selector Whose first position selection has to be unset
      */
-    public static function deselectSecondPosition(string $selector): void {
-        unset(self::$selectingSecondPosition[$selector]);
+    public static function deselectSecondPosition(Player $selector): void {
+        unset(self::$selectingSecondPosition[$selector->getUniqueId()->toString()]);
     }
     
     /**
      * Unset all selected positions of $selector
      * 
-     * @param string $selector Exact name of whose first and seconf position selection has to be cleared
+     * @param Player $selector Whose first and seconf position selection has to be cleared
      */
-    public static function deselectAll(string $selector): void {
+    public static function deselectAll(Player $selector): void {
         self::deselectFirstPosition($selector);
         self::deselectSecondPosition($selector);
     }
@@ -87,62 +90,67 @@ class SelectionManager {
     /**
      * Check by name if has selected any positions
      * 
-     * @param string $selector Exact name of whose presence of any position selection has to be checked 
+     * @param Player $selector Whose presence of any position selection has to be checked 
      * 
      * @return bool True if any position has been selected by the given name, false if not
      */
-    public static function hasSelected(string $selector): bool {
-        return array_key_exists($selector, self::$selectingFirstPosition) || array_key_exists($selector, self::selectingSecondPosition);
+    public static function hasSelected(Player $selector): bool {
+        $uuid = $selector->getUniqueId()->toString();
+        return self::hasSelectedFirst($selector) || self::hasSelectedSecond($selector);
     }
     
     /**
      * Check by name if has selected first position
      * 
-     * @param string $selector Exact name of whose first position selection has to be checked
+     * @param Player $selector Whose first position selection has to be checked
      * 
      * @return bool True if first position has been selected, false if not.
      */
-    public static function hasSelectedFirst(string $selector): bool {
-        return array_key_exists($selector, self::$selectingFirstPosition);
+    public static function hasSelectedFirst(Player $selector): bool {
+        return array_key_exists($selector->getUniqueId()->toString(), self::$selectingFirstPosition);
     }
     
     /**
      * Check by name if has selected second position
      * 
-     * @param string $selector Exact name of whose second position selection has to be checked
+     * @param Player $selector Exact name of whose second position selection has to be checked
      * 
      * @return bool True if second position has been selected, false if not.
      */
-    public static function hasSelectedSecond(string $selector): bool {
-        return array_key_exists($selector, self::$selectingSecondPosition);
+    public static function hasSelectedSecond(Player $selector): bool {
+        return array_key_exists($selector->getUniqueId()->toString(), self::$selectingSecondPosition);
     }
     
     /**
      * Get the first position selected by $selector
      * 
-     * @param string $selector Exact name of whose first selection position is to be get
+     * @param Player $selector Exact name of whose first selection position is to be get
      * 
      * @return Position|null Returns pocketmine\World\Position or null if position is not selected
      */
-    public static function getSelectedFirstPosition(string $selector): array | null {
-        if (array_key_exists($selector, self::$selectingFirstPosition))
-            return self::$selectingFirstPosition[$selector];
-        else
+    public static function getSelectedFirstPosition(Player $selector): array | null {
+        $uuid = $selector->getUniqueId()->toString();
+        if (array_key_exists($uuid, self::$selectingFirstPosition)) {
+            return self::$selectingFirstPosition[$uuid];
+        } else {
             return null;
+        }
     }
     
     /**
      * Get the second position selected by $selector
      * 
-     * @param string $selector Exact name of whose second selection position is to be get
+     * @param Player $selector Exact name of whose second selection position is to be get
      * 
      * @return Position|null Returns pocketmine\World\Position or null if position is not selected
      */
-    public static function getSelectedSecondPosition(string $selector): array | null {
-        if (array_key_exists($selector, self::$selectingSecondPosition))
-            return self::$selectingSecondPosition[$selector];
-        else
+    public static function getSelectedSecondPosition(Player $selector): array | null {
+        $uuid = $selector->getUniqueId()->toString();
+        if (array_key_exists($uuid, self::$selectingSecondPosition)) {
+            return self::$selectingSecondPosition[$uuid];
+        } else {
             return null;
+        }
     }
     
 }

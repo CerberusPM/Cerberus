@@ -40,6 +40,30 @@ permissions:
   cerberus.command.list.other:
     description: Permission to enlist landclaims owned by other players with /cerberus list <name>
     default: op
+  cerberus.command.addmember:
+    description: Permission for /cerberus addmember
+    default: op
+  cerberus.command.addmember.other:
+    description: Permission to add members to landclaims owned by other players
+    default: op
+  cerberus.command.addowner:
+    description: Permission for /cerberus addowner
+    default: op
+  cerberus.command.addowner.other:
+    description: Permission to add owners to landclaims owned by other players
+    default: op
+  cerberus.command.removemember:
+    description: Permission for /cerberus removemember
+    default: op
+  cerberus.command.removemember.other:
+    description: Permission to remove members from landclaims owned by other players
+    default: op
+  cerberus.command.removeowner:
+    description: Permission for /cerberus removeowner
+    default: op
+  cerberus.command.removeowner.other:
+    description: Permission to remove owners from landclaims owned by other players
+    default: op
   cerberus.command.move:
     description: Permission for /cerberus move
     default: op
@@ -74,9 +98,6 @@ permissions:
     default: op
   cerberus.command.wand:
     description: Permission for /cerberus wand
-    default: op
-  cerberus.command.whitelist:
-    description: Permission for /cerberus whitelist
     default: op
   cerberus.command.reload:
     description: Permission for /cerberus reload

@@ -20,12 +20,14 @@
 
 declare(strict_types=1);
 
-namespace CerberusPM\Cerberus;
+namespace CerberusPM\Cerberus\listeners;
 
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\block\BlockBreakEvent;
 
+use CerberusPM\Cerberus\Cerberus;
+use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\SelectionManager;
@@ -33,7 +35,7 @@ use CerberusPM\Cerberus\utils\SelectionManager;
 /**
  * Main event listener used for wand position selection
  */
-class EventListener implements Listener {
+class WandSelectionListener implements Listener {
     private Cerberus $plugin;
     private CerberusAPI $api;
     private ConfigManager $config_manager;
@@ -62,10 +64,10 @@ class EventListener implements Listener {
             $position = $event->getBlock()->getPosition();
             
             if ($event->getAction() === PlayerInteractEvent::LEFT_CLICK_BLOCK) { // start break
-                SelectionManager::selectFirstPosition($player->getName(), $position);
+                SelectionManager::selectFirstPosition($player, $position);
                 $player->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos1.selected", [$position->getX(), $position->getY(), $position->getZ()]));
             } else if ($event->getAction() === PlayerInteractEvent::RIGHT_CLICK_BLOCK) { // use
-                SelectionManager::selectSecondPosition($player->getName(), $position);
+                SelectionManager::selectSecondPosition($player, $position);
                 $player->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.pos2.selected", [$position->getX(), $position->getY(), $position->getZ()]));
             }
         }
@@ -78,7 +80,8 @@ class EventListener implements Listener {
      * @param BlockBreakEvent $event
      */
     public function onBreak(BlockBreakEvent $event): void {
-        if ($event->getPlayer()->hasPermission("cerberus.command.selection") && $this->api->isWand($event->getItem()))
+        if ($event->getPlayer()->hasPermission("cerberus.command.selection") && $this->api->isWand($event->getItem())) {
             $event->cancel();
+        }
     }
 }

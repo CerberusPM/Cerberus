@@ -51,7 +51,7 @@ class ListSubcommand extends BaseSubCommand {
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         if (count($args) == 0) { //Checking landclaims of sender
-            $landclaims = $this->api->listLandOwnedBy($sender->getName());
+            $landclaims = $this->api->listLandOwnedBy($sender);
             if (empty($landclaims)) {
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.none"));
                 return;
@@ -63,10 +63,11 @@ class ListSubcommand extends BaseSubCommand {
             }
             $landclaim_list_message = "";
             foreach($landclaims as $index => $land) {
-                if ($index < count($landclaims) - 1) // Add a comma at the end if not the last
+                if ($index < count($landclaims) - 1) { // Add a comma at the end if not the last
                     $landclaim_list_message .= $land->getName() . ', ';
-                else
+                } else {
                     $landclaim_list_message .= $land->getName();
+                }
             }
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.land_list", [count($landclaims), $landclaim_list_message]));
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.general"));
@@ -75,18 +76,19 @@ class ListSubcommand extends BaseSubCommand {
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.no_other"));
                 return;
             }
-            $landclaims = $this->api->listLandOwnedBy($args["player name"]);
+            $online_player_name = $this->getOwningPlugin()->getServer()->getPlayerByPrefix($args["player name"]);
             if (empty($landclaims)) {
                 //Try to find an online player with name by prefix
-                $online_player_name = $this->getOwningPlugin()->getServer()->getPlayerByPrefix($args["player name"]);
-                if (isset($online_player_name))
+                $landclaims = $this->api->listLandOwnedBy($this->api->getOwningPlugin()->getServer()->getOfflinePlayer($args["player name"]));
+                if (isset($online_player_name)) {
                     $landclaims = $this->api->listLandOwnedBy($online_player_name->getName());
+                }
                 if (empty($landclaims)) {
                     $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.none", [$args["player name"]]));
                     return;
                 }
             }
-            $owner_name = $landclaims[0]->getOwner(); //We might have retreived land name which has improper case or is unfinished (since we may get player name by prefix). It's better to display the accurate land owner name. That might as well help player to tell if landclaim list of the wrong player was retreived
+            $owner_name = implode(", ", $landclaims[0]->getOwnerNames()); //We might have retreived land name which has improper case or is unfinished (since we may get player name by prefix). It's better to display the accurate land owner name. That might as well help player to tell if landclaim list of the wrong player was retreived
             if (count($landclaims) == 1) {
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other.one_land", [$owner_name, $landclaims[0]->getName()]));
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.specific", [$landclaims[0]->getName()]));
@@ -94,10 +96,11 @@ class ListSubcommand extends BaseSubCommand {
             }
             $landclaim_list_message = "";
             foreach($landclaims as $index => $land) {
-                if ($index < count($landclaims) - 1) // Add a comma at the end if not the last
+                if ($index < count($landclaims) - 1) { // Add a comma at the end if not the last
                     $landclaim_list_message .= $land->getName() . ', ';
-                else
+                } else {
                     $landclaim_list_message .= $land->getName();
+                }
             }
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.list.other", [$owner_name, count($landclaims), $landclaim_list_message]));
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.advertisement.general"));

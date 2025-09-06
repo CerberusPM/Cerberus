@@ -28,7 +28,11 @@ use DateTimeZone;
 use pocketmine\utils\Timezone;
 use pocketmine\world\Position;
 use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\player\OfflinePlayer;
+use Ramsey\Uuid\UuidInterface;
 
+use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\ConfigManager;
 
 use function min;
@@ -36,19 +40,28 @@ use function max;
 use function time;
 use function strval;
 use function is_null;
+use function in_array;
+use function array_push;
+use function array_map;
 
 class Landclaim {
     protected string $name;
-    protected string $owner;
+    protected UuidInterface $creator;
+    protected $owners = [];
+    protected $members = [];
     protected Vector3 $pos1;
     protected Vector3 $pos2;
     protected string $world_name;
     protected Vector3 $spawn_point;
     protected int $creation_timestamp;
-    
-    public function __construct(string $name, string $owner, Vector3 $pos1, Vector3 $pos2, string $world_name) {
+
+    private CerberusAPI $api;
+
+    public function __construct(string $name, Player $player, Vector3 $pos1, Vector3 $pos2, string $world_name) {
+        $this->api = CerberusAPI::getInstance();
         $this->name = $name;
-        $this->owner = $owner;
+        $this->creator = $player->getUniqueId();
+        $this->addOwner($player); // The initial creator can then remove themselves from the list
         //Optimize positions for containsPosition() calculation speed boost
         $this->pos1 = Vector3::minComponents($pos1, $pos2);
         $this->pos2 = Vector3::maxComponents($pos1, $pos2);
@@ -64,10 +77,17 @@ class Landclaim {
     }
     
     /**
-     * @return string Lanclaim owner
+     * @return string Lanclaim creator name
      */
-    public function getOwner(): string {
-        return $this->owner;
+    public function getCreatorName(): string {
+        return $this->api->getOwningPlugin()->getServer()->getPlayerByUUID($this->creator)->getDisplayName();
+    }
+
+    /**
+     * @return UuidInterface Lanclaim creator UUID
+     */
+    public function getCreatorUuid(): UuidInterface {
+        return $this->creator;
     }
     
     /**
@@ -95,9 +115,46 @@ class Landclaim {
      * @return Vector3|null Vector3 of spawnpoint coordinates if they are set and null if they aren't
      */
     public function getSpawnpoint(): Vector3|null {
-        if (!isset($this->spawn_point))
+        if (!isset($this->spawn_point)) {
             return null;
+        }
         return $this->spawn_point;
+    }
+
+    /**
+     * Get array of players with owner permissions
+     *
+     * @return UuidInterface[] array of UUIDS of players with owner permissions
+     */
+    public function getOwnerUuids(): array {
+        return $this->owners;
+    }
+
+    /**
+     * Get array of players with member permissions
+     *
+     * @return UuidInterface[] Array of UUIDS of players with owner permissions
+     */
+    public function getMemberUuids(): array {
+        return $this->members;
+    }
+
+    /**
+     * Get array of players with owner permissions
+     *
+     * @return string[] Array of names of players with owner permissions
+     */
+    public function getOwnerNames(): array {
+        return array_map(fn($pl) => $this->api->getOwningPlugin()->getServer()->getPlayerByUUID($pl)->getDisplayName(), $this->owners);
+    }
+
+    /**
+     * Get array of players with member permissions
+     *
+     * @return string[] Array of names of players with member permissions
+     */
+    public function getMemberNames(): array {
+        return array_map(fn($pl) => $this->api->getOwningPlugin()->getServer()->getPlayerByUUID($pl)->getDisplayName(), $this->members);
     }
     
     /**
@@ -113,7 +170,73 @@ class Landclaim {
     public function unsetSpawnpoint(): void {
         unset($this->spawn_point);
     }
+
+    /**
+     * Add player to owner list
+     * 
+     * @param Player player A player to add
+     */
+    public function addOwner(Player|OfflinePlayer $player): bool {
+        if (!isset($player) || ($player instanceof OfflinePlayer && !$player->hasPlayedBefore())) {
+            return false;
+        }
+        array_push($this->owners, $player->getUniqueId());
+        return true;
+    }
+
+    /**
+     * Add player to member list
+     * 
+     * @param Player player A player to add
+     */
+    public function addMember(Player|OfflinePlayer $player): bool {
+        if (!isset($player) || ($player instanceof OfflinePlayer && !$player->hasPlayedBefore())) {
+            return false;
+        }
+        array_push($this->members, $player->getUniqueId());
+        return true;
+    }
     
+     /**
+     * Remove player from the owner list
+     * 
+     * @param Player player A player to remove
+     */
+    public function removeOwner(Player $player): void {
+        if (($key = array_search($player->getUniqueId(), $this->owners)) !== false) {
+            unset($this->owners[$key]);
+        }
+    }
+
+    /**
+     * Remove player from the member list
+     * 
+     * @param Player player A player to remove
+     */
+    public function removeMember(Player $player): void {
+        if (($key = array_search($player->getUniqueId(), $this->members)) !== false) {
+            unset($this->members[$key]);
+        }
+    }
+    
+    /**
+     * Check if player is owner
+     * 
+     * @param Player player A player to check for ownership permission
+     */
+    public function isOwner(Player $player): bool {
+        return in_array($player->getUniqueId(), $this->owners);
+    }
+    
+     /**
+     * Check if player is member
+     * 
+     * @param Player player A player to check for membership
+     */
+    public function isMember(Player $player): bool {
+        return in_array($player->getUniqueId(), $this->members);
+    }
+
     /**
      * Check whether landclaim contains a position
      * 
@@ -128,8 +251,9 @@ class Landclaim {
                 $pos->getY() >= $this->getFirstPosition()->getY() &&
                 $pos->getFloorY() <= $this->getSecondPosition()->getY() &&
                 $pos->getZ() >= $this->getFirstPosition()->getZ() &&
-                $pos->getFloorZ() <= $this->getSecondPosition()->getZ())
+                $pos->getFloorZ() <= $this->getSecondPosition()->getZ()) {
             return true;
+        }
         return false;
     }
     
@@ -147,8 +271,9 @@ class Landclaim {
                 $target->getFirstPosition()->getY() <= $this->getSecondPosition()->getY() &&
                 $target->getSecondPosition()->getY() >= $this->getFirstPosition()->getY() &&
                 $target->getFirstPosition()->getZ() <= $this->getSecondPosition()->getZ() &&
-                $target->getSecondPosition()->getZ() >= $this->getFirstPosition()->getZ())
+                $target->getSecondPosition()->getZ() >= $this->getFirstPosition()->getZ()) {
             return true;
+        }
         return false;
     }
     
@@ -212,16 +337,18 @@ class Landclaim {
      */
     public function getFormattedCreationDate(string $format=null, string $timezone=null): string {
         $timestamp = $this->getCreationTimestamp();
-        if (is_null($format))
+        if (is_null($format)) {
             $format = ConfigManager::getInstance()->get("date-format") ?? "Y-m-d H:i:s";
+        }
         if (is_null($timezone)) {
             $timezone = ConfigManager::getInstance()->get("default-timezone"); //Try to get timezone from the config
-            if (empty($timezone)) //Figure out server time zone if it's not set
-                $timezone = Timezone::detectSystemTimezone(); // Not always accurate. Returned Africa/Juba for me, which is UTC+2, though I had UTC+3 set on my system
+            if (empty($timezone)) { //Figure out server time zone if it's not set
+                $timezone = Timezone::detectSystemTimezone();
+            } // Not always accurate. Returned Africa/Juba for me, which is UTC+2, though I had UTC+3 set on my system
         }
         $datetime = new DateTime('@' . strval($timestamp), new DateTimeZone('UTC')); //Timestamp is stored in UTC to make timezone conversion easier
-        $timezone = new DateTimeZone($timezone);
-        $datetime->setTimeZone($timezone);
+        $tz = new DateTimeZone($timezone);
+        $datetime->setTimeZone($tz);
         return $datetime->format($format);
     }
 }

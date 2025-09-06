@@ -23,8 +23,6 @@ declare(strict_types=1);
 namespace CerberusPM\Cerberus;
 
 use pocketmine\plugin\PluginBase;
-use pocketmine\command\Command;
-
 use CortexPE\Commando\PacketHooker;
 
 use CerberusPM\Cerberus\command\CerberusCommand;
@@ -32,7 +30,8 @@ use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 
-use CerberusPM\Cerberus\events\BlockBreakLandEvent;
+use CerberusPM\Cerberus\listeners\WandSelectionListener;
+use CerberusPM\Cerberus\listeners\BlockBreakListener;
 
 class Cerberus extends PluginBase {
     
@@ -61,7 +60,8 @@ class Cerberus extends PluginBase {
         $this->getLogger()->info($this->lang_manager->translate("plugin.version", [$this->getDescription()->getVersion()]));
         $this->getLogger()->info($this->lang_manager->translate("plugin.selected_language"));
         
-        $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new WandSelectionListener($this), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new BlockBreakListener($this), $this);
     }
     
     public static function getInstance(): Cerberus {

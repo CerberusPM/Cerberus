@@ -86,8 +86,9 @@ class LangManager {
             if (is_array($translation)) { // If array is passed, array elements will be translated. Is useful for multiline strings
                 foreach ($translation as &$translation_string) {
                     foreach($params as $index => $param) {
-                        if (gettype($param) == "integer" || gettype($param) == "double")
+                        if (gettype($param) == "integer" || gettype($param) == "double") {
                             $param = strval($param);
+                        }
                         $translation_string = str_replace("{%$index}", $param, $translation_string);
                     }
                     $translation_string = $this->parseDeclensions($translation_string);
@@ -125,8 +126,9 @@ class LangManager {
             if (is_array($translation)) { // If array is passed, array elements will be translated. Is useful for multiline strings
                 foreach ($translation as &$translation_string) {
                     foreach($params as $index => $param) {
-                        if (gettype($param) == "integer" || gettype($param) == "double")
+                        if (gettype($param) == "integer" || gettype($param) == "double") {
                             $param = strval($param);
+                        }
                         $translation_string = str_replace("{%$index}", $param, $translation_string);
                     }
                     $translation_string = $this->parseDeclensions($translation_string);
@@ -177,7 +179,7 @@ class LangManager {
     
     /**
      * Parse plugin-unique word declension format
-     * @see https://github.com/Levonzie/Cerberus/commit/ca4b058 The commit that has a detailed format description in its message
+     * @see https://github.com/CerberusPM/Cerberus/commit/ca4b058 The commit that has a detailed format description in its message
      * 
      * @param string $message Message, which declension inclusions (if there are any) should be replaced with appropriately declensed word.
      * 

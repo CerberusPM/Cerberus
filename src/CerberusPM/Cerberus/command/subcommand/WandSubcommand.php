@@ -55,7 +55,7 @@ class WandSubcommand extends BaseSubCommand {
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.wand.inventory_full"));
             }
         } else
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.in-game"));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.in_game"));
     }
 } 
  

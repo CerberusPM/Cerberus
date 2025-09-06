@@ -52,19 +52,20 @@ class RemoveSubcommand extends BaseSubCommand {
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         $land = $this->api->getLandByName($args["land name"]);
         if (is_null($land)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.land_does_not_exist", [$args["land name"]]));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;
         }
-        if ($land->getOwner() != $sender->getName() && !$sender->hasPermission("cerberus.command.remove.other")) {
+        if (!$land->isOwner($sender) && !$sender->hasPermission("cerberus.command.remove.other")) {
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.no_other"));
             return;
         }
         $this->api->removeLand($args["land name"]);
         
-        if ($land->getOwner() != $sender->getName())
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.other.success", [$args["land name"], $land->getOwner()]));
-        else
+        if (!$land->isOwner($sender)) {
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.other.success", [$args["land name"], implode(", ", $land->getOwnerNames())]));
+        } else {
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.remove.success", [$args["land name"]]));
+        }
     }
 } 
  

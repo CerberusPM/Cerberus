@@ -58,10 +58,10 @@ class SetspawnSubcommand extends BaseSubCommand {
         }
         $land = $this->api->getLandByName($args["land name"]);
         if (!isset($land)) {
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.setspawn.land_does_not_exist", [$args["land name"]]));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;
         }
-        if ($land->getOwner() != $sender->getName() && !$sender->hasPermission("cerberus.command.setspawn.other")) {
+        if (!$land->isOwner($sender) && !$sender->hasPermission("cerberus.command.setspawn.other")) {
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.setspawn.no_other"));
             return;
         }
@@ -71,8 +71,9 @@ class SetspawnSubcommand extends BaseSubCommand {
                 return;
             }
             $new_pos = $sender->getPosition();
-        } else
-           $new_pos = Position::fromObject($args["position"], $this->getOwningPlugin()->getServer()->getWorldManager()->getWorldByName($land->getWorldName())); //We assume that user means position from the world where the landclaim is
+        } else {
+            $new_pos = Position::fromObject($args["position"], $this->getOwningPlugin()->getServer()->getWorldManager()->getWorldByName($land->getWorldName()));
+        } //We assume that user means position from the world where the landclaim is
         if (!$land->containsPosition($new_pos)) { //Check if specified position is in landclaim bounds
             $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.setspawn.position_not_in_land"));
             return;

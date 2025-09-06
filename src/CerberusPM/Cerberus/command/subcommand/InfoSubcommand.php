@@ -34,6 +34,7 @@ use CerberusPM\Cerberus\utils\LangManager;
 
 use function count;
 use function is_null;
+use function implode;
 
 class InfoSubcommand extends BaseSubCommand {
 
@@ -53,33 +54,37 @@ class InfoSubcommand extends BaseSubCommand {
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         if (count($args) < 1) {
-            if ($sender instanceof Player)
+            if ($sender instanceof Player) {
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.should_specify_land_name.player"));
-            else
+            } else {
                 $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("comamnd.info.should_specify_land_name.console"));
+            }
             return;
         }
         $land = $this->api->getLandByName($args["land name"]);
         if (!isset($land)) {//Landclaim not found
-            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.info.land_does_not_exist", [$args["land name"]]));
+            $sender->sendMessage($this->config_manager->getPrefix() . $this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;
         }
         $creation_date = $land->getFormattedCreationDate();
-        if (empty($creation_date)) //That may happen if format is empty or improperly set
+        if (empty($creation_date)) { //That may happen if format is empty or improperly set
             $creation_date = $this->lang_manager->translate("command.info.no_info");
-        if (is_null($land->getSpawnpoint()))
+        }
+        if (is_null($land->getSpawnpoint())) {
             $spawn_x = $spawn_y = $spawn_z = $this->lang_manager->translate("command.info.not_set");
-        else {
+        } else {
             $spawn_x = $land->getSpawnpoint()->getX();
             $spawn_y = $land->getSpawnpoint()->getY();
             $spawn_z = $land->getSpawnpoint()->getZ();
         }
-        
-        $message = $this->lang_manager->translate("command.info.info", [$land->getName(), $land->getOwner(), $land->getWorldName(), $creation_date,
-                                                                        $land->getFirstPosition()->getX(), $land->getFirstPosition()->getY(), $land->getFirstPosition()->getZ(),
-                                                                        $land->getSecondPosition()->getX(), $land->getSecondPosition()->getY(), $land->getSecondPosition()->getZ(),
-                                                                        $spawn_x, $spawn_y, $spawn_z, $land->getLength(), $land->getWidth(), $land->getHeight(), $land->getArea(), $land->getVolume()]);
-        foreach ($message as $string)
+
+        $message = $this->lang_manager->translate("command.info.info", [
+            $land->getName(), $land->getCreatorName(), implode(", ", $land->getOwnerNames()), implode(", ", $land->getMemberNames()), $land->getWorldName(), $creation_date,
+            $land->getFirstPosition()->getX(), $land->getFirstPosition()->getY(), $land->getFirstPosition()->getZ(),
+            $land->getSecondPosition()->getX(), $land->getSecondPosition()->getY(), $land->getSecondPosition()->getZ(),
+            $spawn_x, $spawn_y, $spawn_z, $land->getLength(), $land->getWidth(), $land->getHeight(), $land->getArea(), $land->getVolume()]);
+        foreach ($message as $string) {
             $sender->sendMessage($this->config_manager->getPrefix() . $string);
+        }
     }
 } 

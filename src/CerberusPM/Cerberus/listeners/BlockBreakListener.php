@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace CerberusPM\Cerberus\events;
+namespace CerberusPM\Cerberus\listeners;
 
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\Listener;
@@ -9,10 +9,15 @@ use CerberusPM\Cerberus\Cerberus;
 use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
-use CerberusPM\Cerberus\utils\SelectionManager;
-use CerberusPM\Cerberus\EventListener;
 
-class BlockBreakLandEvent implements Listener {
+use function in_array;
+
+/**
+ * A temporary class used for block break registration
+ * Will be then replaced by flags
+ */
+class BlockBreakListener implements Listener {
+    
     private Cerberus $plugin;
     private CerberusAPI $api;
     private ConfigManager $config_manager;
@@ -33,8 +38,8 @@ class BlockBreakLandEvent implements Listener {
         $landclaims = $this->api->getLandClaimsByPosition($position);
 
         foreach ($landclaims as $land) {
-            if ($player != $land->getOwner()) { // TODO: whitelist check
-                $event->cancel(true); // Cancel the event for other players
+            if (!$land->isOwner($player) && !$land->isMember($player)) {
+                $event->cancel(true); // Cancel the event for non-owners or non-members
             }
         }
     }

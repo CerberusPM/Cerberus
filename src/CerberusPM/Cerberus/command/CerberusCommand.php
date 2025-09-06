@@ -42,31 +42,42 @@ use CerberusPM\Cerberus\command\subcommand\SetspawnSubcommand;
 use CerberusPM\Cerberus\command\subcommand\TeleportSubcommand;
 use CerberusPM\Cerberus\command\subcommand\UnsetspawnSubcommand;
 use CerberusPM\Cerberus\command\subcommand\WandSubcommand;
-use CerberusPM\Cerberus\command\subcommand\WhitelistSubcommand;
+use CerberusPM\Cerberus\command\subcommand\AddMemberSubcommand;
+use CerberusPM\Cerberus\command\subcommand\AddOwnerSubcommand;
+use CerberusPM\Cerberus\command\subcommand\RemoveMemberSubcommand;
+use CerberusPM\Cerberus\command\subcommand\RemoveOwnerSubcommand;
 
 
 class CerberusCommand extends BaseCommand {
     private const BASE_PERMISSION = "cerberus.command";
     
     protected function prepare(): void {
-        $this->registerSubCommand(new ClaimSubcommand("claim", "Claim land", ["create", "new", "c"]));
-        $this->registerSubCommand(new ExpandSubcommand("expand", "Expand your selection", ["exp", "e"]));
-        $this->registerSubCommand(new FirstPositionSubcommand("pos1", "Select first position", ["1", "first"]));
-        $this->registerSubCommand(new FlagSubcommand("flag", "Manage land flags", ["f"]));
-        $this->registerSubCommand(new HelpSubcommand("help", "Get usage information", ["h", "?", "how"]));
-        $this->registerSubCommand(new HereSubcommand("here", "Get name of the land you are in", ["aqui"]));
-        $this->registerSubCommand(new ListSubcommand("list", "List landclaims", ["l"]));
-        $this->registerSubCommand(new InfoSubcommand("info", "Get detailed information about a land", ["i", "information"]));
-        $this->registerSubCommand(new MoveSubcommand("move", "Move a landclaim", ["mv", "mov", "m"]));
-        $this->registerSubCommand(new ReloadSubcommand("reload", "Reload plugin config and/or language", ["rel","rld"]));
-        $this->registerSubCommand(new RemoveSubcommand("remove", "Remove a landclaim", ["rm", "rem", "rmv", "delete", "erase", "r", "d"]));
-        $this->registerSubCommand(new SecondPositionSubcommand("pos2", "Select second position", ["2", "second"]));
-        $this->registerSubCommand(new SetspawnSubcommand("setspawn", "Set teleportation point for a landclaim", ["s", "spawn", "set"]));
-        $this->registerSubCommand(new TeleportSubcommand("teleport", "Teleport to land's spawnpoint", ["tp", "to", "tpto"]));
-        $this->registerSubCommand(new UnsetspawnSubcommand("unsetspawn", "Remove landclaim's spawnpoint", ["us", "unset", "rmspawn", "delspawn", 'clearspawn']));
-        $this->registerSubCommand(new WandSubcommand("wand", "Get a selection wand", ["wnd", "w", "thingy"]));
-        #$this->registerSubCommand(new WhitelistSubcommand("whitelist", "Manage who can access your land", ["white", "invite"])); # Doesn't work for now
+        $subcommands = [
+            new ClaimSubcommand("claim", "Claim land", ["create", "new", "c"]),
+            new ExpandSubcommand("expand", "Expand your selection", ["exp", "e"]),
+            new FirstPositionSubcommand("pos1", "Select first position", ["1", "first"]),
+            new FlagSubcommand("flag", "Manage land flags", ["f"]),
+            new HelpSubcommand("help", "Get usage information", ["h", "?", "how"]),
+            new HereSubcommand("here", "Get name of the land you are in", ["aqui"]),
+            new ListSubcommand("list", "List landclaims", ["l"]),
+            new InfoSubcommand("info", "Get detailed information about a land", ["i", "information"]),
+            new MoveSubcommand("move", "Move a landclaim", ["mv", "mov", "m"]),
+            new ReloadSubcommand("reload", "Reload plugin config and/or language", ["rel","rld"]),
+            new RemoveSubcommand("remove", "Remove a landclaim", ["rm", "rem", "rmv", "delete", "erase", "r", "d"]),
+            new SecondPositionSubcommand("pos2", "Select second position", ["2", "second"]),
+            new SetspawnSubcommand("setspawn", "Set teleportation point for a landclaim", ["s", "spawn", "set"]),
+            new TeleportSubcommand("teleport", "Teleport to land's spawnpoint", ["tp", "to", "tpto"]),
+            new UnsetspawnSubcommand("unsetspawn", "Remove landclaim's spawnpoint", ["us", "unset", "rmspawn", "delspawn", 'clearspawn']),
+            new WandSubcommand("wand", "Get a selection wand", ["wnd", "w", "thingy"]),
+            new AddMemberSubcommand("addmember", "Add a player to member list", ["am", "whitelist", "addmbr", "add"]),
+            new AddOwnerSubcommand("addowner", "Add a player to owner list", ["ao", "addown"]),
+            new RemoveMemberSubcommand("removemember", "Remove a player from member list", ["remmember", "delmember", "delmember", "rmmember", "rmmbr"]),
+            new RemoveOwnerSubcommand("removeowner", "Remove a player from owner list", ["remowner", "rmowner", "rmowr", "delowner", "delowr"])
+        ];
         
+        foreach($subcommands as $subcmd) {
+            $this->registerSubCommand($subcmd);
+        }
         
         $this->setPermission(self::BASE_PERMISSION);
     }
