@@ -29,6 +29,7 @@ use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\LandManager;
 
 /**
  * A class which provides /cerberus reload command functionality
@@ -37,39 +38,57 @@ class ReloadSubcommand extends BaseSubCommand {
 
     private ConfigManager $config_manager;
     private LangManager $lang_manager;
+    private LandManager $land_manager;
 
     protected function prepare(): void {
-        $this->registerArgument(0, new RawStringArgument("all|config|lang", true)); //Optional. If not specified what to reload will reload everything
+        $this->registerArgument(0, new RawStringArgument("all|config|lang|land", true)); //Optional. If not specified what to reload will reload everything
         
         $this->setPermission("cerberus.command.reload");
         
         $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
+        $this->land_manager = LandManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
-        $arg = $args["all|config|lang"] ?? null;
+        $arg = $args["all|config|lang|land"] ?? null;
         $old_lang = $this->config_manager->get("language") ?? "eng";
-        if (!isset($arg) || $arg == "all") {
-            $this->config_manager->reload();
-            $this->lang_manager->reload();
-            $sender->sendMessage($this->lang_manager->translate("command.reload.all"));
-        } else if ($arg == "config" || $arg == "conf") {
-            $this->config_manager->reload();
-            $sender->sendMessage($this->lang_manager->translate("command.reload.config"));
-        } else if ($arg == "lang" || $arg == "language") {
-            $this->lang_manager->reload();
-            $sender->sendMessage($this->lang_manager->translate("command.reload.lang", [$this->lang_manager->translate("language-name")]));
-            return; //Skip language change check
-        } else {
-            $sender->sendMessage($this->lang_manager->translate("command.reload.options"));
-            return; //Skip language check change
+        switch($arg) {
+            case null:
+            case "all":
+                $this->config_manager->reload();
+                $this->lang_manager->reload();
+                $count = $this->land_manager->loadLandclaims();
+                $sender->sendMessage($this->lang_manager->translate("command.reload.all"));
+                $sender->sendMessage($this->lang_manager->translate("command.reload.land", [$count]));
+                break;
+            case "config":
+            case "conf":
+                $this->config_manager->reload();
+                $sender->sendMessage($this->lang_manager->translate("command.reload.config"));
+                break;
+            case "language":
+            case "lang":
+                $this->lang_manager->reload();
+                $sender->sendMessage($this->lang_manager->translate("command.reload.lang", [$this->lang_manager->translate("language-name")]));
+                return; //Skip language change check
+            case "landclaims":
+            case "land":
+                $count = $this->land_manager->loadLandclaims();
+                $sender->sendMessage($this->lang_manager->translate("command.reload.land", [$count]));
+                break;
+            default:
+                $sender->sendMessage($this->lang_manager->translate("command.reload.options"));
+                return; //Skip language check change
+                
         }
         //Language change check and lang_manager reload if changed
         $new_lang = $this->config_manager->get("language");
         if ($old_lang !== $new_lang && isset($new_lang)) {
                 $this->lang_manager->reload(); //Reload the language file as new language is set in the config
-                $sender->sendMessage($this->lang_manager->translate("command.reload.lang.switch", [$this->lang_manager->translate("lang.$old_lang"), $this->lang_manager->translate("lang.$new_lang")]));
+                $sender->sendMessage($this->lang_manager->translate("command.reload.lang.switch",
+                        [$this->lang_manager->translate("lang.$old_lang", include_prefix: false),
+                            $this->lang_manager->translate("lang.$new_lang", include_prefix: false)]));
         }
     }
 } 

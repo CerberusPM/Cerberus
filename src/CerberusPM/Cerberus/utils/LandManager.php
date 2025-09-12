@@ -22,18 +22,26 @@ declare(strict_types=1);
 
 namespace CerberusPM\Cerberus\utils;
 
+use SQLite3;
+
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 use pocketmine\math\Vector3;
+use Ramsey\Uuid\Uuid;
 
+use CerberusPM\Cerberus\Cerberus;
 use CerberusPM\Cerberus\Landclaim;
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\exception\LandExistsException;
 use CerberusPM\Cerberus\exception\LandIntersectException;
 
 use function is_null;
+use function in_array;
+use function array_map;
 use function array_push;
 use function implode;
+use function explode;
+use function count;
 use function array_key_exists;
 
 /**
@@ -41,15 +49,23 @@ use function array_key_exists;
  */
 class LandManager {
     private static LandManager $instance;
-     
-    private array $landclaims = [];
     
-    private function __construct() { }
+    private array $landclaims = [];
+    public array $table_columns = ["name", "creator_uuid", "owner_uuids", "member_uuids", "pos1", "pos2", "world_name", "spawnpoint", "creation_timestamp"];
+    
+    private function __construct() {
+        $lang_manager = LangManager::getInstance();
+        // Load saved landclaims
+        Cerberus::getInstance()->getLogger()->info($lang_manager->translate("plugin.loading_landclaims", include_prefix: false));
+        $landclaim_count = $this->loadLandclaims();
+        // Announce loaded landclaims
+        Cerberus::getInstance()->getLogger()->info($lang_manager->translate("plugin.loaded_landclaims", [$landclaim_count], false));
+    }
     
     /**
      * Get LandManager instance
      * 
-     * @return LangManager LangManager instance
+     * @return LandManager LandManager instance
      */
     public static function getInstance(): LandManager {
         if (!isset(self::$instance)) {
@@ -57,6 +73,46 @@ class LandManager {
         }
         
         return self::$instance;
+    }
+    
+    /**
+     * Loads all the landclaims from the db
+     * 
+     * @return int Loaded landclaims count
+     */
+    public function loadLandclaims(): int {
+        $db = $this->openDB();
+        
+        $result = $db->query('SELECT * FROM landclaims');
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $pos1_array = explode(',', $row["pos1"]);
+            $pos2_array = explode(',', $row["pos2"]);
+            $pos1 = new Vector3((int) $pos1_array[0], (int) $pos1_array[1], (int) $pos1_array[2]);
+            $pos2 = new Vector3((int) $pos2_array[0], (int) $pos2_array[1], (int) $pos2_array[2]);
+            
+            $land = new Landclaim($row["name"], Uuid::fromString($row["creator_uuid"]),
+                    $pos1, $pos2, $row["world_name"], $row["creation_timestamp"]);
+            // Set spawnpoint if exists
+            if (!empty($row["spawnpoint"])) {
+                $spoint_array = explode(',', $row["spawnpoint"]);
+                $land->setSpawnpoint(new Vector3((float) $spoint_array[0], (float) $spoint_array[1], (float) $spoint_array[2]));
+            }
+            // Set owners and members
+            if (!empty($row["owner_uuids"])) {
+                $owners = array_map(fn($str) => Uuid::fromString($str), explode(',', $row["owner_uuids"]));
+                $land->setOwnerUuids($owners);
+            }
+            if (!empty($row["member_uuids"])) {
+                $members = array_map(fn($str) => Uuid::fromString($str), explode(',', $row["member_uuids"]));
+                $land->setMemberUuids($members);
+            }
+            
+            $this->landclaims[$row["name"]] = $land;
+            $land->setRegistered(true);
+        }
+        $db->close();
+        
+        return count($this->landclaims);
     }
     
     /**
@@ -72,6 +128,57 @@ class LandManager {
             Throw new LandExistsException("Landclaim named $land_name already exists!");
         }
         $this->landclaims[$land_name] = $land;
+        
+        $land->setRegistered(true);
+        
+        // Save to database
+        $db = $this->openDB();
+        // Convert all landclaim fields to SQL-saveable format
+        $p1 = $land->getFirstPosition();
+        $p2 = $land->getSecondPosition();
+        $sp = $land->getSpawnpoint();
+
+        $stmt = $db->prepare("INSERT OR REPLACE INTO landclaims (" . 
+                implode(', ', $this->table_columns) . ") VALUES (:" . implode(', :', $this->table_columns) . ')');
+        
+        $stmt->bindValue(':name', $land_name, SQLITE3_TEXT);
+        $stmt->bindValue(':creator_uuid', $land->getCreatorUuid()->toString(), SQLITE3_TEXT);
+        $stmt->bindValue(':owner_uuids', $land->getOwnerUuidsString(), SQLITE3_TEXT);
+        $stmt->bindValue(':member_uuids', $land->getMemberUuidsString(), SQLITE3_TEXT);
+        $stmt->bindValue(':pos1', "{$p1->getX()},{$p1->getY()},{$p1->getZ()}", SQLITE3_TEXT);
+        $stmt->bindValue(':pos2', "{$p2->getX()},{$p2->getY()},{$p2->getZ()}", SQLITE3_TEXT);
+        $stmt->bindValue(':world_name', $land->getWorldName(), SQLITE3_TEXT);
+        $stmt->bindValue(':spawnpoint', (is_null($land->getSpawnpoint())) ? NULL : "{$sp->getX()},{$sp->getY()},{$sp->getZ()}", SQLITE3_TEXT);
+        $stmt->bindValue(':creation_timestamp', $land->getCreationTimestamp(), SQLITE3_INTEGER);
+        $stmt->execute();
+        
+        $db->close();
+    }
+    
+    public function updateDBValueForLandclaim(string $land_name, string $column_name, string|int|NULL $new_value): void {
+        if (!$this->exists($land_name)) {
+            return;
+        }
+        if (!in_array($column_name, $this->table_columns)) {
+            Throw new \CerberusPM\Cerberus\exception\IllegalDBColumnNameException();
+        }
+        $db = $this->openDB();
+        $stmt = $db->prepare("UPDATE landclaims SET $column_name = :new_value WHERE name = :name");
+        $stmt->bindValue(":name", $land_name, SQLITE3_TEXT);
+        switch (gettype($new_value)) {
+            case "string":
+                $stmt->bindValue(":new_value", $new_value, SQLITE3_TEXT);
+                break;
+            case "integer":
+                $stmt->bindValue(":new_value", $new_value, SQLITE3_INTEGER);
+                break;
+            case "NULL":
+                $stmt->bindValue(":new_value", NULL, SQLITE3_NULL);
+                break;
+        }
+        $stmt->execute();
+        
+        $db->close();
     }
     
     /**
@@ -82,6 +189,14 @@ class LandManager {
     public function unregisterLandclaim(string $land_name): void {
         if ($this->exists($land_name)) {
             unset($this->landclaims[$land_name]);
+            // Save to database
+            $db = $this->openDB();
+            
+            $stmt = $db->prepare("DELETE FROM landclaims WHERE name = :name");
+            $stmt->bindValue(':name', $land_name, SQLITE3_TEXT);
+            $stmt->execute();
+            
+            $db->close();
         }
     }
     
@@ -100,7 +215,7 @@ class LandManager {
      * @return bool Whether land exists or not
      */
     public function exists(string $land_name): bool {
-        return array_key_exists($land_name, self::getLandclaims());
+        return array_key_exists($land_name, $this->landclaims);
     }
     
     /**
@@ -129,7 +244,7 @@ class LandManager {
                         . implode(", ", $intersecting_land->getOwnerNames()), 0, null, $land, $intersecting_land);
             }
         }
-        LandManager::registerLandclaim($land);
+        $this->registerLandclaim($land);
     }
     
     /**
@@ -204,5 +319,17 @@ class LandManager {
             }
         }
         return $landclaims;
+    }
+    
+    private function openDB(): SQLite3 {
+        $db = new SQLite3(Cerberus::getInstance()->getDataFolder() . 'landclaims.db');
+        // Create the necessary table if it doesn't exist
+        $db->exec("CREATE TABLE IF NOT EXISTS landclaims ("
+                . "name TEXT PRIMARY KEY, creator_uuid TEXT NOT NULL, "
+                . "owner_uuids TEXT, member_uuids TEXT, "
+                . "pos1 TEXT NOT NULL, pos2 TEXT NOT NULL, "
+                . "world_name TEXT NOT NULL, spawnpoint TEXT, "
+                . "creation_timestamp INTEGER NOT NULL)");
+        return $db;
     }
 }

@@ -2,7 +2,7 @@
 # Author: Levonzie
 
 language-name: English
-language-version: 1.0-DEV-57
+language-version: 1.0-DEV-60
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -12,6 +12,8 @@ plugin.selected_language: "Selected language: English"
 plugin.outdated_config: "Plugin's config.yml is outdated and has been updated automatically. The old file was backed up as {%0} If you made any changes to the config, you have to transfer them manually from the old file."
 plugin.outdated_langfile: "Selected language file (English) is outdated and has been updated automatically. The old file was backed up as {%0}"
 plugin.author: "This Plugin is Constructed by Levonzie and skyss0fly"
+plugin.loading_landclaims: "Loading landclaims..."
+plugin.loaded_landclaims: "Successfully loadded {%0} landclaims!"
 
 ### Language names (at the moment used in language change messages)
 lang.eng: "English"
@@ -31,6 +33,7 @@ command.reload.all: "Configuration and plugin language have been successfully re
 command.reload.config: "Configuration has been reloaded"
 command.reload.lang: "Current language file ({%0}) has been reloaded"
 command.reload.lang.switch: "Language changed from {%0} to {%1}"
+command.reload.land: "{%0} lanclaims have been successfully reloaded from the database!"
 command.reload.options: "The following can be reloaded: all|config|lang. If no argument specified, everything will be reloaded"
 #### Position
 command.pos.in-game: "&cYou should be in-game to run this command without position set. If you want to select position from the console please specify coordinates manually!"

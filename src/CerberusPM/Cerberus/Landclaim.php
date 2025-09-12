@@ -34,6 +34,7 @@ use Ramsey\Uuid\UuidInterface;
 
 use CerberusPM\Cerberus\Cerberus;
 use CerberusPM\Cerberus\utils\ConfigManager;
+use CerberusPM\Cerberus\utils\LandManager;
 
 use function min;
 use function max;
@@ -41,6 +42,7 @@ use function time;
 use function strval;
 use function is_null;
 use function in_array;
+use function implode;
 use function array_push;
 use function array_map;
 
@@ -54,17 +56,28 @@ class Landclaim {
     protected string $world_name;
     protected Vector3 $spawn_point;
     protected int $creation_timestamp;
+    protected bool $registered = false;
     
 
-    public function __construct(string $name, Player $player, Vector3 $pos1, Vector3 $pos2, string $world_name) {
+    public function __construct(string $name, Player|UuidInterface $player, Vector3 $pos1, Vector3 $pos2, string $world_name, int $creation_timestamp = null) {
         $this->name = $name;
-        $this->creator = $player->getUniqueId();
-        $this->addOwner($player); // The initial creator can then remove themselves from the list
+        if ($player instanceof Player) {
+            $this->creator = $player->getUniqueId();
+            $this->addOwner($player); // The initial creator can then remove themselves from the list
+        } elseif ($player instanceof UuidInterface) {
+            $this->creator = $player;
+            array_push($this->owners, $player);
+        }
+        
         //Optimize positions for containsPosition() calculation speed boost
         $this->pos1 = Vector3::minComponents($pos1, $pos2);
         $this->pos2 = Vector3::maxComponents($pos1, $pos2);
         $this->world_name = $world_name;
-        $this->creation_timestamp = time();
+        if (empty($creation_timestamp)) { // Let LandManager override it when loading from db
+            $this->creation_timestamp = time();
+        } else {
+            $this->creation_timestamp = $creation_timestamp;
+        }
     }
     
     /**
@@ -127,6 +140,24 @@ class Landclaim {
     public function getOwnerUuids(): array {
         return $this->owners;
     }
+    
+    /**
+     * Get array of players as a comma-separated string
+     *
+     * @return Comma-separated string of UUIDS of players with owner permissions
+     */
+    public function getOwnerUuidsString(): string {
+        return implode(',', array_map(fn($uuid) => $uuid->toString(), $this->owners));
+    }
+    
+    /**
+     * Get array of players as a comma-separated string
+     *
+     * @return Comma-separated string of UUIDS of players with owner permissions
+     */
+    public function getMemberUuidsString(): string {
+        return implode(',', array_map(fn($uuid) => $uuid->toString(), $this->members));
+    }
 
     /**
      * Get array of players with member permissions
@@ -158,8 +189,12 @@ class Landclaim {
     /**
      * Sets spawnpoint for the landclaim
      */
-    public function setSpawnpoint(Vector3 $position): void {
-        $this->spawn_point = $position;
+    public function setSpawnpoint(Vector3 $pos): void {
+        $this->spawn_point = $pos;
+        // Update spawnpoint in the db
+        if ($this->isRegistered()) {
+            LandManager::getInstance()->updateDBValueForLandclaim($this->name, "spawnpoint", "{$pos->getX()},{$pos->getY()},{$pos->getZ()}");
+        }
     }
     
     /**
@@ -167,6 +202,10 @@ class Landclaim {
      */
     public function unsetSpawnpoint(): void {
         unset($this->spawn_point);
+        // Update spawnpoint in the db
+        if ($this->isRegistered()) {
+            LandManager::getInstance()->updateDBValueForLandclaim($this->name, "spawnpoint", NULL);
+        }
     }
 
     /**
@@ -180,6 +219,10 @@ class Landclaim {
         }
         if (!in_array($player->getUniqueId(), $this->owners)) {
             array_push($this->owners, $player->getUniqueId());
+            // Update owners in the db
+            if ($this->isRegistered()) {
+                LandManager::getInstance()->updateDBValueForLandclaim($this->name, "owner_uuids", $this->getOwnerUuidsString());
+            }
         }
         return true;
     }
@@ -195,8 +238,32 @@ class Landclaim {
         }
         if (!in_array($player->getUniqueId(), $this->members)) {
             array_push($this->members, $player->getUniqueId());
+            // Update members in the db
+            if ($this->isRegistered()) {
+                LandManager::getInstance()->updateDBValueForLandclaim($this->name, "member_uuids", $this->getMemberUuidsString());
+            }
         }
         return true;
+    }
+    
+    /**
+     * Set the owner UUID array
+     * 
+     * @param array $uuids Array of owner UUIDs
+     * @return void
+     */
+    public function setOwnerUuids(array $uuids): void {
+        $this->owners = $uuids;
+    }
+    
+    /**
+     * Set the member UUID array
+     * 
+     * @param array $uuids Array of member UUIDs
+     * @return void
+     */
+    public function setMemberUuids(array $uuids): void {
+        $this->members = $uuids;
     }
     
      /**
@@ -207,6 +274,10 @@ class Landclaim {
     public function removeOwner(Player $player): void {
         if (($key = array_search($player->getUniqueId(), $this->owners)) !== false) {
             unset($this->owners[$key]);
+            // Update owners in the db
+            if ($this->isRegistered()) {
+                LandManager::getInstance()->updateDBValueForLandclaim($this->name, "owner_uuids", $this->getOwnerUuidsString());
+            }
         }
     }
 
@@ -218,6 +289,10 @@ class Landclaim {
     public function removeMember(Player $player): void {
         if (($key = array_search($player->getUniqueId(), $this->members)) !== false) {
             unset($this->members[$key]);
+            // Update members in the db
+            if ($this->isRegistered()) {
+                LandManager::getInstance()->updateDBValueForLandclaim($this->name, "member_uuids", $this->getMemberUuidsString());
+            }
         }
     }
     
@@ -237,6 +312,26 @@ class Landclaim {
      */
     public function isMember(Player $player): bool {
         return in_array($player->getUniqueId(), $this->members);
+    }
+    
+    /**
+     * Check if this landclaim is registered in LandManager
+     * 
+     * @return bool Registered in LandManager or not
+     */
+    public function isRegistered(): bool {
+        return $this->registered;
+    }
+    
+    /**
+     * Mark this landclaim as registered in LandManager.
+     * This method is usually executed by LandManager after the landclaim has been added to its landclaim array
+     * 
+     * @param bool $value Set registered in LandManager or not
+     * @return void
+     */
+    public function setRegistered(bool $value): void {
+        $this->registered = $value;
     }
 
     /**
