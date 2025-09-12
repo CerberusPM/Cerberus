@@ -26,9 +26,9 @@ use pocketmine\plugin\PluginBase;
 use CortexPE\Commando\PacketHooker;
 
 use CerberusPM\Cerberus\command\CerberusCommand;
-use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\LandManager;
 
 use CerberusPM\Cerberus\listeners\WandSelectionListener;
 use CerberusPM\Cerberus\listeners\BlockBreakListener;
@@ -37,8 +37,8 @@ class Cerberus extends PluginBase {
     
     private static Cerberus $instance; //Unique instance. Singleton class
     
-    private CerberusAPI $api;
     private LangManager $lang_manager;
+    private LandManager $land_manager;
     private ConfigManager $config_manager;
     
     public function onLoad(): void {
@@ -52,9 +52,9 @@ class Cerberus extends PluginBase {
             PacketHooker::register($this);
         }
         
-        $this->api = CerberusAPI::getInstance();
         $this->lang_manager = LangManager::getInstance();
         $this->config_manager = ConfigManager::getInstance();
+        $this->land_manager = LandManager::getInstance();
         
         $this->getLogger()->notice($this->lang_manager->translate("plugin.in-dev", include_prefix: false));
         $this->getLogger()->info($this->lang_manager->translate("plugin.version", [$this->getDescription()->getVersion()], false));
@@ -64,20 +64,40 @@ class Cerberus extends PluginBase {
         $this->getServer()->getPluginManager()->registerEvents(new BlockBreakListener($this), $this);
     }
     
+    /**
+     * Get the main class instance
+     * 
+     * @return Cerberus Plugin's main class instance
+     */
     public static function getInstance(): Cerberus {
         return self::$instance;
     }
     
-    public function getAPI(): CerberusAPI {
-        return $this->api;
-    }
-    
+    /**
+     * Get ConfigManager instance
+     * 
+     * @return ConfigManager ConfigManager instance
+     */
     public function getConfigManager(): ConfigManager {
         return $this->config_manager;
     }
     
+    /**
+     * Get LangManager instance
+     * 
+     * @return LangManager LangManager instance
+     */
     public function getLangManager(): LangManager {
         return $this->lang_manager;
+    }
+    
+    /**
+     * Get LandManager instance
+     * 
+     * @return LandManager LandManager instance
+     */
+    public function getLandManager() : LandManager {
+        return $this->land_manager;
     }
     
     /**

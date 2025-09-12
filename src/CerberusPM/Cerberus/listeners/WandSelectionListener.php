@@ -27,8 +27,7 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\block\BlockBreakEvent;
 
 use CerberusPM\Cerberus\Cerberus;
-use CerberusPM\Cerberus\CerberusAPI;
-use CerberusPM\Cerberus\utils\ConfigManager;
+use CerberusPM\Cerberus\utils\WandManager;
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\SelectionManager;
 
@@ -37,14 +36,10 @@ use CerberusPM\Cerberus\utils\SelectionManager;
  */
 class WandSelectionListener implements Listener {
     private Cerberus $plugin;
-    private CerberusAPI $api;
-    private ConfigManager $config_manager;
     private LangManager $lang_manager;
     
     function __construct(Cerberus $plugin) {
         $this->plugin = $plugin;
-        $this->api = $plugin->getAPI();
-        $this->config_manager = $plugin->getConfigManager();
         $this->lang_manager = $plugin->getLangManager();
     }
     
@@ -58,7 +53,7 @@ class WandSelectionListener implements Listener {
     public function onInteract(PlayerInteractEvent $event): void {
         $player = $event->getPlayer();
         
-        if ($player->hasPermission("cerberus.command.selection") && $this->api->isWand($event->getItem())) {
+        if ($player->hasPermission("cerberus.command.selection") && WandManager::isWand($event->getItem())) {
             $event->cancel();
             
             $position = $event->getBlock()->getPosition();
@@ -80,7 +75,7 @@ class WandSelectionListener implements Listener {
      * @param BlockBreakEvent $event
      */
     public function onBreak(BlockBreakEvent $event): void {
-        if ($event->getPlayer()->hasPermission("cerberus.command.selection") && $this->api->isWand($event->getItem())) {
+        if ($event->getPlayer()->hasPermission("cerberus.command.selection") && WandManager::isWand($event->getItem())) {
             $event->cancel();
         }
     }

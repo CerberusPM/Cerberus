@@ -27,22 +27,22 @@ use pocketmine\player\Player;
 
 use CortexPE\Commando\BaseSubCommand;
 
-use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\LandManager;
 
 use function count;
 use function strval;
 
 class HereSubcommand extends BaseSubCommand {
 
-    private CerberusAPI $api;
     private LangManager $lang_manager;
+    private LandManager $land_manager;
 
     protected function prepare(): void {
         $this->setPermission("cerberus.command.here");
         
-        $this->api = CerberusAPI::getInstance();
         $this->lang_manager = LangManager::getInstance();
+        $this->land_manager = LandManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
@@ -52,7 +52,7 @@ class HereSubcommand extends BaseSubCommand {
         }
         
         $current_position = $sender->getPosition();
-        $landclaims = $this->api->getLandclaimsByPosition($current_position);
+        $landclaims = $this->land_manager->getLandclaimsByPosition($current_position);
         
         $current_position = $current_position->round(1);
         $sender->sendMessage($this->lang_manager->translate("command.here.current_position", [$current_position->getX(),

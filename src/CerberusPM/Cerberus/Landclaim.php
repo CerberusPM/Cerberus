@@ -32,7 +32,7 @@ use pocketmine\player\Player;
 use pocketmine\player\OfflinePlayer;
 use Ramsey\Uuid\UuidInterface;
 
-use CerberusPM\Cerberus\CerberusAPI;
+use CerberusPM\Cerberus\Cerberus;
 use CerberusPM\Cerberus\utils\ConfigManager;
 
 use function min;
@@ -54,11 +54,9 @@ class Landclaim {
     protected string $world_name;
     protected Vector3 $spawn_point;
     protected int $creation_timestamp;
-
-    private CerberusAPI $api;
+    
 
     public function __construct(string $name, Player $player, Vector3 $pos1, Vector3 $pos2, string $world_name) {
-        $this->api = CerberusAPI::getInstance();
         $this->name = $name;
         $this->creator = $player->getUniqueId();
         $this->addOwner($player); // The initial creator can then remove themselves from the list
@@ -80,7 +78,7 @@ class Landclaim {
      * @return string Lanclaim creator name
      */
     public function getCreatorName(): string {
-        return $this->api->getOwningPlugin()->getServer()->getPlayerByUUID($this->creator)->getDisplayName();
+        return Cerberus::getInstance()->getServer()->getPlayerByUUID($this->creator)->getDisplayName();
     }
 
     /**
@@ -145,7 +143,7 @@ class Landclaim {
      * @return string[] Array of names of players with owner permissions
      */
     public function getOwnerNames(): array {
-        return array_map(fn($pl) => $this->api->getOwningPlugin()->getServer()->getPlayerByUUID($pl)->getDisplayName(), $this->owners);
+        return array_map(fn($pl) => Cerberus::getInstance()->getServer()->getPlayerByUUID($pl)->getDisplayName(), $this->owners);
     }
 
     /**
@@ -154,7 +152,7 @@ class Landclaim {
      * @return string[] Array of names of players with member permissions
      */
     public function getMemberNames(): array {
-        return array_map(fn($pl) => $this->api->getOwningPlugin()->getServer()->getPlayerByUUID($pl)->getDisplayName(), $this->members);
+        return array_map(fn($pl) => Cerberus::getInstance()->getServer()->getPlayerByUUID($pl)->getDisplayName(), $this->members);
     }
     
     /**
@@ -180,7 +178,9 @@ class Landclaim {
         if (!isset($player) || ($player instanceof OfflinePlayer && !$player->hasPlayedBefore())) {
             return false;
         }
-        array_push($this->owners, $player->getUniqueId());
+        if (!in_array($player->getUniqueId(), $this->owners)) {
+            array_push($this->owners, $player->getUniqueId());
+        }
         return true;
     }
 
@@ -193,7 +193,9 @@ class Landclaim {
         if (!isset($player) || ($player instanceof OfflinePlayer && !$player->hasPlayedBefore())) {
             return false;
         }
-        array_push($this->members, $player->getUniqueId());
+        if (!in_array($player->getUniqueId(), $this->members)) {
+            array_push($this->members, $player->getUniqueId());
+        }
         return true;
     }
     

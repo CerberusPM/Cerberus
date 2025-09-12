@@ -27,7 +27,6 @@ use pocketmine\command\CommandSender;
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
-use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\SelectionManager;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
@@ -43,17 +42,17 @@ use function strrpos;
 
 class ClaimSubcommand extends BaseSubCommand {
 
-    private CerberusAPI $api;
     private ConfigManager $config_manager;
     private LangManager $lang_manager;
+    private LandManager $land_manager;
 
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("name")); //Name of a landclaim
         
         $this->setPermission("cerberus.command.claim");
-        $this->api = CerberusAPI::getInstance();
         $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
+        $this->land_manager = LandManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
@@ -82,7 +81,7 @@ class ClaimSubcommand extends BaseSubCommand {
             $world = $pos1[1];
         }
         //Check if land already exists
-        if ($this->api->landExists($args["name"])) {
+        if ($this->land_manager->exists($args["name"])) {
             $sender->sendMessage($this->lang_manager->translate("command.claim.already_exists", [$args["name"]]));
             return;
         }
@@ -133,11 +132,11 @@ class ClaimSubcommand extends BaseSubCommand {
                     $area_limit = intval($default_area_limit);
                 }
             }
-            if (!$no_count_limit && count($this->api->listLandOwnedBy($sender)) >= $count_limit) {
+            if (!$no_count_limit && count($this->land_manager->listLandOwnedBy($sender)) >= $count_limit) {
                 $sender->sendMessage($this->lang_manager->translate("command.claim.landclaim_count_limit_exceeded", [$count_limit]));
                 return;
             }
-            if ($this->config_manager->get("notify-user-when-count-limit-reached") && !$no_count_limit && count($this->api->listLandOwnedBy($sender)) == $count_limit - 1) {
+            if ($this->config_manager->get("notify-user-when-count-limit-reached") && !$no_count_limit && count($this->land_manager->listLandOwnedBy($sender)) == $count_limit - 1) {
                 $show_limit_reach_warning = true;
             }
 
@@ -147,7 +146,7 @@ class ClaimSubcommand extends BaseSubCommand {
             }
         }
         //Check if intersects land owned by somebody else
-        $intersecting_landclaims = $this->api->getIntersectingLandclaims($new_land);
+        $intersecting_landclaims = $this->land_manager->getIntersectingLandclaims($new_land);
         if (!empty($intersecting_landclaims)) {
             $owned_by_somebody_else = array();
             foreach ($intersecting_landclaims as $land) { //Make a list of intersecting landclaims owned by other player
@@ -193,7 +192,7 @@ class ClaimSubcommand extends BaseSubCommand {
             $sender->sendMessage($this->lang_manager->translate("command.claim.landclaim_count_limit_reached_warning", [$count_limit]));
         }
         //Finally create a landclaim
-        LandManager::registerLandclaim($new_land);
+        LandManager::getInstance()->registerLandclaim($new_land);
         SelectionManager::deselectAll($sender);
         
         $sender->sendMessage($this->lang_manager->translate("command.claim.success", [$args["name"]]));

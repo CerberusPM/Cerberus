@@ -27,13 +27,13 @@ use pocketmine\command\CommandSender;
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
-use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\LandManager;
 
 class AddMemberSubcommand extends BaseSubCommand {
     
-    private CerberusAPI $api;
     private LangManager $lang_manager;
+    private LandManager $land_manager;
 
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name", true));
@@ -41,8 +41,8 @@ class AddMemberSubcommand extends BaseSubCommand {
         
         $this->setPermission("cerberus.command.addmember");
         
-        $this->api = CerberusAPI::getInstance();
         $this->lang_manager = LangManager::getInstance();
+        $this->land_manager = LandManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
@@ -56,7 +56,7 @@ class AddMemberSubcommand extends BaseSubCommand {
             return;
         }
         // Get the land
-        $land = $this->api->getLandByName($args["land name"]);
+        $land = $this->land_manager->getLandByName($args["land name"]);
         if (is_null($land)) {
             $sender->sendMessage($this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;
@@ -69,7 +69,7 @@ class AddMemberSubcommand extends BaseSubCommand {
         // Get the player
         $player = $this->getOwningPlugin()->getServer()->getPlayerByPrefix($args["player name"]);
         if (!isset($player)) {
-            $player = $this->api->getOwningPlugin()->getServer()->getOfflinePlayer($args["player name"]);
+            $player = getOwningPlugin()->getServer()->getOfflinePlayer($args["player name"]);
         }
         // Add the player
         if (!$land->addMember($player)) {

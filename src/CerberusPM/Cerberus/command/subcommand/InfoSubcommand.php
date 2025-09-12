@@ -28,9 +28,9 @@ use pocketmine\player\Player;
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
-use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\LandManager;
 
 use function count;
 use function is_null;
@@ -38,18 +38,18 @@ use function implode;
 
 class InfoSubcommand extends BaseSubCommand {
 
-    private CerberusAPI $api;
     private ConfigManager $config_manager;
     private LangManager $lang_manager;
+    private LandManager $land_manager;
 
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name", true));
         
         $this->setPermission("cerberus.command.info");
         
-        $this->api = CerberusAPI::getInstance();
         $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
+        $this->land_manager = LandManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
@@ -61,7 +61,7 @@ class InfoSubcommand extends BaseSubCommand {
             }
             return;
         }
-        $land = $this->api->getLandByName($args["land name"]);
+        $land = $this->land_manager->getLandByName($args["land name"]);
         if (!isset($land)) {//Landclaim not found
             $sender->sendMessage($this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;

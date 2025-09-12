@@ -27,21 +27,21 @@ use pocketmine\command\CommandSender;
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
-use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\LandManager;
 
 class UnsetspawnSubcommand extends BaseSubCommand {
 
-    private CerberusAPI $api;
     private LangManager $lang_manager;
+    private LandManager $land_manager;
 
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name", true));
         
         $this->setPermission("cerberus.command.unsetspawn");
         
-        $this->api = CerberusAPI::getInstance();
         $this->lang_manager = LangManager::getInstance();
+        $this->land_manager = LandManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
@@ -49,7 +49,7 @@ class UnsetspawnSubcommand extends BaseSubCommand {
             $sender->sendMessage($this->lang_manager->translate("command.unsetspawn.should_specify_land_name"));
             return;
         }
-        $land = $this->api->getLandByName($args["land name"]);
+        $land = $this->land_manager->getLandByName($args["land name"]);
         if (!isset($land)) {
             $sender->sendMessage($this->lang_manager->translate("command.land_does_not_exist", [$args["land name"]]));
             return;

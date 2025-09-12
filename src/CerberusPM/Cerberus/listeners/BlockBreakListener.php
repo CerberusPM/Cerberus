@@ -6,11 +6,9 @@ namespace CerberusPM\Cerberus\listeners;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\Listener;
 use CerberusPM\Cerberus\Cerberus;
-use CerberusPM\Cerberus\CerberusAPI;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
-
-use function in_array;
+use CerberusPM\Cerberus\utils\LandManager;
 
 /**
  * A temporary class used for block break registration
@@ -19,15 +17,15 @@ use function in_array;
 class BlockBreakListener implements Listener {
     
     private Cerberus $plugin;
-    private CerberusAPI $api;
     private ConfigManager $config_manager;
     private LangManager $lang_manager;
+    private LandManager $land_manager;
 
     function __construct(Cerberus $plugin) {
         $this->plugin = $plugin;
-        $this->api = $plugin->getAPI();
         $this->config_manager = $plugin->getConfigManager();
         $this->lang_manager = $plugin->getLangManager();
+        $this->land_manager = $plugin->getLandManager();
     }
 
 
@@ -35,7 +33,7 @@ class BlockBreakListener implements Listener {
         $player = $event->getPlayer();
         $position = $player->getPosition(); // Get the player's current position
 
-        $landclaims = $this->api->getLandClaimsByPosition($position);
+        $landclaims = $this->land_manager->getLandClaimsByPosition($position);
 
         foreach ($landclaims as $land) {
             if (!$land->isOwner($player) && !$land->isMember($player)) {

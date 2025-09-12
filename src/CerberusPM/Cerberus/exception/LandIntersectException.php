@@ -26,7 +26,7 @@ use CerberusPM\Cerberus\exception\CerberusException;
 use CerberusPM\Cerberus\Landclaim;
 
 /**
- * Thrown by CerberusAPI when two lands intersect and intersation check is not bypassed
+ * Thrown by LandManager when two lands intersect and intersation check is not bypassed
  */
 class LandIntersectException extends CerberusException {
     /** @var Landclaim Landclaim which is checked for intersection with another landclaim */

@@ -27,28 +27,29 @@ use pocketmine\command\CommandSender;
 use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
-use CerberusPM\Cerberus\CerberusAPI;
+use CerberusPM\Cerberus\Cerberus;
 use CerberusPM\Cerberus\utils\LangManager;
+use CerberusPM\Cerberus\utils\LandManager;
 
 use function count;
 
 class ListSubcommand extends BaseSubCommand {
 
-    private CerberusAPI $api;
     private LangManager $lang_manager;
+    private LandManager $land_manager;
 
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("player name", true));
         
         $this->setPermission("cerberus.command.list");
         
-        $this->api = CerberusAPI::getInstance();
         $this->lang_manager = LangManager::getInstance();
+        $this->land_manager = LandManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
         if (count($args) == 0) { //Checking landclaims of sender
-            $landclaims = $this->api->listLandOwnedBy($sender);
+            $landclaims = $this->land_manager->listLandOwnedBy($sender);
             if (empty($landclaims)) {
                 $sender->sendMessage($this->lang_manager->translate("command.list.none"));
                 return;
@@ -76,9 +77,9 @@ class ListSubcommand extends BaseSubCommand {
             $online_player_name = $this->getOwningPlugin()->getServer()->getPlayerByPrefix($args["player name"]);
             if (empty($landclaims)) {
                 //Try to find an online player with name by prefix
-                $landclaims = $this->api->listLandOwnedBy($this->api->getOwningPlugin()->getServer()->getOfflinePlayer($args["player name"]));
+                $landclaims = $this->land_manager->listLandOwnedBy($this->getOwningPlugin()->getServer()->getOfflinePlayer($args["player name"]));
                 if (isset($online_player_name)) {
-                    $landclaims = $this->api->listLandOwnedBy($online_player_name->getName());
+                    $landclaims = $this->land_manager->listLandOwnedBy($online_player_name->getName());
                 }
                 if (empty($landclaims)) {
                     $sender->sendMessage($this->lang_manager->translate("command.list.other.none", [$args["player name"]]));
