@@ -74,18 +74,18 @@ class ClaimSubcommand extends BaseSubCommand {
             $pos2 = SelectionManager::getSelectedSecondPosition($sender);
         }
         //Check if positions are located in the same world
-        if ($pos1[1] != $pos2[1]) {
+        if ($pos1->getWorld() != $pos2->getWorld()) {
             $sender->sendMessage($this->lang_manager->translate("command.claim.world_mismatch"));
             return;
         } else {
-            $world = $pos1[1];
+            $world = $pos1->getWorld()->getFolderName();
         }
         //Check if land already exists
         if ($this->land_manager->exists($args["name"])) {
             $sender->sendMessage($this->lang_manager->translate("command.claim.already_exists", [$args["name"]]));
             return;
         }
-        $new_land = new Landclaim($args["name"], $sender, $pos1[0], $pos2[0], $world);
+        $new_land = new Landclaim($args["name"], $sender, $pos1, $pos2, $world);
         //Claim limits
         $show_limit_reach_warning = false;
         if ($this->config_manager->get("landclaim-count-limit") || $this->config_manager->get("landclaim-area-limit")) {

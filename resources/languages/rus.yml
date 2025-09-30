@@ -4,7 +4,7 @@
 # Автор: Levonzie
 
 language-name: Русский
-language-version: 1.0-DEV-60
+language-version: 1.0-DEV-61
 
 ## Строки перевода
 ### Плагин - основные фразы
@@ -74,6 +74,16 @@ command.claim.success: "&aУчасток {%0} успешно создан!"
 command.remove.no_other: "&cНевозможно удалить участок. Вы не имеете права удалять участки других игроков!"
 command.remove.success: "&aУчасток {%0} успешно удалён!"
 command.remove.other.success: "&aУчасток {%0}, принадлежащий {%1}, успешно удалён!"
+#### Expand
+command.expand.usage: "Использование: /cerberus expand up(u)|down(d)|vert(both) <кол-во блоков>"
+command.expand.select_both_positions: "&cНевозможно расширить выделение. Сперва необходимо выбрать две позиции!"
+command.expand.select_pos1: "&cНевозможно расширить выделение. Не выбрана первая позиция!"
+command.expand.select_pos2: "&cНевозможно расширить выделение. Не выбрана вторая позиция!"
+command.expand.world_mismatch: "&cНевозможно расширить выделение. Выбранные позиции должны располагаться в одном мире!"
+command.expand.world_not_found: "&cНевозможно расширить выделение. Мир \"{%0}\", который содержит выделение не существует. Пожалуйста, убедитесь, что он загружен."
+command.expand.success.up: "&aВыделение успешно расширено вверх на {%0} блоков. Теперь его самая высокая Y-координата: {%1}"
+command.expand.success.down: "&aВыделение успешно расширено вниз на {%0} блоков.  Теперь его самая низкая Y-координата: {%1}"
+command.expand.success.both: "&aВыделение успешно расширено вверх на {%0} блоков и вниз на {%1} блоков."
 #### Here
 command.here.current_position: "&bВаши текущие координаты: &eX: &f{%0} &eY: &f{%1} &eZ: &f{%2}"
 command.here.land_here: "&aЗдесь находится участок {%0}, принадлежащий {%1}"

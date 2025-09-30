@@ -44,7 +44,8 @@ By default, all permissions are set to `op`. This means only server operators ha
 1. Do /cerberus wand or /crb wand to get the selection wand
 2. Left click a block (break) to select the first position. Alternatively you can do /crb pos1 to set first position to where you're standing at, or even
 specify the exact coordinates if you wish!
-3. Do /crb claim <name> to create a landclaim
+3. Use /crb expand <up/down/both> [number_of_blocks(up to the world height limit if not specified)] to expand the selection vertically
+4. Do /crb claim <name> to create a landclaim
 
 ### Video Tutorial:
 `Coming in Release 1.0.0`
@@ -56,7 +57,6 @@ specify the exact coordinates if you wish!
 CerberusPM uses [Commando](https://github.com/ACM-PocketMine-MP/Commando/tree/PM5/) (the Link is a Forked Version of Commando which remains UP TO DATE with CerberusPM. 
 
 ## Features yet to Implement
-* Expand subcommand
 * Move subcommand
 * Flag system and flag subcommand with many flags (like in WorldGuard for Java)
 * Importing landclaims from other plugins, i.e. migration

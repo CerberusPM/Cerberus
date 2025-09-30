@@ -59,7 +59,7 @@ class Landclaim {
     protected bool $registered = false;
     
 
-    public function __construct(string $name, Player|UuidInterface $player, Vector3 $pos1, Vector3 $pos2, string $world_name, int $creation_timestamp = null) {
+    public function __construct(string $name, Player|UuidInterface $player, Vector3|Position $pos1, Vector3|Position $pos2, string $world_name, int $creation_timestamp = null) {
         $this->name = $name;
         if ($player instanceof Player) {
             $this->creator = $player->getUniqueId();

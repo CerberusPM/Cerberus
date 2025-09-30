@@ -45,7 +45,7 @@ class SelectionManager {
      */
     public static function selectFirstPosition(Player $selector, Position $position): void {
         $uuid = $selector->getUniqueId()->toString();
-        self::$selectingFirstPosition[$uuid] = [$position->floor(), $position->getWorld()->getFolderName()];
+        self::$selectingFirstPosition[$uuid] = $position;
     }
     
     /**
@@ -56,7 +56,7 @@ class SelectionManager {
      */
     public static function selectSecondPosition(Player $selector, Position $position): void {
         $uuid = $selector->getUniqueId()->toString();
-        self::$selectingSecondPosition[$uuid] = [$position->floor(), $position->getWorld()->getFolderName()];
+        self::$selectingSecondPosition[$uuid] = $position;
     }
     
     /**
@@ -128,7 +128,7 @@ class SelectionManager {
      * 
      * @return Position|null Returns pocketmine\World\Position or null if position is not selected
      */
-    public static function getSelectedFirstPosition(Player $selector): array | null {
+    public static function getSelectedFirstPosition(Player $selector): Position | null {
         $uuid = $selector->getUniqueId()->toString();
         if (array_key_exists($uuid, self::$selectingFirstPosition)) {
             return self::$selectingFirstPosition[$uuid];
@@ -144,7 +144,7 @@ class SelectionManager {
      * 
      * @return Position|null Returns pocketmine\World\Position or null if position is not selected
      */
-    public static function getSelectedSecondPosition(Player $selector): array | null {
+    public static function getSelectedSecondPosition(Player $selector): Position | null {
         $uuid = $selector->getUniqueId()->toString();
         if (array_key_exists($uuid, self::$selectingSecondPosition)) {
             return self::$selectingSecondPosition[$uuid];
