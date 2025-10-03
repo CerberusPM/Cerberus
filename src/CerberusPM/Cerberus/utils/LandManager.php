@@ -39,6 +39,7 @@ use function is_null;
 use function in_array;
 use function array_map;
 use function array_push;
+use function array_keys;
 use function implode;
 use function explode;
 use function count;
@@ -51,7 +52,7 @@ class LandManager {
     private static LandManager $instance;
     
     private array $landclaims = [];
-    public array $table_columns = ["name", "creator_uuid", "owner_uuids", "member_uuids", "pos1", "pos2", "world_name", "spawnpoint", "creation_timestamp"];
+    public array $table_columns = ["name", "creator_uuid", "owner_uuids", "member_uuids", "pos1", "pos2", "world_name", "spawnpoint", "flags", "creation_timestamp"];
     
     private function __construct() {
         $lang_manager = LangManager::getInstance();
@@ -106,6 +107,13 @@ class LandManager {
                 $members = array_map(fn($str) => Uuid::fromString($str), explode(',', $row["member_uuids"]));
                 $land->setMemberUuids($members);
             }
+            // Set flags
+            if (!empty($row["flags"])) {
+                $flag_ids = explode(',', $row["flags"]);
+                foreach ($flag_ids as $flag_id) {
+                    $land->addFlagById($flag_id);
+                }
+            }
             
             $this->landclaims[$row["name"]] = $land;
             $land->setRegistered(true);
@@ -113,6 +121,16 @@ class LandManager {
         $db->close();
         
         return count($this->landclaims);
+    }
+    
+    /**
+     * Reloads all the landclaims from the db
+     * 
+     * @return int Loaded landclaims count
+     */
+    public function reloadLandclaims(): int {
+        $this->landclaims = array();
+        return $this->loadLandclaims();
     }
     
     /**
@@ -149,6 +167,7 @@ class LandManager {
         $stmt->bindValue(':pos2', "{$p2->getX()},{$p2->getY()},{$p2->getZ()}", SQLITE3_TEXT);
         $stmt->bindValue(':world_name', $land->getWorldName(), SQLITE3_TEXT);
         $stmt->bindValue(':spawnpoint', (is_null($land->getSpawnpoint())) ? NULL : "{$sp->getX()},{$sp->getY()},{$sp->getZ()}", SQLITE3_TEXT);
+        $stmt->bindValue(":flags", $land->getFlagsString(), SQLITE3_TEXT);
         $stmt->bindValue(':creation_timestamp', $land->getCreationTimestamp(), SQLITE3_INTEGER);
         $stmt->execute();
         
@@ -328,7 +347,7 @@ class LandManager {
                 . "name TEXT PRIMARY KEY, creator_uuid TEXT NOT NULL, "
                 . "owner_uuids TEXT, member_uuids TEXT, "
                 . "pos1 TEXT NOT NULL, pos2 TEXT NOT NULL, "
-                . "world_name TEXT NOT NULL, spawnpoint TEXT, "
+                . "world_name TEXT NOT NULL, spawnpoint TEXT, flags TEXT,"
                 . "creation_timestamp INTEGER NOT NULL)");
         return $db;
     }

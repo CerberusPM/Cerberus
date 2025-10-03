@@ -2,18 +2,18 @@
 # Author: Levonzie
 
 language-name: English
-language-version: 1.0-DEV-61
+language-version: 1.0-DEV-62
 
 ## Translation strings
 ### Plugin - general plugin strings
-plugin.in-dev: "The plugin is currently in early development stage. We apologize, but most commands are not available at the moment."
+plugin.in-dev: "The plugin is currently in development. Please report all the bugs you encounter in plugin's GitHub issues: https://github.com/CerberusPM/Cerberus/issues"
 plugin.version: "Cerberus version: {%0}"
 plugin.selected_language: "Selected language: English"
 plugin.outdated_config: "Plugin's config.yml is outdated and has been updated automatically. The old file was backed up as {%0} If you made any changes to the config, you have to transfer them manually from the old file."
 plugin.outdated_langfile: "Selected language file (English) is outdated and has been updated automatically. The old file was backed up as {%0}"
 plugin.author: "This Plugin is Constructed by Levonzie and skyss0fly"
 plugin.loading_landclaims: "Loading landclaims..."
-plugin.loaded_landclaims: "Successfully loadded {%0} landclaims!"
+plugin.loaded_landclaims: "Successfully loaded {%0} landclaims!"
 
 ### Language names (at the moment used in language change messages)
 lang.eng: "English"
@@ -114,8 +114,9 @@ command.info.info:
 - "&bSecond position: &eX: &f{%9} &eY: &f{%10} &eZ: &f{%11}"
 - "&bSpawnpoint: &eX: &f{%12} &eY: &f{%13} &eZ: &f{%14}"
 - "&bDimensions: &f{%15}&ex&f{%16}&ex&f{%17} &e(LWH)"
-- "&bArea: &e{%18} m²"
-- "&bVolume: &e{%19} m³"
+- "&bFlags: &e{%18}"
+- "&bArea: &e{%19} m²"
+- "&bVolume: &e{%20} m³"
 - "&b----------------------------"
 #### Setspawn
 command.setspawn.should_specify_land_name: "&cYou should specify the land which spawnpoint should be set."
@@ -158,3 +159,18 @@ command.removemember.not_a_member: "&c{%0} is not a member of \"{%1}\""
 command.removeowner.no_other: "&cYou have no permission to remove owners from landclaims you''re not an owner of."
 command.removeowner.success : "&aSuccessfully removed {%0} from the owner list!"
 command.removeowner.not_an_owner: "&c{%0} is not an owner of \"{%1}\""
+#### Flag
+command.flag.should_specify_flag: "&cPlease specify a flag. Available options are:{%0}"
+command.flag.should_specify_enabled: "&cPlease specify whether this flag should be turned on or off (true/false)"
+command.flag.no_other: "&cYou don't have permission to toggle flags in other players' landclaims!"
+command.flag.flag_not_found: "&cSorry, flag \"{%0}\" not found!"
+command.flag.no_permission_to_flag: "&cYou don't have permission to use the flag {%0}"
+command.flag.already_enabled: "&cThe flag {%0} is already enabled in this landclaim!"
+command.flag.success_enable: "&aSuccessfully enabled the flag {%0} in land {%1}!"
+command.flag.already_disabled: "&cThe flag {%0} is already disabled in land {%1}"
+command.flag.success_disable: "&aSuccessfully disabled the flag {%0} in land {%1}"
+command.flag.flag_is_off: "&cUnable to toggle flag \"{%0}\" as it's disabled!"
+##### Flag descriptions
+flag.no_break.description: "Prevent block breaking"
+flag.no_place.description: "Prevent block placing"
+flag.no_interact.description: "Prevent interaction with blocks (opening, using, pressing, etc.)"

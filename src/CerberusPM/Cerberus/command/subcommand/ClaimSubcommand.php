@@ -191,6 +191,10 @@ class ClaimSubcommand extends BaseSubCommand {
         if ($show_limit_reach_warning) {
             $sender->sendMessage($this->lang_manager->translate("command.claim.landclaim_count_limit_reached_warning", [$count_limit]));
         }
+        //Apply default flags
+        foreach ($this->config_manager->get("default-flags") as $flag_id) {
+            $new_land->addFlagById($flag_id);
+        }
         //Finally create a landclaim
         LandManager::getInstance()->registerLandclaim($new_land);
         $new_land->addOwner($sender);

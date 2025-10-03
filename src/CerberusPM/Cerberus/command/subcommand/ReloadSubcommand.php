@@ -30,6 +30,7 @@ use CortexPE\Commando\args\RawStringArgument;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\LandManager;
+use CerberusPM\Cerberus\utils\FlagManager;
 
 /**
  * A class which provides /cerberus reload command functionality
@@ -39,6 +40,7 @@ class ReloadSubcommand extends BaseSubCommand {
     private ConfigManager $config_manager;
     private LangManager $lang_manager;
     private LandManager $land_manager;
+    private FlagManager $flag_manager;
 
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("all|config|lang|land", true)); //Optional. If not specified what to reload will reload everything
@@ -48,6 +50,7 @@ class ReloadSubcommand extends BaseSubCommand {
         $this->config_manager = ConfigManager::getInstance();
         $this->lang_manager = LangManager::getInstance();
         $this->land_manager = LandManager::getInstance();
+        $this->flag_manager = FlagManager::getInstance();
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
@@ -58,13 +61,15 @@ class ReloadSubcommand extends BaseSubCommand {
             case "all":
                 $this->config_manager->reload();
                 $this->lang_manager->reload();
-                $count = $this->land_manager->loadLandclaims();
+                $this->flag_manager->reload();
+                $count = $this->land_manager->reloadLandclaims();
                 $sender->sendMessage($this->lang_manager->translate("command.reload.all"));
                 $sender->sendMessage($this->lang_manager->translate("command.reload.land", [$count]));
                 break;
             case "config":
             case "conf":
                 $this->config_manager->reload();
+                $this->flag_manager->reload();
                 $sender->sendMessage($this->lang_manager->translate("command.reload.config"));
                 break;
             case "language":
@@ -74,6 +79,7 @@ class ReloadSubcommand extends BaseSubCommand {
                 return; //Skip language change check
             case "landclaims":
             case "land":
+                $this->flag_manager->reload();
                 $count = $this->land_manager->loadLandclaims();
                 $sender->sendMessage($this->lang_manager->translate("command.reload.land", [$count]));
                 break;

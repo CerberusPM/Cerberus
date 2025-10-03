@@ -102,3 +102,24 @@ permissions:
   cerberus.command.reload:
     description: Permission for /cerberus reload
     default: op
+  cerberus.command.flag.other:
+    description: Permission to set flags for landclaims owned by other players
+    default: op
+  cerberus.flag.no_place:
+    description: Permission to disable block placing via /cerberus flag no_place on/off
+    default: op
+  cerberus.flag.no_place.bypass:
+    description: Permission to bypass NoPlace flag
+    default: op
+  cerberus.flag.no_break:
+    description: Permission to disable block breaking via /cerberus flag no_break on/off
+    default: op
+  cerberus.flag.no_break.bypass:
+    description: Permission to bypass NoBreak flag
+    default: op
+  cerberus.flag.no_interact:
+    description: Permission to disable block interaction (opening, closing, pressing, etc.) via /cerberus flag no_interact on/off
+    default: op
+  cerberus.flag.no_interact.bypass:
+    description: Permission to bypass NoInteract flag
+    default: op

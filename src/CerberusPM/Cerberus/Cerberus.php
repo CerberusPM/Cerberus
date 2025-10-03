@@ -29,6 +29,7 @@ use CerberusPM\Cerberus\command\CerberusCommand;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\LandManager;
+use CerberusPM\Cerberus\utils\FlagManager;
 
 use CerberusPM\Cerberus\listeners\WandSelectionListener;
 use CerberusPM\Cerberus\listeners\BlockBreakListener;
@@ -40,6 +41,7 @@ class Cerberus extends PluginBase {
     private LangManager $lang_manager;
     private LandManager $land_manager;
     private ConfigManager $config_manager;
+    private FlagManager $flag_manager;
     
     public function onLoad(): void {
         self::$instance = $this;
@@ -55,13 +57,13 @@ class Cerberus extends PluginBase {
         $this->lang_manager = LangManager::getInstance();
         $this->config_manager = ConfigManager::getInstance();
         $this->land_manager = LandManager::getInstance();
+        $this->flag_manager = FlagManager::getInstance();
         
         $this->getLogger()->notice($this->lang_manager->translate("plugin.in-dev", include_prefix: false));
         $this->getLogger()->info($this->lang_manager->translate("plugin.version", [$this->getDescription()->getVersion()], false));
         $this->getLogger()->info($this->lang_manager->translate("plugin.selected_language", include_prefix: false));
         
         $this->getServer()->getPluginManager()->registerEvents(new WandSelectionListener($this), $this);
-        $this->getServer()->getPluginManager()->registerEvents(new BlockBreakListener($this), $this);
     }
     
     /**
@@ -96,8 +98,13 @@ class Cerberus extends PluginBase {
      * 
      * @return LandManager LandManager instance
      */
-    public function getLandManager() : LandManager {
+    public function getLandManager(): LandManager {
         return $this->land_manager;
+    }
+    
+    
+    public function getFlagManager(): FlagManager {
+        return $this->flag_manager;
     }
     
     /**

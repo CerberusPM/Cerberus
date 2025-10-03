@@ -36,6 +36,8 @@ use Ramsey\Uuid\UuidInterface;
 use CerberusPM\Cerberus\Cerberus;
 use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LandManager;
+use CerberusPM\Cerberus\utils\FlagManager;
+use CerberusPM\Cerberus\flags\Flag;
 
 use function min;
 use function max;
@@ -52,6 +54,7 @@ class Landclaim {
     protected UuidInterface $creator;
     protected $owners = [];
     protected $members = [];
+    protected $flags = [];
     protected Vector3 $pos1;
     protected Vector3 $pos2;
     protected string $world_name;
@@ -336,6 +339,107 @@ class Landclaim {
      */
     public function setRegistered(bool $value): void {
         $this->registered = $value;
+    }
+     
+    /**
+     * Get an array of enabled flags
+     * 
+     * @return array Enabled flags
+     */
+    public function getFlags(): array {
+        return $this->flags;
+    }
+    
+    /**
+     * Get a comma-separated enabled flag IDs string
+     * 
+     * @return string Flag ids in a comma-separated list string
+     */
+    public function getFlagsString(): string {
+        return implode(',', array_keys($this->getFlags()));
+    }
+    
+    
+    /**
+     * Enable a flag in this landclaim
+     * 
+     * @param Flag $flag The flag to enable
+     */
+    public function addFlag(Flag $flag): void {
+        $flag->addAffectedLandclaim($this);
+        $this->flags[$flag->getId()] = $flag;
+        if ($this->registered) {
+            LandManager::getInstance()->updateDBValueForLandclaim($this->getName(), "flags", $this->getFlagsString());
+        }
+    }
+    
+    /**
+     * Enable a flag by its IDS
+     * 
+     * @param string $flag_id The ID of a flag to be enabled
+     * @return bool Whether the flag has been successfully added or not
+     */
+    public function addFlagById(string $flag_id): bool {
+        $flag = FlagManager::getInstance()->getFlagById($flag_id);
+        if (isset($flag)) {
+            $this->addFlag($flag);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Disable a flag in this landclaim
+     * 
+     * @param Flag $flag A flag to be disabled
+     * @return bool Whether the flag has been successfully removed
+     */
+    public function removeFlag(Flag $flag): bool {
+        if (in_array($flag, $this->flags)) {
+            unset($this->flags[$flag->getId()]);
+            $flag->removeAffectedLandclaim($this);
+            LandManager::getInstance()->updateDBValueForLandclaim($this->getName(), "flags", $this->getFlagsString());
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Disable a flag in this landclaim by its ID
+     * 
+     * @param string $flag_id The ID of a flag to be disabled
+     * @return bool Whether the flag has been successfully removed
+     */
+    public function removeFlagById(string $flag_id): bool {
+        $flag = FlagManager::getInstance()->getFlagById($flag_id);
+        if (isset($flag)) {
+            return $this->removeFlag($flag);
+        }
+        return false;
+    }
+    
+    /**
+     * Check whether a flag is inabled in this landclaim
+     * 
+     * @param Flag $flag A flag to be checked
+     * @return bool
+     */
+    public function hasFlag(Flag $flag): bool {
+        return in_array($flag, $this->flags);
+    }
+    
+    /**
+     * Check whether a flag is inabled in this landclaim by its ID
+     * 
+     * @param string $flag_id A flag ID to be checked
+     * @return bool
+     */
+    public function hasFlagById(string $flag_id): bool {
+        $flag = FlagManager::getInstance()->getFlagById($flag_id);
+        if (isset($flag)) {
+            return $this->hasFlag($flag_id);
+        }
+        return false;
     }
 
     /**

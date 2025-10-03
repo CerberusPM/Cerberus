@@ -35,6 +35,7 @@ use CerberusPM\Cerberus\utils\LandManager;
 use function count;
 use function is_null;
 use function implode;
+use function rtrim;
 
 class InfoSubcommand extends BaseSubCommand {
 
@@ -77,12 +78,20 @@ class InfoSubcommand extends BaseSubCommand {
             $spawn_y = $land->getSpawnpoint()->getY();
             $spawn_z = $land->getSpawnpoint()->getZ();
         }
-
+        // Compose colored flag list string
+        $flag_list = "";
+        foreach ($land->getFlags() as $flag) {
+            if ($flag->isRegistered()) {
+                $flag_list .= "&e" . $flag->getName() . ", ";
+            } else {
+                $flag_list .= "&7" . $flag->getName() . ", ";
+            }
+        }
         $message = $this->lang_manager->translate("command.info.info", [
             $land->getName(), $land->getCreatorName(), implode(", ", $land->getOwnerNames()), implode(", ", $land->getMemberNames()), $land->getWorldName(), $creation_date,
             $land->getFirstPosition()->getX(), $land->getFirstPosition()->getY(), $land->getFirstPosition()->getZ(),
             $land->getSecondPosition()->getX(), $land->getSecondPosition()->getY(), $land->getSecondPosition()->getZ(),
-            $spawn_x, $spawn_y, $spawn_z, $land->getLength(), $land->getWidth(), $land->getHeight(), $land->getArea(), $land->getVolume()], false);
+            $spawn_x, $spawn_y, $spawn_z, $land->getLength(), $land->getWidth(), $land->getHeight(), rtrim($flag_list, ", "), $land->getArea(), $land->getVolume()], false);
         foreach ($message as $string) {
             $sender->sendMessage($this->config_manager->getPrefix() . $string);
         }
