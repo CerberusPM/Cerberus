@@ -30,6 +30,7 @@ use pocketmine\world\Position;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\player\OfflinePlayer;
+use pocketmine\console\ConsoleCommandSender;
 use Ramsey\Uuid\UuidInterface;
 
 use CerberusPM\Cerberus\Cerberus;
@@ -63,12 +64,9 @@ class Landclaim {
         $this->name = $name;
         if ($player instanceof Player) {
             $this->creator = $player->getUniqueId();
-            $this->addOwner($player); // The initial creator can then remove themselves from the list
         } elseif ($player instanceof UuidInterface) {
             $this->creator = $player;
-            array_push($this->owners, $player);
         }
-        
         //Optimize positions for containsPosition() calculation speed boost
         $this->pos1 = Vector3::minComponents($pos1, $pos2);
         $this->pos2 = Vector3::maxComponents($pos1, $pos2);
@@ -92,6 +90,8 @@ class Landclaim {
      */
     public function getCreatorName(): string {
         return Cerberus::getInstance()->getServer()->getPlayerByUUID($this->creator)->getDisplayName();
+        // KNOWN BUG: Crash on offline player info fetch.
+        // TODO: Fix by implementing user cache (as a separate table)
     }
 
     /**
@@ -299,10 +299,14 @@ class Landclaim {
     /**
      * Check if player is owner
      * 
-     * @param Player player A player to check for ownership permission
+     * @param Player|ConsoleCommandSender player A player (or console) to check for ownership permission
      */
-    public function isOwner(Player $player): bool {
-        return in_array($player->getUniqueId(), $this->owners);
+    public function isOwner(Player|ConsoleCommandSender $sender): bool {
+        if ($sender instanceof Player) {
+            return in_array($sender->getUniqueId(), $this->owners);
+        } elseif($sender instanceof ConsoleCommandSender) {
+            return true;
+        }
     }
     
      /**

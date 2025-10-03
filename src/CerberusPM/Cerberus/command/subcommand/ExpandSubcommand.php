@@ -38,6 +38,10 @@ use function min;
 use function max;
 
 class ExpandSubcommand extends BaseSubCommand {
+    
+    private ConfigManager $config_manager;
+    private LangManager $lang_manager;
+
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("direction")); // up/down/both/front/back/left/right/...
         $this->registerArgument(1, new IntegerArgument("blocks", true)); //Optional. If not provided, expands to fit all blocks, available at a given direction

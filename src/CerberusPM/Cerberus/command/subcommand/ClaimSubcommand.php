@@ -193,6 +193,8 @@ class ClaimSubcommand extends BaseSubCommand {
         }
         //Finally create a landclaim
         LandManager::getInstance()->registerLandclaim($new_land);
+        $new_land->addOwner($sender);
+        
         SelectionManager::deselectAll($sender);
         
         $sender->sendMessage($this->lang_manager->translate("command.claim.success", [$args["name"]]));
