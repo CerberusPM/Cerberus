@@ -24,13 +24,12 @@ namespace CerberusPM\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\LandManager;
 
-class AddOwnerSubcommand extends BaseSubCommand {
+class AddOwnerSubcommand extends CerberusSubcommand {
         
     private LangManager $lang_manager;
     private LandManager $land_manager;

@@ -26,7 +26,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\utils\ConfigManager;
@@ -36,7 +35,7 @@ use CerberusPM\Cerberus\utils\LandManager;
 use function count;
 use function array_push;
 
-class TeleportSubcommand extends BaseSubCommand {
+class TeleportSubcommand extends CerberusSubcommand {
 
     private ConfigManager $config_manager;
     private LangManager $lang_manager;

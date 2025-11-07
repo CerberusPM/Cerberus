@@ -122,7 +122,7 @@ class LangManager {
      * 
      * @return string|string[]|null Returns colorized string or array of strings of the translation corresponding to $key. Returns null if translation is not found or empty.
      */
-    public function translateDefault(string $key, array $params): string|array|null {
+    public function translateDefault(string $key, array $params = []): string|array|null {
         try {
             $translation = $this->default_translations[$key];
         } catch (\ErrorException) { //Undefined array key

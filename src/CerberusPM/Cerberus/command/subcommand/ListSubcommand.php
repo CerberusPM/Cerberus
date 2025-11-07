@@ -24,16 +24,14 @@ namespace CerberusPM\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
-use CerberusPM\Cerberus\Cerberus;
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\LandManager;
 
 use function count;
 
-class ListSubcommand extends BaseSubCommand {
+class ListSubcommand extends CerberusSubcommand {
 
     private LangManager $lang_manager;
     private LandManager $land_manager;

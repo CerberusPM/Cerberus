@@ -4,16 +4,16 @@
 # Автор: Levonzie
 
 language-name: Русский
-language-version: 1.0-DEV-62
+language-version: 1.0-DEV-63
 
 ## Строки перевода
 ### Плагин - основные фразы
-plugin.in-dev: "Плагин находится в процессе разработки. Пожалуйста, сообщайте о багах на GitHub issues: https://github.com/CerberusPM/Cerberus/issues"
+plugin.in-dev: "Плагин находится в процессе разработки. Пожалуйста, сообщайте о багах на GitHub issues: https://github.com/CerberusPM/Cerberus/issues \n/crb help для получения информации о доступных командах"
 plugin.version: "Версия плагина: {%0}"
 plugin.selected_language: "Выбран язык: русский"
 plugin.outdated_config: "Внимание! Текущий файл конфигурации устарел и был обновлён автоматически. Резервную копию старого файла можно найти по адресу: {%0} Если Вы вносили какие-либо изменения в конфигурацию, не забудьте перенести их в новый файл вручную."
 plugin.outdated_langfile: "Внимание! Текущий файл языка (Русский) устарел и был обновлён автоматически. Резервную копию старого файла можно найти по адресу: {%0}"
-plugin.author: "Плагин создали Levonzie и skyss0fly"
+plugin.authors: "Плагин создали Levonzie и skyss0fly"
 plugin.loading_landclaims: "Загрузка участков..."
 plugin.loaded_landclaims: "Успешно {!declense({%0}) 1: загружен; 2,3,4,5,6,7,8,9,0,11,12,13,14: загружено} {%0} {!declense({%0}) 1: участок; 2,3,4: участка; 5,6,7,8,9,0,11,12,13,14: участков}!"
 
@@ -21,8 +21,30 @@ plugin.loaded_landclaims: "Успешно {!declense({%0}) 1: загружен; 
 lang.eng: "Английский"
 lang.rus: "Русский"
 
-### Miscellaneous strings
+### Прочие строки
 misc.and: "и" #Союз и
+
+### Описания команд
+command.description.claim: "Создать защитный участок территории"
+command.description.expand: "Расширить выделение"
+command.description.pos1: "Выбрать первую позицию"
+command.description.pos2: "Выбрать вторую позицию"
+command.description.flag: "Управление флагами участка"
+command.description.help: "Вывести список доступных команд"
+command.description.here: "Узнать участок, на котором вы находитесь"
+command.description.list: "Получить список участков"
+command.description.info: "Получить сведения об участке"
+command.description.move: "Переместить участок в рамки нового выделения"
+command.description.reload: "Перезагрузить конфигурацию плагина и/или язык"
+command.description.remove: "Удалить участок"
+command.description.setspawn: "Установить точку телепортации для участка"
+command.description.teleport: "Переместиться на точку телепортации участка"
+command.description.unsetspawn: "Удалить точку телепортации участка"
+command.description.wand: "Получить инструмент для выделения"
+command.description.addmember: "Добавить игрока в список участников участка"
+command.description.addowner: "Добавить игрока в список владельцев участка"
+command.description.removemember: "Удалить игрока из списка участников"
+command.description.removeowner: "Удалить игрока из списка владельцев"
 
 ### Сообщения команд
 command.in_game: "&cЭта команда доступна только игрокам!"
@@ -30,6 +52,9 @@ command.player_not_found: "&cИгрок {%0} не найден."
 command.land_does_not_exist: "&cУчасток с названием \"{%0}\" не существует. Пожалуйста, проверьте написание и регистр."
 command.should_specify_land_name: "&cПожалуйста, укажите участок"
 command.should_specify_player: "&cПожалуйста, укажите игрока"
+#### Help
+command.help.available_commands: "&aДоступные для выполнения команды:"
+command.help.command_entry: "&a • /crb {%0} - {%1}"
 #### Reload
 command.reload.all: "Конфигурация и язык плагина успешно перезагружены"
 command.reload.config: "Конфигурация перезагружена"

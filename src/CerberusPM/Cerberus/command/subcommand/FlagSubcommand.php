@@ -24,7 +24,6 @@ namespace CerberusPM\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 use CortexPE\Commando\args\BooleanArgument;
 
@@ -32,7 +31,7 @@ use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\LandManager;
 use CerberusPM\Cerberus\utils\FlagManager;
 
-class FlagSubcommand extends BaseSubCommand {
+class FlagSubcommand extends CerberusSubcommand {
     
     private LangManager $lang_manager;
     private LandManager $land_manager;

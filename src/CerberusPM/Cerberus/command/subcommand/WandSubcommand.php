@@ -25,13 +25,11 @@ namespace CerberusPM\Cerberus\command\subcommand;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 
-use CortexPE\Commando\BaseSubCommand;
-
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\WandManager;
 use CerberusPM\Cerberus\Exception\InventoryFullException;
 
-class WandSubcommand extends BaseSubCommand {
+class WandSubcommand extends CerberusSubcommand {
 
     private LangManager $lang_manager;
 
@@ -49,8 +47,9 @@ class WandSubcommand extends BaseSubCommand {
             } catch (InventoryFullException) {
                 $sender->sendMessage($this->lang_manager->translate("command.wand.inventory_full"));
             }
-        } else
+        } else {
             $sender->sendMessage($this->lang_manager->translate("command.in_game"));
+        }
     }
 } 
  

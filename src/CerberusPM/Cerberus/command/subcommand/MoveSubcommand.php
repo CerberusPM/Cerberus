@@ -24,11 +24,10 @@ namespace CerberusPM\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 use CortexPE\Commando\args\Vector3Argument;
 
-class MoveSubcommand extends BaseSubCommand {
+class MoveSubcommand extends CerberusSubcommand {
     protected function prepare(): void {
         $this->registerArgument(0, new RawStringArgument("land name"));
         $this->registerArgument(1, new RawStringArgument("where")); // here/to

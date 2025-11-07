@@ -25,15 +25,13 @@ namespace CerberusPM\Cerberus\command\subcommand;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 
-use CortexPE\Commando\BaseSubCommand;
-
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\LandManager;
 
 use function count;
 use function strval;
 
-class HereSubcommand extends BaseSubCommand {
+class HereSubcommand extends CerberusSubcommand {
 
     private LangManager $lang_manager;
     private LandManager $land_manager;

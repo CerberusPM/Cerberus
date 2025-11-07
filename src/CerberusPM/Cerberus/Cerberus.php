@@ -42,19 +42,22 @@ class Cerberus extends PluginBase {
     private LandManager $land_manager;
     private ConfigManager $config_manager;
     private FlagManager $flag_manager;
+    private CerberusCommand $base_command;
     
     public function onLoad(): void {
         self::$instance = $this;
     }
     
     public function onEnable(): void {
-        $this->getServer()->getCommandMap()->register("Cerberus", new CerberusCommand($this, "cerberus", "protect land", ["crb", "cerb"]));
+        $this->lang_manager = LangManager::getInstance();
+        
+        $this->base_command = new CerberusCommand($this, "cerberus", "protect land", ["crb", "cerb"]);
+        $this->getServer()->getCommandMap()->register("Cerberus", $this->base_command);
         
         if(!PacketHooker::isRegistered()) {
             PacketHooker::register($this);
         }
         
-        $this->lang_manager = LangManager::getInstance();
         $this->config_manager = ConfigManager::getInstance();
         $this->land_manager = LandManager::getInstance();
         $this->flag_manager = FlagManager::getInstance();
@@ -102,9 +105,22 @@ class Cerberus extends PluginBase {
         return $this->land_manager;
     }
     
-    
+    /**
+     * Get FlagManager instance
+     * 
+     * @return FlagManager FlagManager instance
+     */
     public function getFlagManager(): FlagManager {
         return $this->flag_manager;
+    }
+    
+    /**
+     * Get base cerberus command class instance
+     * 
+     * @return CerberusCommand CerberusCommand instance
+     */
+    public function getCerberusCommand(): CerberusCommand {
+        return $this->base_command;
     }
     
     /**

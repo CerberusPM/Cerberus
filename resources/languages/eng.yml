@@ -2,16 +2,16 @@
 # Author: Levonzie
 
 language-name: English
-language-version: 1.0-DEV-62
+language-version: 1.0-DEV-63
 
 ## Translation strings
 ### Plugin - general plugin strings
-plugin.in-dev: "The plugin is currently in development. Please report all the bugs you encounter in plugin's GitHub issues: https://github.com/CerberusPM/Cerberus/issues"
+plugin.in-dev: "The plugin is currently in development. Please report all the bugs you encounter in plugin's GitHub issues: https://github.com/CerberusPM/Cerberus/issues \nDo /crb help to get info about the available commands"
 plugin.version: "Cerberus version: {%0}"
 plugin.selected_language: "Selected language: English"
 plugin.outdated_config: "Plugin's config.yml is outdated and has been updated automatically. The old file was backed up as {%0} If you made any changes to the config, you have to transfer them manually from the old file."
 plugin.outdated_langfile: "Selected language file (English) is outdated and has been updated automatically. The old file was backed up as {%0}"
-plugin.author: "This Plugin is Constructed by Levonzie and skyss0fly"
+plugin.authors: "This Plugin is Constructed by Levonzie and skyss0fly"
 plugin.loading_landclaims: "Loading landclaims..."
 plugin.loaded_landclaims: "Successfully loaded {%0} landclaims!"
 
@@ -22,12 +22,37 @@ lang.rus: "Russian"
 ### Miscellaneous strings
 misc.and: "and"
 
+### Command descriptions
+command.description.claim: "Claim land"
+command.description.expand: "Expand your selection"
+command.description.pos1: "Select first position"
+command.description.pos2: "Select second position"
+command.description.flag: "Manage land flags"
+command.description.help: "Get available commands and usage information"
+command.description.here: "Get name of the land you are in"
+command.description.list: "List landclaims"
+command.description.info: "Get detailed information about a land"
+command.description.move: "Move a landclaim"
+command.description.reload: "Reload plugin config and/or language"
+command.description.remove: "Remove a landclaim"
+command.description.setspawn: "Set teleportation point for a landclaim"
+command.description.teleport: "Teleport to land's spawnpoint"
+command.description.unsetspawn: "Remove landclaim's spawnpoint"
+command.description.wand: "Get a selection wand"
+command.description.addmember: "Add a player to member list"
+command.description.addowner: "Add a player to owner list"
+command.description.removemember: "Remove a player from member list"
+command.description.removeowner: "Remove a player from owner list"
+
 ### Command messages
 command.in_game: "&cThis command should be used in-game"
 command.player_not_found: "&cPlayer {%0} not found."
 command.land_does_not_exist: "&cLandclaim named \"{%0}\" does not exist. Please check your spelling and case."
 command.should_specify_land_name: "&cPlease specify the land"
 command.should_specify_player: "&cPlease specify the player"
+#### Help
+command.help.available_commands: "&aCommands available to you:"
+command.help.command_entry: "&a • /crb {%0} - {%1}"
 #### Reload
 command.reload.all: "Configuration and plugin language have been successfully reloaded"
 command.reload.config: "Configuration has been reloaded"

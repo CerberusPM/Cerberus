@@ -50,36 +50,42 @@ use CerberusPM\Cerberus\command\subcommand\RemoveOwnerSubcommand;
 
 class CerberusCommand extends BaseCommand {
     private const BASE_PERMISSION = "cerberus.command";
-    
+    private array $subcommands = [];
+
+
     protected function prepare(): void {
-        $subcommands = [
-            new ClaimSubcommand("claim", "Claim land", ["create", "new", "c"]),
-            new ExpandSubcommand("expand", "Expand your selection", ["exp", "e"]),
-            new FirstPositionSubcommand("pos1", "Select first position", ["1", "first"]),
-            new FlagSubcommand("flag", "Manage land flags", ["f"]),
-            new HelpSubcommand("help", "Get usage information", ["h", "?", "how"]),
-            new HereSubcommand("here", "Get name of the land you are in", ["aqui"]),
-            new ListSubcommand("list", "List landclaims", ["l"]),
-            new InfoSubcommand("info", "Get detailed information about a land", ["i", "information"]),
-            new MoveSubcommand("move", "Move a landclaim", ["mv", "mov", "m"]),
-            new ReloadSubcommand("reload", "Reload plugin config and/or language", ["rel","rld"]),
-            new RemoveSubcommand("remove", "Remove a landclaim", ["rm", "rem", "rmv", "delete", "erase", "r", "d"]),
-            new SecondPositionSubcommand("pos2", "Select second position", ["2", "second"]),
-            new SetspawnSubcommand("setspawn", "Set teleportation point for a landclaim", ["s", "spawn", "set"]),
-            new TeleportSubcommand("teleport", "Teleport to land's spawnpoint", ["tp", "to", "tpto"]),
-            new UnsetspawnSubcommand("unsetspawn", "Remove landclaim's spawnpoint", ["us", "unset", "rmspawn", "delspawn", 'clearspawn']),
-            new WandSubcommand("wand", "Get a selection wand", ["wnd", "w", "thingy"]),
-            new AddMemberSubcommand("addmember", "Add a player to member list", ["am", "whitelist", "addmbr", "add"]),
-            new AddOwnerSubcommand("addowner", "Add a player to owner list", ["ao", "addown"]),
-            new RemoveMemberSubcommand("removemember", "Remove a player from member list", ["remmember", "delmember", "delmember", "rmmember", "rmmbr"]),
-            new RemoveOwnerSubcommand("removeowner", "Remove a player from owner list", ["remowner", "rmowner", "rmowr", "delowner", "delowr"])
+        $this->subcommands = [
+            new ClaimSubcommand("claim", "command.description.claim", ["create", "new", "c"]),
+            new ExpandSubcommand("expand", "command.description.expand", ["exp", "e"]),
+            new FirstPositionSubcommand("pos1", "command.description.pos1", ["1", "first"]),
+            new SecondPositionSubcommand("pos2", "command.description.pos2", ["2", "second"]),
+            new FlagSubcommand("flag", "command.description.flag", ["f"]),
+            new HelpSubcommand("help", "command.description.help", ["h", "?", "how"]),
+            new HereSubcommand("here", "command.description.here", ["aqui"]),
+            new ListSubcommand("list", "command.description.list", ["l"]),
+            new InfoSubcommand("info", "command.description.info", ["i", "information"]),
+            new MoveSubcommand("move", "command.description.move", ["mv", "mov", "m"]),
+            new ReloadSubcommand("reload", "command.description.reload", ["rel","rld"]),
+            new RemoveSubcommand("remove", "command.description.remove", ["rm", "rem", "rmv", "delete", "erase", "r", "d"]),
+            new SetspawnSubcommand("setspawn", "command.description.setspawn", ["s", "spawn", "set"]),
+            new TeleportSubcommand("teleport", "command.description.teleport", ["tp", "to", "tpto"]),
+            new UnsetspawnSubcommand("unsetspawn", "command.description.unsetspawn", ["us", "unset", "rmspawn", "delspawn", 'clearspawn']),
+            new WandSubcommand("wand", "command.description.wand", ["wnd", "w", "thingy"]),
+            new AddMemberSubcommand("addmember", "command.description.addmember", ["am", "whitelist", "addmbr", "add"]),
+            new AddOwnerSubcommand("addowner", "command.description.addowner", ["ao", "addown"]),
+            new RemoveMemberSubcommand("removemember", "command.description.removemember", ["remmember", "delmember", "delmember", "rmmember", "rmmbr"]),
+            new RemoveOwnerSubcommand("removeowner", "command.description.removeowner", ["remowner", "rmowner", "rmowr", "delowner", "delowr"])
         ];
         
-        foreach($subcommands as $subcmd) {
+        foreach($this->subcommands as $subcmd) {
             $this->registerSubCommand($subcmd);
         }
         
         $this->setPermission(self::BASE_PERMISSION);
+    }
+    
+    public function getSubcommands(): array {
+        return $this->subcommands;
     }
     
     public function getPermission(): string {
@@ -87,7 +93,12 @@ class CerberusCommand extends BaseCommand {
     }
     
     public function onRun(CommandSender $sender, string $alias, array $args): void {
-        $sender->sendMessage($this->getOwningPlugin()->getLangManager()->translate("plugin.in-dev"));
+        $lang_manager = $this->getOwningPlugin()->getLangManager();
+       
+        $sender->sendMessage($lang_manager->translate("plugin.in-dev"));
+        $sender->sendMessage($lang_manager->translate("plugin.version", [$this->getOwningPlugin()->getDescription()->getVersion()], false));
+        $sender->sendMessage($lang_manager->translate("plugin.selected_language", include_prefix: false));
+        $sender->sendMessage($lang_manager->translate("plugin.authors", include_prefix: false));
     }
     
 }

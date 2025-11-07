@@ -24,7 +24,6 @@ namespace CerberusPM\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\utils\SelectionManager;
@@ -40,7 +39,7 @@ use function str_contains;
 use function substr;
 use function strrpos;
 
-class ClaimSubcommand extends BaseSubCommand {
+class ClaimSubcommand extends CerberusSubcommand {
 
     private ConfigManager $config_manager;
     private LangManager $lang_manager;

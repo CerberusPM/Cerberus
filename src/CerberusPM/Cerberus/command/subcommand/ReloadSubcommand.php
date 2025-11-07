@@ -24,7 +24,6 @@ namespace CerberusPM\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\utils\ConfigManager;
@@ -35,7 +34,7 @@ use CerberusPM\Cerberus\utils\FlagManager;
 /**
  * A class which provides /cerberus reload command functionality
  */
-class ReloadSubcommand extends BaseSubCommand {
+class ReloadSubcommand extends CerberusSubcommand {
 
     private ConfigManager $config_manager;
     private LangManager $lang_manager;

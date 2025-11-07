@@ -27,14 +27,13 @@ use pocketmine\command\CommandSender;
 use pocketmine\world\Position;
 use pocketmine\player\Player;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\Vector3Argument;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\SelectionManager;
 
-class SecondPositionSubcommand extends BaseSubCommand {
+class SecondPositionSubcommand extends CerberusSubcommand {
 
     private LangManager $lang_manager;
 

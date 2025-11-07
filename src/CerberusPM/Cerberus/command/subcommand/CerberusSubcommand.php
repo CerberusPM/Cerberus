@@ -22,23 +22,28 @@ declare(strict_types=1);
 
 namespace CerberusPM\Cerberus\command\subcommand;
 
-use pocketmine\command\CommandSender;
-
+use CortexPE\Commando\BaseSubCommand;
 use CerberusPM\Cerberus\utils\LangManager;
 
-class HelpSubcommand extends CerberusSubcommand {
-    protected function prepare(): void {
-        $this->setPermission("cerberus.command.help");
-        
+/**
+ * Extension class for Commando's BaseSubcommand to implement dynamic usage message translation
+ */
+abstract class CerberusSubcommand extends BaseSubCommand {
+    
+    private string $description_key;
+    
+    public function __construct(string $name, string $description = "", array $aliases = []) {
+        $this->description_key = $description;
+        if (!empty($description)) {
+            $description = LangManager::getInstance()->translateDefault($description);
+        }
+        parent::__construct($name, $description, $aliases);
     }
     
-    public function onRun(CommandSender $sender, string $alias, array $args): void {
-        $lang_manager = LangManager::getInstance();
-        $sender->sendMessage($lang_manager->translate("command.help.available_commands"));
-        foreach ($this->getOwningPlugin()->getCerberusCommand()->getSubcommands() as $cmd) {
-            if ($sender->hasPermission($cmd->getPermission())) { // Show only commands available to sender
-                $sender->sendMessage($lang_manager->translate("command.help.command_entry", [$cmd->getUsageMessage(), $cmd->getTranslatedDescription()], false));   
-            }
+    public function getTranslatedDescription(): string {
+        if (!empty($this->description_key)) {
+            return LangManager::getInstance()->translate($this->description_key, include_prefix: false);
         }
+        return $this->getDescription();
     }
 }

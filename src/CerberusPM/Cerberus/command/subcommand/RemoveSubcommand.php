@@ -24,7 +24,6 @@ namespace CerberusPM\Cerberus\command\subcommand;
 
 use pocketmine\command\CommandSender;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\utils\LangManager;
@@ -32,7 +31,7 @@ use CerberusPM\Cerberus\utils\LandManager;
 
 use function is_null;
 
-class RemoveSubcommand extends BaseSubCommand {
+class RemoveSubcommand extends CerberusSubcommand {
 
     private LangManager $lang_manager;
     private LandManager $land_manager;

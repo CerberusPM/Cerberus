@@ -25,7 +25,6 @@ namespace CerberusPM\Cerberus\command\subcommand;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 
 use CerberusPM\Cerberus\utils\ConfigManager;
@@ -37,7 +36,7 @@ use function is_null;
 use function implode;
 use function rtrim;
 
-class InfoSubcommand extends BaseSubCommand {
+class InfoSubcommand extends CerberusSubcommand {
 
     private ConfigManager $config_manager;
     private LangManager $lang_manager;

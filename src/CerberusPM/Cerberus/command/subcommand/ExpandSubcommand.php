@@ -26,7 +26,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\world\World;
 use pocketmine\world\Position;
 
-use CortexPE\Commando\BaseSubCommand;
 use CortexPE\Commando\args\RawStringArgument;
 use CortexPE\Commando\args\IntegerArgument;
 
@@ -37,7 +36,7 @@ use CerberusPM\Cerberus\utils\SelectionManager;
 use function min;
 use function max;
 
-class ExpandSubcommand extends BaseSubCommand {
+class ExpandSubcommand extends CerberusSubcommand {
     
     private ConfigManager $config_manager;
     private LangManager $lang_manager;
