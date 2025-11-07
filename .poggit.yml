@@ -1,0 +1,15 @@
+--- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/CerberusPM/Cerberus
+build-by-default: true
+branches:
+- main
+projects:
+  Cerberus:
+    path: ""
+    icon: "cerberus.png"
+    libs:
+      - src: ACM-PocketMine-MP/Commando/Commando # FernanACM's Commando is probbaly the most up-to-date version
+        version: ^3.2.1
+        branch: PM5
+      - src: muqsit/simplepackethandler/SimplePacketHandler
+        version: ^0.1.5
+...
