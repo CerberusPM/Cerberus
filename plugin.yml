@@ -1,5 +1,5 @@
 name: Cerberus
-api: 5.0.0
+api: 5.36.0
 version: 1.0.0-DEV
 main: CerberusPM\Cerberus\Cerberus
 author: [ Levonzie, skyss0fly ]
