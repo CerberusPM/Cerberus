@@ -57,5 +57,7 @@ enabled-flags:
   no_break: true
   no_place: true
   no_interact: true
+  invincible: true
+  no_pvp: true
 
-version: 1.0-DEV-62 # For internal use. Don't touch!
+version: 1.0-DEV-65 # For internal use. Don't touch!

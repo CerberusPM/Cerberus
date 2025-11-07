@@ -39,7 +39,6 @@ use function is_null;
 use function in_array;
 use function array_map;
 use function array_push;
-use function array_keys;
 use function implode;
 use function explode;
 use function count;

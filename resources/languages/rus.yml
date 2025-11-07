@@ -4,7 +4,7 @@
 # Автор: Levonzie
 
 language-name: Русский
-language-version: 1.0-DEV-63
+language-version: 1.0-DEV-66
 
 ## Строки перевода
 ### Плагин - основные фразы
@@ -201,4 +201,5 @@ command.flag.flag_is_off: "&cНевозможно установить флаг 
 flag.no_break.description: "Запретить ломать блоки"
 flag.no_place.description: "Запретить ставить блоки"
 flag.no_interact.description: "Запретить взяиможействие с блоками: открытие, нажатие, использование, и т.д."
-
+flag.no_pvp.description: "Запретить ПВП"
+flag.invincible.description: "Предотвратить любые виды урона"

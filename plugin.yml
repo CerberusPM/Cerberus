@@ -123,3 +123,12 @@ permissions:
   cerberus.flag.no_interact.bypass:
     description: Permission to bypass NoInteract flag
     default: op
+  cerberus.flag.no_pvp:
+    description: Permission to disable PVP in your regions via /cerberus flag pvp on/off
+    default: op
+  cerberus.flag.no_pvp.bypass:
+    description: Permission to bypass NoPVP flag
+    default: op
+  cerberus.flag.invincible:
+    description: Permissian to prevent all kinds of damage in the region via /cerberus flag invincible on/off
+    default: op

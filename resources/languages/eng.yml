@@ -2,7 +2,7 @@
 # Author: Levonzie
 
 language-name: English
-language-version: 1.0-DEV-63
+language-version: 1.0-DEV-66
 
 ## Translation strings
 ### Plugin - general plugin strings
@@ -199,3 +199,5 @@ command.flag.flag_is_off: "&cUnable to toggle flag \"{%0}\" as it's disabled!"
 flag.no_break.description: "Prevent block breaking"
 flag.no_place.description: "Prevent block placing"
 flag.no_interact.description: "Prevent interaction with blocks (opening, using, pressing, etc.)"
+flag.no_pvp.description: "Prevent PVPing"
+flag.invincible.description: "Prevent all kinds of damage"

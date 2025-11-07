@@ -28,6 +28,8 @@ use CerberusPM\Cerberus\flags\Flag;
 use CerberusPM\Cerberus\flags\NoBreakFlag;
 use CerberusPM\Cerberus\flags\NoPlaceFlag;
 use CerberusPM\Cerberus\flags\NoInteractFlag;
+use CerberusPM\Cerberus\flags\InvincibleFlag;
+use CerberusPM\Cerberus\flags\NoPVPFlag;
 
 use function in_array;
 use function strtolower;
@@ -46,7 +48,9 @@ class FlagManager {
         $this->default_flags = [
             new NoBreakFlag(),
             new NoPlaceFlag(),
-            new NoInteractFlag()
+            new NoInteractFlag(),
+            new InvincibleFlag(),
+            new NoPVPFlag()
         ]; // We are going to reuse the same flag objects
         $this->registerDefaultFlags();
     }
