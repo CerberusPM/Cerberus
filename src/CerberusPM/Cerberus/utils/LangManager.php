@@ -99,8 +99,9 @@ class LangManager {
                 return $translation;
             } else {
                 foreach ($params as $index => $param) {
-                    if (gettype($param) == "integer" || gettype($param) == "double")
+                    if (gettype($param) == "integer" || gettype($param) == "double") {
                         $param = strval($param);
+                    }
                     $translation = str_replace("{%$index}", $param, $translation);
                 }
                 $translation = $this->parseDeclensions($translation);
@@ -143,8 +144,9 @@ class LangManager {
                 return $translation;
             } else {
                 foreach ($params as $index => $param) {
-                    if (gettype($param) == "integer" || gettype($param) == "double")
+                    if (gettype($param) == "integer" || gettype($param) == "double") {
                         $param = strval($param);
+                    }
                     $translation = str_replace("{%$index}", $param, $translation);
                 }
                 $translation = $this->parseDeclensions($translation);
@@ -192,8 +194,9 @@ class LangManager {
      * @return string Message with proper word declensions by number
      */
     public function parseDeclensions(string $message): string {
-        if (!str_contains($message, '!declense')) //Declension keyword
+        if (!str_contains($message, '!declense')) { //Declension keyword
             return $message;
+        }
         $new_message = $message;
         
         $declension_map = array();
@@ -207,8 +210,9 @@ class LangManager {
         $declensing = false;
         $declense_number = "1";
         for ($i = 0; $i < $message_len; $i++) {
-            if ($declension_block_started)
+            if ($declension_block_started) {
                 $block_buffer .= $message[$i];
+            }
             if ($message[$i] == '{') {
                 $curly_bracket_met = true;
                 $declension_block_started = true;
@@ -240,16 +244,18 @@ class LangManager {
                 }
                 if ($message[$i] == ';' || $message[$i] == '}') { //Time to assign values to declension map keys
                     $value = trim($char_buffer);
-                    foreach ($temp_keys as $key)
+                    foreach ($temp_keys as $key) {
                         $declension_map[$key] = $value;
+                    }
                     $temp_keys = array();
                     $char_buffer = '';
                     if ($message[$i] == '}') { //Declension block end reached. Replace declension block with declension result
                         $ending_digits = '';
                         foreach ($declension_map as $key => $value) {
                             $key = strval($key);
-                            if (substr($declense_number, -strlen($key)) == $key && strlen($ending_digits) <= strlen($key)) //We make sure that two-digit numbers are prefered over single-digit
+                            if (substr($declense_number, -strlen($key)) == $key && strlen($ending_digits) <= strlen($key)) { //We make sure that two-digit numbers are prefered over single-digit
                                 $ending_digits = $key;
+                            }
                         }
                         $new_message = str_replace($block_buffer, $declension_map[$ending_digits], $new_message);
                         $block_buffer = '';
@@ -282,9 +288,10 @@ class LangManager {
         if (!is_file($selected_lang_path)) { 
             $saved_file = $this->plugin->saveResource("languages/$selected_language.yml");
             
-            if (!$saved_file) //Language file was not created
+            if (!$saved_file) { //Language file was not created
                 Throw new CerberusLangException("Specified language $selected_language is not available. Please make sure you use one of the available languages (eng, rus), or manually added appropriate language file in plugin's languages folder.");
-            
+            }
+
             $language_contents = yaml_parse_file($selected_lang_path);
             $this->translations = $language_contents;
             return;
@@ -292,16 +299,25 @@ class LangManager {
         
         //The language file exists. Check if it's alright
         $existing_langfile_contents = yaml_parse_file($selected_lang_path);
-        if (!is_array($existing_langfile_contents))
+        if (!is_array($existing_langfile_contents)) {
             Throw new CerberusLangException("$selected_language language file is not a valid YAML file or is empty. Please check the syntax");
+        }
         $existing_langfile_version = $existing_langfile_contents["language-version"];
         //Version check
-        $embedded_langfile_path = $this->plugin->getResourcePath("languages/$selected_language.yml");
-        $embedded_langfile_contents = yaml_parse_file($embedded_langfile_path);
+        $embedded_langfile_path = $this->plugin->getResource("languages/$selected_language.yml");
+        if ($embedded_langfile_path !== null) {
+            $content = stream_get_contents($embedded_langfile_path);
+            fclose($embedded_langfile_path);
+            
+            $embedded_langfile_contents = yaml_parse($content);
+        } else {
+            $this->plugin->getLogger()->error("Warning! Failed to load default embedded language file $selected_language. This may cause errors");
+            return;
+        }
         $embedded_langfile_version = $embedded_langfile_contents["language-version"];
         
         if (version_compare($existing_langfile_version, $embedded_langfile_version) < 0) { //Embedded language file is newer
-            @rename($selected_lang_path, $selected_lang_path . '.old'); //Backup the old language file
+            rename($selected_lang_path, $selected_lang_path . '.old'); //Backup the old language file
             $this->plugin->saveResource("languages/$selected_language.yml", true);
             $this->plugin->getLogger()->warning(str_replace('{%0}', "$selected_lang_path.old", $embedded_langfile_contents["plugin.outdated_langfile"])); //Languages are not yet loaded for translate() to work, so we'll translate "manually"
         }
@@ -314,8 +330,15 @@ class LangManager {
      * Load translations from default language file, embedded in source code
      */
     private function loadDefaultLanguage(): void {
-        $langfile_path = $this->plugin->getResourcePath("languages/eng.yml"); //Default embedded language file
-        $this->default_translations = yaml_parse_file($langfile_path);
+        $langfile_path = $this->plugin->getResource("languages/eng.yml");
+        if ($langfile_path !== null) {
+            $content = stream_get_contents($langfile_path);
+            fclose($langfile_path);
+            
+            $this->default_translations = yaml_parse($content);
+            return;
+        }
+        $this->plugin->getLogger()->error("Warning! Failed to load default embedded english language file. This may cause errors");
     }
 
 }

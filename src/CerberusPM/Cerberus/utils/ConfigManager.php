@@ -140,7 +140,15 @@ class ConfigManager {
     }
     
     private function loadDefaultConfig(): void {
-        $default_config_path = $this->plugin->getResourcePath("config.yml"); //Default embedded config
-        $this->default_settings = yaml_parse_file($default_config_path);
+        $config_res = $this->plugin->getResource("config.yml");
+        if ($config_res !== null) {
+            $content = stream_get_contents($config_res);
+            fclose($config_res);
+            
+            $this->default_settings = yaml_parse($content);
+        } else {
+            $this->plugin->getLogger()->error("Warning! Failed to load default embedded config. This may cause errors");
+        }
+        
     }
 }

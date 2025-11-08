@@ -4,9 +4,12 @@ If you are familiar with WorldGuard for Java Edition servers, this plugin aims t
 Built By Server Owners for Server Owners!
 
 > [!NOTE]  
-> The plugin is already useful and pretty stable. All features enlisted herein are ready to use.
+> All commands and features enlisted herein are already implemented and available for use.
 > But the development is still going on, so you might encounter bugs.
 > Your bug and issue reports will be greately appreciated.
+
+> [!WARNING]  
+> Landclaim selection, creation and listing from console is currently broken and will be fixed very soon.
 
 ## Features
 * Customizable selection tool (axe by default) and selection setting, expansion commands
