@@ -32,7 +32,6 @@ use CerberusPM\Cerberus\utils\LandManager;
 use CerberusPM\Cerberus\utils\FlagManager;
 
 use CerberusPM\Cerberus\listeners\WandSelectionListener;
-use CerberusPM\Cerberus\listeners\BlockBreakListener;
 
 class Cerberus extends PluginBase {
     
@@ -63,8 +62,6 @@ class Cerberus extends PluginBase {
         $this->flag_manager = FlagManager::getInstance();
         
         $this->getLogger()->notice($this->lang_manager->translate("plugin.in-dev", include_prefix: false));
-        $this->getLogger()->info($this->lang_manager->translate("plugin.version", [$this->getDescription()->getVersion()], false));
-        $this->getLogger()->info($this->lang_manager->translate("plugin.selected_language", include_prefix: false));
         
         $this->getServer()->getPluginManager()->registerEvents(new WandSelectionListener($this), $this);
     }
@@ -121,14 +118,5 @@ class Cerberus extends PluginBase {
      */
     public function getCerberusCommand(): CerberusCommand {
         return $this->base_command;
-    }
-    
-    /**
-     * Returns the full path to a data file in the plugin's resources folder.
-     * 
-     * This method is available in PocketMine since API 5.5.0. It's added here for compatibility with older PocketMine versions.
-     */
-    public function getResourcePath(string $filename): string {
-        return $this->getFile() . "/resources/" . $filename;
     }
 }

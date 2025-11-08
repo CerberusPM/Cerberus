@@ -96,6 +96,7 @@ class CerberusCommand extends BaseCommand {
         $lang_manager = $this->getOwningPlugin()->getLangManager();
        
         $sender->sendMessage($lang_manager->translate("plugin.in-dev"));
+        $sender->sendMessage($lang_manager->translate("plugin.do_help", include_prefix: false));
         $sender->sendMessage($lang_manager->translate("plugin.version", [$this->getOwningPlugin()->getDescription()->getVersion()], false));
         $sender->sendMessage($lang_manager->translate("plugin.selected_language", include_prefix: false));
         $sender->sendMessage($lang_manager->translate("plugin.authors", include_prefix: false));

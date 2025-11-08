@@ -36,7 +36,7 @@ class HelpSubcommand extends CerberusSubcommand {
         $lang_manager = LangManager::getInstance();
         $sender->sendMessage($lang_manager->translate("command.help.available_commands"));
         foreach ($this->getOwningPlugin()->getCerberusCommand()->getSubcommands() as $cmd) {
-            if ($sender->hasPermission($cmd->getPermission())) { // Show only commands available to sender
+            if ($cmd->testPermissionSilent($sender)) { // Show only commands available to sender
                 $sender->sendMessage($lang_manager->translate("command.help.command_entry", [$cmd->getUsageMessage(), $cmd->getTranslatedDescription()], false));   
             }
         }

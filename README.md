@@ -146,6 +146,7 @@ specify the exact coordinates if you wish!
 CerberusPM uses [Commando](https://github.com/ACM-PocketMine-MP/Commando/tree/PM5/) (the Link is a Forked Version of Commando which remains UP TO DATE with CerberusPM. 
 
 ## Features yet to Implement
++ Fix land creation, listing, etc. errors for console
 * Move subcommand
 * Flag scope (decide, which flags are applied to which groups (owners, members, guests))
 * Add more flags

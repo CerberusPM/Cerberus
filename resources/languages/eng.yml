@@ -2,11 +2,12 @@
 # Author: Levonzie
 
 language-name: English
-language-version: 1.0-DEV-66
+language-version: 1.0-DEV-70
 
 ## Translation strings
 ### Plugin - general plugin strings
-plugin.in-dev: "The plugin is currently in development. Please report all the bugs you encounter in plugin's GitHub issues: https://github.com/CerberusPM/Cerberus/issues \nDo /crb help to get info about the available commands"
+plugin.in-dev: "The plugin is currently in development. Please report all the bugs you encounter in plugin's GitHub issues: https://github.com/CerberusPM/Cerberus/issues"
+plugin.do_help: "Do /crb help to get info about the available commands"
 plugin.version: "Cerberus version: {%0}"
 plugin.selected_language: "Selected language: English"
 plugin.outdated_config: "Plugin's config.yml is outdated and has been updated automatically. The old file was backed up as {%0} If you made any changes to the config, you have to transfer them manually from the old file."
