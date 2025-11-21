@@ -92,9 +92,7 @@ class Landclaim {
      * @return string Lanclaim creator name
      */
     public function getCreatorName(): string {
-        return Cerberus::getInstance()->getServer()->getPlayerByUUID($this->creator)->getDisplayName();
-        // KNOWN BUG: Crash on offline player info fetch.
-        // TODO: Fix by implementing user cache (as a separate table)
+        return Cerberus::getInstance()->getPlayerCache()->getNameByUUID($this->creator);
     }
 
     /**
@@ -177,7 +175,7 @@ class Landclaim {
      * @return string[] Array of names of players with owner permissions
      */
     public function getOwnerNames(): array {
-        return array_map(fn($pl) => Cerberus::getInstance()->getServer()->getPlayerByUUID($pl)->getDisplayName(), $this->owners);
+        return array_map(fn($pl) => Cerberus::getInstance()->getPlayerCache()->getNameByUUID($pl), $this->owners);
     }
 
     /**
@@ -186,7 +184,7 @@ class Landclaim {
      * @return string[] Array of names of players with member permissions
      */
     public function getMemberNames(): array {
-        return array_map(fn($pl) => Cerberus::getInstance()->getServer()->getPlayerByUUID($pl)->getDisplayName(), $this->members);
+        return array_map(fn($pl) => Cerberus::getInstance()->getPlayerCache()->getNameByUUID($pl), $this->members);
     }
     
     /**
@@ -304,10 +302,12 @@ class Landclaim {
      * 
      * @param Player|ConsoleCommandSender player A player (or console) to check for ownership permission
      */
-    public function isOwner(Player|ConsoleCommandSender $sender): bool {
+    public function isOwner(Player|UuidInterface|ConsoleCommandSender $sender): bool {
         if ($sender instanceof Player) {
             return in_array($sender->getUniqueId(), $this->owners);
-        } elseif($sender instanceof ConsoleCommandSender) {
+        } elseif ($sender instanceof UuidInterface) {
+            return in_array($sender, $this->owners);
+        } elseif ($sender instanceof ConsoleCommandSender) {
             return true;
         }
     }
@@ -317,8 +317,14 @@ class Landclaim {
      * 
      * @param Player player A player to check for membership
      */
-    public function isMember(Player $player): bool {
-        return in_array($player->getUniqueId(), $this->members);
+    public function isMember(Player|UuidInterface|ConsoleCommandSender $player): bool {
+        if ($sender instanceof Player) {
+            return in_array($sender->getUniqueId(), $this->members);
+        } elseif ($sender instanceof UuidInterface) {
+            return in_array($sender, $this->members);
+        } elseif ($sender instanceof ConsoleCommandSender) {
+            return true;
+        }
     }
     
     /**

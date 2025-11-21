@@ -72,17 +72,19 @@ class ListSubcommand extends CerberusSubcommand {
                 $sender->sendMessage($this->lang_manager->translate("command.list.no_other"));
                 return;
             }
-            $online_player_name = $this->getOwningPlugin()->getServer()->getPlayerByPrefix($args["player name"]);
+            $player = $this->getOwningPlugin()->getServer()->getPlayerByPrefix($args["player name"]); // Prefer online players
+            if (!isset($player)) {
+                $player = $this->getOwningPlugin()->getPlayerCache()->getUuidByName($args["player name"]);
+            }
+            if (!isset($player)) {
+                $sender->sendMessage($this->lang_manager->translate("command.player_not_found", [$args["player name"]]));
+                return;
+            }
+            
+            $landclaims = $this->land_manager->listLandOwnedBy($player);
             if (empty($landclaims)) {
-                //Try to find an online player with name by prefix
-                $landclaims = $this->land_manager->listLandOwnedBy($this->getOwningPlugin()->getServer()->getOfflinePlayer($args["player name"]));
-                if (isset($online_player_name)) {
-                    $landclaims = $this->land_manager->listLandOwnedBy($online_player_name->getName());
-                }
-                if (empty($landclaims)) {
-                    $sender->sendMessage($this->lang_manager->translate("command.list.other.none", [$args["player name"]]));
-                    return;
-                }
+                $sender->sendMessage($this->lang_manager->translate("command.list.other.none", [$this->getOwningPlugin()->getPlayerCache()->getNameByUuid($player)]));
+                return;
             }
             $owner_name = implode(", ", $landclaims[0]->getOwnerNames()); //We might have retreived land name which has improper case or is unfinished (since we may get player name by prefix). It's better to display the accurate land owner name. That might as well help player to tell if landclaim list of the wrong player was retreived
             if (count($landclaims) == 1) {

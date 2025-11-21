@@ -30,8 +30,10 @@ use CerberusPM\Cerberus\utils\ConfigManager;
 use CerberusPM\Cerberus\utils\LangManager;
 use CerberusPM\Cerberus\utils\LandManager;
 use CerberusPM\Cerberus\utils\FlagManager;
+use CerberusPM\Cerberus\utils\PlayerCacheManager;
 
 use CerberusPM\Cerberus\listeners\WandSelectionListener;
+use CerberusPM\Cerberus\listeners\PlayerJoinListener;
 
 class Cerberus extends PluginBase {
     
@@ -41,6 +43,7 @@ class Cerberus extends PluginBase {
     private LandManager $land_manager;
     private ConfigManager $config_manager;
     private FlagManager $flag_manager;
+    private PlayerCacheManager $cache_manager;
     private CerberusCommand $base_command;
     
     public function onLoad(): void {
@@ -60,10 +63,14 @@ class Cerberus extends PluginBase {
         $this->config_manager = ConfigManager::getInstance();
         $this->land_manager = LandManager::getInstance();
         $this->flag_manager = FlagManager::getInstance();
+        $this->cache_manager = PlayerCacheManager::getInstance();
+        
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerJoinListener($this), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new WandSelectionListener($this), $this);
         
         $this->getLogger()->notice($this->lang_manager->translate("plugin.in-dev", include_prefix: false));
         
-        $this->getServer()->getPluginManager()->registerEvents(new WandSelectionListener($this), $this);
+        
     }
     
     /**
@@ -111,6 +118,16 @@ class Cerberus extends PluginBase {
         return $this->flag_manager;
     }
     
+    /**
+     * Get PlayerCacheManager instance
+     * 
+     * @return PlayerCacheManager PlayerCacheManager instance
+     */
+    public function getPlayerCache(): PlayerCacheManager {
+        return $this->cache_manager;
+    }
+
+
     /**
      * Get base cerberus command class instance
      * 

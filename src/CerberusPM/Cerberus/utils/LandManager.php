@@ -28,6 +28,7 @@ use pocketmine\player\Player;
 use pocketmine\world\Position;
 use pocketmine\math\Vector3;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\Lazy\LazyUuidFromString;
 
 use CerberusPM\Cerberus\Cerberus;
 use CerberusPM\Cerberus\Landclaim;
@@ -308,7 +309,7 @@ class LandManager {
      * 
      * @return Landclaim[] Array of landclaims owned by specified owner. Empty array if has no landclaims
      */
-    public function listLandOwnedBy(Player $player): array {
+    public function listLandOwnedBy(Player|UuidInterface|LazyUuidFromString $player): array {
         $landclaims = array();
         foreach($this->landclaims as $land) {
             if ($land->isOwner($player)) {
